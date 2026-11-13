@@ -1,0 +1,91 @@
+# ==============================================================
+# Docker Compose — Bitshift Happens Stack
+# ==============================================================
+#
+# SERVICES:
+#   1. mlflow-server  — Model registry + tracking UI (port 5000)
+#   2. training-job    — One-shot: trains & registers a model
+#   3. inference       — Long-running: serves predictions (port 8787)
+#
+# USAGE:
+#   docker compose up mlflow-server          # Start tracker only
+#   docker compose run training-job           # Train a model
+#   docker compose up inference              # Start serving
+#   docker compose up                        # Full stack (all three)
+#
+# WORKFLOW:
+#   1. mlflow-server starts first
+#   2. training-job runs, logs model to registry
+#   3. inference pulls latest Production model and serves it
+#   4. POST requests to :8787/invocations get predictions
+# ==============================================================
+
+services:
+  # ── MLflow Tracking Server ────────────────────────────────────
+  # The central registry for experiments, models, and artifacts.
+  # In production: use PostgreSQL + S3/GCS instead of SQLite + local.
+  mlflow-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_db:/mlflow/db
+      - mlflow_artifacts:/mlflow/artifacts
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - mlflow-net
+
+  # ── Training Job ────────────────────────────────────────────
+  # One-shot container that trains a model and registers it.
+  # Override framework via: docker compose run training-job python src/train.py --framework xgboost
+  training-job:
+    build:
+      context: .
+      dockerfile: Dockerfile.train
+    depends_on:
+      mlflow-server:
+        condition: service_healthy
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+      - MLFLOW_EXPERIMENT_NAME=3-sigma-junction26
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    networks:
+      - mlflow-net
+
+  # ── Inference Server ────────────────────────────────────────
+  # Long-running container that serves predictions 24/7.
+  # Automatically pulls the latest Production model from registry.
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    ports:
+      - "8787:8787"
+    depends_on:
+      mlflow-server:
+        condition: service_healthy
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+      - MODEL_NAME=inference-model
+      - MODEL_STAGE=Production
+      - SERVE_PORT=8787
+      - NUM_WORKERS=2
+    networks:
+      - mlflow-net
+    restart: unless-stopped
+
+volumes:
+  mlflow_db:
+  mlflow_artifacts:
+
+networks:
+  mlflow-net:
+    driver: bridge

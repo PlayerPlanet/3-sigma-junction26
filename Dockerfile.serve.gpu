@@ -1,0 +1,44 @@
+# ==============================================================
+# GPU Inference Server Dockerfile
+# ==============================================================
+# Same as Dockerfile.serve but with NVIDIA CUDA support.
+# Use this when your model requires GPU acceleration.
+#
+# Requirements:
+#   - NVIDIA Docker runtime (nvidia-docker2)
+#   - Base image with CUDA + cuDNN
+#   - Docker Compose with GPU passthrough configured
+# ==============================================================
+
+FROM ghcr.io/playerplanet/python:3.11-cuda
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        git && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY src/ ./src/
+COPY config/ ./config/
+
+# Environment variables
+ENV MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
+    MODEL_NAME=inference-model \
+    MODEL_STAGE=Production \
+    SERVE_PORT=8787 \
+    NUM_WORKERS=2
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:${SERVE_PORT}/health')" || exit 1
+
+COPY scripts/serve_entrypoint.py .
+ENTRYPOINT ["python", "serve_entrypoint.py"]

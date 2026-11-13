@@ -1,0 +1,25 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+dist
+build
+.venv
+venv
+
+# MLflow
+mlruns/
+mlflow.db
+*.sqlite
+
+# IDE
+.vscode
+.idea
+
+# Environment
+.env
+
+# Data
+*.csv
+*.parquet

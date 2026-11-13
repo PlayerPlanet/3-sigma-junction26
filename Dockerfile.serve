@@ -1,0 +1,47 @@
+# ==============================================================
+# Inference Server Dockerfile
+# ==============================================================
+# This container PULLS a model from the MLflow registry and serves
+# it using `mlflow models serve`.
+#
+# Two modes of operation:
+#   1. STARTUP mode (default): Connects to tracking server, pulls
+#      model by name+stage, and starts serving
+#   2. LOCAL mode: Serves a model artifact already baked into
+#      the image (for air-gapped environments)
+# ==============================================================
+
+FROM python:3.11-slim
+
+# Install system dependencies for model serving
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        git && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install Python dependencies first (leverage Docker layer caching)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY src/ ./src/
+COPY config/ ./config/
+
+# Environment variables with sensible defaults
+# These are OVERRIDDEN by docker-compose or k8s config
+ENV MLFLOW_TRACKING_URI=http://mlflow-server:5000 \
+    MODEL_NAME=inference-model \
+    MODEL_STAGE=Production \
+    SERVE_PORT=8787 \
+    NUM_WORKERS=2
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:${SERVE_PORT}/health')" || exit 1
+
+# startup.py handles fetching the model from MLflow and launching the server
+COPY scripts/serve_entrypoint.py .
+ENTRYPOINT ["python", "serve_entrypoint.py"]
