@@ -121,6 +121,7 @@ bayesenv/            environments, particle posterior, grader, policies, LLM tex
   chem_lab.py        discrete chemistry lab        (docs/CHEM_LAB.md)
   wetlab.py          batched Gillespie wet lab     (docs/WETLAB.md)
   dagnet.py          random-DAG causal network lab (docs/DAGNET.md)
+  lab_rows.py        design rows from the labs     (docs/LAB_ROWS.md)
   spec.py            YAML task syntax              (docs/TASK_SPEC.md)
 templates/           Harbor task templates (bayes_task, chem_task, wetlab_task, dag_task)
 specs/               task families in the YAML syntax

@@ -30,7 +30,10 @@ N_CANDIDATES = 6
 EIG_K = {"bernoulli": 4096, "gaussian": 1024}
 EIG_REPS = {"bernoulli": 1, "gaussian": 8}
 KINDS = ("design", "predict", "demo")
-SPLITS = ("train", "heldout_instance", "heldout_family")
+SPLITS = ("train", "heldout_instance", "heldout_family", "lab_transfer")
+# "categorical" and the optional design fields below only occur in the lab rows (bayesenv/lab_rows.py)
+FAMILIES = ("bernoulli", "gaussian", "categorical")
+DESIGN_OPTIONAL = {"value", "greedy_choice", "dp_choice"}
 COMMON = {"spec": str, "spec_hash": str, "instance": int, "seed": int, "kind": str, "split": str,
           "env": str, "family": str, "source": str, "depth": int, "prompt": list}
 
@@ -166,7 +169,7 @@ def validate_row(row: dict) -> None:
             raise ValueError(f"row field {k!r} missing or not {t.__name__}")
     if row["kind"] not in KINDS or row["split"] not in SPLITS:
         raise ValueError("bad kind or split")
-    if row["source"] not in ("reference", "random") or row["family"] not in ("bernoulli", "gaussian"):
+    if row["source"] not in ("reference", "random") or row["family"] not in FAMILIES:
         raise ValueError("bad source or family")
     if "theta" in row:
         raise ValueError("rows must not carry theta*")
@@ -176,8 +179,17 @@ def validate_row(row: dict) -> None:
         raise ValueError("prompt must be chat messages: system first, user last")
     extra = set(row) - set(COMMON)
     if row["kind"] == "design":
-        if extra != {"candidates", "eig"}:
+        if extra - DESIGN_OPTIONAL != {"candidates", "eig"} or (extra & DESIGN_OPTIONAL
+                                                                  and not DESIGN_OPTIONAL <= extra):
             raise ValueError(f"design row fields: {sorted(extra)}")
+        if "value" in row:
+            ok = len(row["value"]) == N_CANDIDATES and all(
+                isinstance(v, float) and np.isfinite(v) for v in row["value"])
+            if not ok:
+                raise ValueError("value must be 6 finite floats")
+            if not all(isinstance(row[k], int) and not isinstance(row[k], bool)
+                       and 0 <= row[k] < N_CANDIDATES for k in ("greedy_choice", "dp_choice")):
+                raise ValueError("greedy_choice and dp_choice must be candidate indices")
         if len(row["candidates"]) != N_CANDIDATES or len(row["eig"]) != N_CANDIDATES:
             raise ValueError("design rows carry 6 candidates and 6 EIG values")
         if not all(isinstance(e, float) and np.isfinite(e) for e in row["eig"]):

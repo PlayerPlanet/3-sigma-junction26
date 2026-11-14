@@ -253,6 +253,10 @@ Extra fields by kind:
 visible, so anything deployed against an adversary still needs `Task(..., salt=...)` as before.
 `datagen.validate_row` checks the schema; `data/sample_rows.jsonl` holds 20 real rows.
 
+Lab-transfer evaluation rows (`split: lab_transfer`, `spec: lab:*`, design rows only, family
+`categorical` for the finite labs, optional `value` / `greedy_choice` / `dp_choice` fields) use
+the same schema and `design_reward`; they are described in `docs/LAB_ROWS.md`.
+
 Splits: whole families named in `--heldout-families` (default `item_response` and
 `damped_oscillation`, one per likelihood) are `heldout_family`; in every other family the
 instances with `K % 10 == 9` are `heldout_instance`; the rest is `train`.

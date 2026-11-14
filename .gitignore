@@ -53,3 +53,5 @@ data/
 # Local editor state
 .obsidian/
 results/dagnet_sweep*.json
+# data/ is ignored as a whole; data/lab_transfer/sample_rows.jsonl (12 rows) and
+# wetlab_stability.json are force-added (git add -f). Rebuild the full set: scripts/gen_lab_rows.py, docs/LAB_ROWS.md
