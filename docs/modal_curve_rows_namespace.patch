@@ -1,0 +1,46 @@
+--- a/train/modal_curve.py	2026-11-14 20:17:41.880040189 +0000
++++ b/train/modal_curve.py	2026-11-14 20:17:41.890928347 +0000
+@@ -31,12 +31,16 @@
+ from __future__ import annotations
+ 
+ import json
++import os
+ import time
+ from pathlib import Path
+ 
+ import modal
+ 
+ ROOT = Path(__file__).resolve().parents[1]
++# Rows namespace on the Volume. CURVE_ROWS=rows_battleship keeps another row set (for example
++# the Battleship rows, docs/BATTLESHIP_TRAINING.md) from overwriting the toy rows in rows/.
++ROWS = os.environ.get("CURVE_ROWS", "rows")
+ app = modal.App("bayesenv-curve")
+ image = (
+     modal.Image.debian_slim(python_version="3.12")
+@@ -44,7 +48,7 @@
+                     "huggingface_hub[hf_transfer]", "numpy==2.3.4", "scipy==1.16.3", "pyyaml==6.0.2",
+                     "sentencepiece", "protobuf", "pillow")
+     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "TOKENIZERS_PARALLELISM": "false",
+-          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"})
++          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True", "CURVE_ROWS": ROWS})
+     .add_local_dir(str(ROOT / "bayesenv"), "/root/bayesenv", ignore=["__pycache__"])
+     .add_local_dir(str(ROOT / "specs"), "/root/specs")
+ )
+@@ -78,7 +82,7 @@
+ 
+ 
+ def _rows(name: str) -> list[dict]:
+-    return [json.loads(l) for l in open(f"/vol/rows/{name}.jsonl", encoding="utf-8")]
++    return [json.loads(l) for l in open(f"/vol/{ROWS}/{name}.jsonl", encoding="utf-8")]
+ 
+ 
+ # ---- model, prompt rendering, generation (shared by training and evaluation) --------
+@@ -496,7 +500,7 @@
+     files = {"design_train": train_rows(allrows), **{f"eval_{s}": eval_sample(allrows, s) for s in EVAL_SPLITS}}
+     with vol.batch_upload(force=True) as b:
+         for name, rs in files.items():
+-            b.put_file(io.BytesIO("".join(json.dumps(r) + "\n" for r in rs).encode()), f"rows/{name}.jsonl")
++            b.put_file(io.BytesIO("".join(json.dumps(r) + "\n" for r in rs).encode()), f"{ROWS}/{name}.jsonl")
+             print(name, len(rs), "rows;", len({r["env"] for r in rs}), "task instances;",
+                   sorted({r["spec"] for r in rs}))
+ 

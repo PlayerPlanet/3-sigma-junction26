@@ -6,7 +6,8 @@
 Play: click a cell to fire, the arrows to scan a row or column; toggle the exact posterior
 (the heat map and the rule bars) on and off; let the reference make moves; submit a belief and
 see the hidden board, the score and its design / inference split.
-Replay: any Harbor trial of a battleship task (jobs/**/verifier/details.json) step by step,
+Replay: any Harbor trial of a battleship task (jobs/**/verifier/details.json) or any episode of
+experiments/battleship_llm.py (results/battleship_llm/<model>/seed-<n>.json) step by step,
 next to the reference on the same hidden board, or an offline demo (reference vs a
 noise-ignoring coder) that needs no Harbor run.
 
@@ -68,8 +69,10 @@ def demo_runs(seed: int) -> dict:
 
 def list_runs() -> list[str]:
     runs = []
-    for base in ("jobs", "results"):
-        for f in sorted((ROOT / base).glob("**/verifier/details.json")):
+    files = [f for base in ("jobs", "results") for f in sorted((ROOT / base).glob("**/verifier/details.json"))]
+    files += sorted((ROOT / "results" / "battleship_llm").glob("*/seed-*.json"))
+    if files:
+        for f in files:
             try:
                 if "trajectory" in json.loads(f.read_text()):
                     runs.append(str(f.relative_to(ROOT)))
@@ -80,10 +83,11 @@ def list_runs() -> list[str]:
 
 def load_run(rel: str) -> dict:
     f = (ROOT / rel).resolve()
-    if ROOT not in f.parents or f.name != "details.json":
+    if ROOT not in f.parents or not (f.name == "details.json" or
+                                     (f.name.startswith("seed-") and f.suffix == ".json")):
         raise ValueError("not a run file")
     d = json.loads(f.read_text())
-    d["label"] = rel
+    d["label"] = f"{d['label']} ({rel})" if d.get("label") else rel
     return d
 
 
@@ -245,9 +249,9 @@ async function renderPlay(){const P=document.getElementById('play');P.innerHTML=
  META.names.forEach((n,i)=>rules.appendChild($(`<div><b>${n}</b> (${META.n_rule[i]} layouts): ${META.definitions[n]}</div>`)))}
 // ---------------- replay
 async function renderReplay(){const P=document.getElementById('replay');P.innerHTML='';const m=$('<main style="grid-template-columns:1fr"></main>');P.appendChild(m);
- const top=$('<div class="panel"><div class="row"><b>Run</b><select id="runs"><option value="">choose a Harbor trial...</option></select><span class="mute">or</span><input id="dseed" size="6" value="39"><button class="b" id="demo">Offline demo</button></div></div>');m.appendChild(top);
+ const top=$('<div class="panel"><div class="row"><b>Run</b><select id="runs"><option value="">choose a run (Harbor trial or LLM episode)...</option></select><span class="mute">or</span><input id="dseed" size="6" value="39"><button class="b" id="demo">Offline demo</button></div></div>');m.appendChild(top);
  const runs=await api('/api/runs');const sel=top.querySelector('#runs');runs.forEach(r=>sel.appendChild($(`<option>${r}</option>`)));
- if(!runs.length)sel.appendChild($('<option disabled>no battleship runs under jobs/ yet</option>'));
+ if(!runs.length)sel.appendChild($('<option disabled>no runs yet (jobs/ or results/battleship_llm/)</option>'));
  sel.onchange=async()=>{if(sel.value){R=await api('/api/run?path='+encodeURIComponent(sel.value));step=0;renderReplay()}};
  top.querySelector('#demo').onclick=async()=>{R=await api('/api/demo?seed='+top.querySelector('#dseed').value);step=0;renderReplay()};
  if(!R)return;top.appendChild($(`<div class="small mute">${R.label||''}</div>`));

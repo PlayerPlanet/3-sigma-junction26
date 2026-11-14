@@ -185,6 +185,11 @@ python scripts/battleship_ui.py      # http://localhost:8050
   board, or an offline demo (seed 39 is a good one: one flipped report makes the noise-ignoring
   player rule out the true rule entirely).
 
+## Benchmarking and training
+
+`docs/BATTLESHIP_TRAINING.md`: Gemini on full games and on design rows, GRPO on Gemma 4 with
+the size-curve pipeline, and the pre-registered transfer test on the wet-lab rows.
+
 ## Not done / open
 
 * **No language-model agent has played this yet**, so the frontier gap is unmeasured. The
