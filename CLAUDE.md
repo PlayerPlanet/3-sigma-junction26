@@ -12,6 +12,7 @@ posterior. Read `README.md` for the overview and `docs/RESULTS.md` for results.
 | Hidden state is one of a few named hypotheses and the likelihood is a formula | copy `bayesenv/chem_lab.py` | about an hour |
 | Stock that runs out, several readings per run, stochastic kinetics, anything without a formula for the likelihood | copy `bayesenv/wetlab.py` | a few hours |
 | The unknown is a structure to average over (a graph), answers are forecasts of held-out interventions | copy `bayesenv/dagnet.py` (`docs/DAGNET.md`) | a few hours |
+| A stochastic simulator whose likelihood the agent cannot write down but the grader can compute exactly (CME / finite state projection) | copy `bayesenv/lfilab.py` (`docs/LFILAB.md`) | a day |
 
 The YAML syntax does **not** support: named hypotheses to identify, state that carries over
 between experiments (stock, vessels), time-series outputs, count/Poisson outcomes, or
@@ -66,7 +67,7 @@ random is as good as the reference, the lab has no room for experiment choice to
 - `wetlab_baselines`: ODE-based "competent coder" baselines to check a lab is hard enough.
 
 **Harbor packaging**
-- `templates/{bayes_task,chem_task,wetlab_task,dag_task}/`: copy the closest one. Each has the MCP
+- `templates/{bayes_task,chem_task,wetlab_task,dag_task,lfi_task}/`: copy the closest one. Each has the MCP
   server (`environment/mcp-server/server.py`), the token-protected `/grade` endpoint, the
   oracle `solution/solve.sh` and the verifier `tests/test.sh`.
 - `scripts/make_*_tasks.py` render a template per seed; `scripts/render_tasks.sh` renders all.
