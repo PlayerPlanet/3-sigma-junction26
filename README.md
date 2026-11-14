@@ -105,6 +105,7 @@ These runs predate the switch to `reward.txt`; their score is the `reward` field
 | `tasks/bayes` location-0..4 | position of a signal source, continuous outcomes | Gaussian predictions for 30 held-out designs | exact (particle) posterior |
 | `tasks/chem` chem-0..4 | one of 7 reactor faults | probabilities over faults | exact, by enumeration |
 | `tasks/wetlab` wetlab-0..4 | one of 6 reaction mechanisms plus rate constants, stochastic kinetics, limited stock | probabilities over mechanisms | approximate, simulation-based |
+| `tasks/dag` dag-0..4 | a causal Bayesian network on 5 binary variables (one of 29,281 DAGs plus its tables), fully disclosed prior | probabilities for 24 held-out interventions | exact, model averaging over all DAGs ([`docs/DAGNET.md`](docs/DAGNET.md)); not yet run against a language model |
 
 Every task runs the environment as an MCP server in its own container, keeps the hidden state
 behind a per-trial secret salt, and exposes the grade only through a token-protected endpoint.
@@ -119,8 +120,9 @@ rows. Its large-scale sweep has not been run yet.
 bayesenv/            environments, particle posterior, grader, policies, LLM text protocol
   chem_lab.py        discrete chemistry lab        (docs/CHEM_LAB.md)
   wetlab.py          batched Gillespie wet lab     (docs/WETLAB.md)
+  dagnet.py          random-DAG causal network lab (docs/DAGNET.md)
   spec.py            YAML task syntax              (docs/TASK_SPEC.md)
-templates/           Harbor task templates (bayes_task, chem_task, wetlab_task)
+templates/           Harbor task templates (bayes_task, chem_task, wetlab_task, dag_task)
 specs/               task families in the YAML syntax
 scripts/             render_tasks.sh, eval.sh, calibration and data-generation scripts
 experiments/         E1–E6 experiment and analysis scripts (Modal CPU fan-out)
@@ -145,10 +147,11 @@ Not tracked, because it can be regenerated:
 | E6 attack data (`results/e6_*.jsonl`) | `modal run experiments/e6_stealth.py --seeds 400 --out results/e6_stealth.jsonl`; the no-information attacks are policies in `bayesenv/policies.py`, run through `experiments/batch.py --policies ... --seed0 2000 --out results/e6_attacks.jsonl` |
 | Figures (`results/fig_*.png`) | `python experiments/plots.py` |
 | Chemistry and wet lab calibration | `python scripts/chem_calibrate.py`, `python scripts/wetlab_calibrate.py` |
+| DAG lab calibration (`results/dagnet_calibration.json`) | `modal run experiments/dagnet_modal.py::calibrate --seeds 400` (small local run: `python scripts/dagnet_calibrate.py --seeds 0:20`) |
 | Training rows (`data/`, `results/sft/`) | `python scripts/gen_training_data.py --specs specs/*.yaml --instances N --out data/v1` |
 | Preprint PDF | `cd paper && latexmk main.tex` |
 
-The rendered Harbor tasks in `tasks/bayes`, `tasks/chem` and `tasks/wetlab` are tracked, so
+The rendered Harbor tasks in `tasks/bayes`, `tasks/chem`, `tasks/wetlab` and `tasks/dag` are tracked, so
 that `harbor run -p tasks/...` works on a fresh clone. They are generated from `templates/` by
 `scripts/render_tasks.sh`; edit the templates, not the rendered copies.
 
@@ -156,7 +159,7 @@ that `harbor run -p tasks/...` works on a fresh clone. They are generated from `
 
 ```bash
 uv run --no-project --with numpy --with scipy --with pyyaml --with pytest \
-  pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py tests/test_spec.py
+  pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py tests/test_spec.py tests/test_dagnet.py
 ```
 
 `tests/test_model.py` and `tests/test_predict.py` belong to the original project template and
