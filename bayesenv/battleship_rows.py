@@ -19,8 +19,14 @@ zero-shot on the lab rows (`lab:wetlab`, `lab:chem`, ...):
 
 Everything a label depends on is in the row: the exact posterior used for the labels is
 computed from the actions and results as printed. The hidden board is never written.
-Candidates: the best action over all 48 actions + 5 other random affordable actions, like
-`datagen.design_candidates` (best of a pool + 5 random). Histories come from the reference
+Candidates (v2, "matched"): 3 fires + 3 scans: the best fire, the best scan (one of them is the
+best affordable action overall), and two more of each type picked at matched values (for two
+random target values, the fire and the scan whose label is closest). Action type then carries
+almost no information about the label. With v1's "best + 5 random" candidates the best action
+was a scan in 74% of rows, so "pick any scan" scored 0.78 against 0.57 for a random pick; with
+matched candidates every simple shortcut we tried scores within 0.04 of a random pick
+(tests/test_battleship_rows.py checks this). States with fewer than 3 affordable scans
+(budget 1 left) are skipped. Histories come from the reference
 (`source: "reference"`) or from uniformly random affordable actions (`source: "random"`),
 balanced over (source, depth). States where no candidate has 1e-3 nats per unit are skipped.
 """
@@ -41,6 +47,7 @@ SEED_BASE = {"train": 8_100_000, "heldout_instance": 8_500_000}
 SOURCES = ("reference", "random")
 MAX_DEPTH = 14                 # depth = number of actions already taken
 N_CANDIDATES = 6
+CANDIDATES = "matched-v2"
 MIN_EIG = 1e-3
 INTRO = "You are a scientist running experiments on an unknown system."
 BEGIN = "Begin. Run your first experiment."
@@ -139,6 +146,28 @@ def _play(seed: int, source: str, depth: int) -> B.BattleshipLab | None:
     return lab
 
 
+def matched_candidates(per: np.ndarray, ok, rng: np.random.Generator) -> list[int] | None:
+    """3 fires + 3 scans: best of each type, then two value-matched pairs (see module doc)."""
+    fires = [int(a) for a in ok if a < B.N * B.N]
+    scans = [int(a) for a in ok if a >= B.N * B.N]
+    if len(fires) < 3 or len(scans) < 3:
+        return None
+    bf = max(fires, key=lambda a: per[a])
+    bs = max(scans, key=lambda a: per[a])
+    sel = [bf, bs]
+    rf = [a for a in fires if a != bf]
+    rs = [a for a in scans if a != bs]
+    lo, hi = min(per[a] for a in rf + rs), max(per[a] for a in rf + rs)
+    for _ in range(2):
+        v = rng.uniform(lo, hi)
+        f = min(rf, key=lambda a: abs(per[a] - v))
+        sc = min(rs, key=lambda a: abs(per[a] - v))
+        sel += [f, sc]
+        rf.remove(f)
+        rs.remove(sc)
+    return sel
+
+
 def make_row(seed: int, source: str, depth: int, split: str, h: str | None = None) -> dict | None:
     lab = _play(seed, source, depth)
     if lab is None or lab.remaining <= 0:
@@ -153,8 +182,9 @@ def make_row(seed: int, source: str, depth: int, split: str, h: str | None = Non
     if per[best] < MIN_EIG:
         return None
     rng = np.random.default_rng([seed, 0xB5A7])
-    others = rng.choice([a for a in ok if a != best], N_CANDIDATES - 1, replace=False)
-    cands = [best, *map(int, others)]
+    cands = matched_candidates(per, ok, rng)
+    if cands is None:
+        return None
     rng.shuffle(cands)
     h = h or spec_hash()
     msgs = [{"role": "system", "content": system_prompt()}, {"role": "user", "content": BEGIN}]
@@ -169,7 +199,8 @@ def make_row(seed: int, source: str, depth: int, split: str, h: str | None = Non
             "depth": int(depth), "prompt": msgs, "kind": "design", "candidates": clist,
             "eig": [round(float(per[a]), 5) + 0.0 for a in cands],
             "eig_nats": [round(float(eig[a]), 5) + 0.0 for a in cands],
-            "cost": [int(cost[a]) for a in cands], "budget_remaining": int(lab.remaining)}
+            "cost": [int(cost[a]) for a in cands], "budget_remaining": int(lab.remaining),
+            "candidates_rule": CANDIDATES}
 
 
 def generate(split: str, n: int, depths=range(MAX_DEPTH + 1)) -> list[dict]:

@@ -1,0 +1,15 @@
+{
+  "tag": "bench-v1",
+  "salt": "battleship-llm-v1",
+  "seeds": "0:10",
+  "temperature": 0.0,
+  "max_tokens": 4096,
+  "concurrency": 4,
+  "one_tag": false,
+  "models": [
+    {"provider": "gemini", "model": "gemini-4-hydrogen"},
+    {"provider": "verda", "model": "kimi-k3-1-pro", "concurrency": 2},
+    {"provider": "verda-deepseek", "model": "SET-FROM---list-models"},
+    {"provider": "modal", "model": "gemma-4-26b-a4b-it"}
+  ]
+}

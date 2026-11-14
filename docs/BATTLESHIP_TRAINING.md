@@ -28,13 +28,16 @@ actions. The model answers `<observe>[design]</observe>`; the reward is
 Battleship rows: `bayesenv/battleship_rows.py`, `scripts/gen_battleship_rows.py`,
 `tests/test_battleship_rows.py`. Actions are designs: `[0, row, col]` fires, `[1, 0, i]` scans
 row i, `[1, 1, i]` scans column i. Histories come from the reference or from random play,
-balanced over depth 0 to 14 (4,000 train rows, 600 held-out; about 6 minutes to generate).
+balanced over depth 0 to 14 (about 4,000 train rows and 600 held-out; about 12 minutes to generate).
 
-Floors to beat on the Battleship rows: a random candidate scores 0.549. The best action is a
-scan in 74% of rows, so the shortcut "pick any scan" already scores about 0.74. A trained model
-has to clear 0.74 on Battleship before it has learned more than that shortcut. The shortcut
-cannot help on the wet-lab rows, which have no scans, so any transfer there is not explained by
-it.
+Shortcut patched (rows v2, `data/battleship_v2`). In the first row set (v1) the candidates were
+"best + 5 random", the best action was a scan in 74% of rows, and "pick any scan" scored 0.78
+against 0.57 for a random pick. v2 always offers 3 fires and 3 scans: the best of each type plus
+two value-matched pairs, so the action type says almost nothing about the label. Every simple
+shortcut we tried (any scan, any fire, next to a hit, nearest the centre) now lands within 0.04 of
+a random pick (about 0.64), and `tests/test_battleship_rows.py` fails if picking by type gains more
+than 0.08. The reference's choice still scores 1. Train and report on v2; v1 results are only
+useful as a shortcut-learning control.
 
 ## Measurements
 
@@ -64,9 +67,9 @@ M="uv run --no-project --with modal modal run --env 3-sigma-submission"
 PY="uv run --no-project --with numpy --with scipy --with pyyaml --with openai python"   # hosted-model runs
 ```
 
-**1. Rows** (about 7 minutes, numpy only; `data/` is not tracked):
+**1. Rows** (about 12 minutes, numpy only; `data/` is not tracked):
 ```bash
-python scripts/gen_battleship_rows.py --train 4000 --heldout 600 --out data/battleship
+python scripts/gen_battleship_rows.py --train 4000 --heldout 600 --out data/battleship_v2
 ```
 
 **2. Lab transfer rows** (see `docs/LAB_ROWS.md`), then a wet-lab-only file for hosted models:
@@ -79,18 +82,18 @@ uv run --no-project --with modal modal volume put --env 3-sigma-submission bayes
     data/lab_transfer/rows.jsonl lab_rows.jsonl
 ```
 
-**3. Train and evaluate Gemma** (rows go to `rows_battleship/` on the Volume, runs to
-`runs/battleship/`, so nothing of the toy experiments is overwritten):
+**3. Train and evaluate Gemma** (rows go to `rows_battleship_v2/` on the Volume, runs to
+`runs/battleship-v2/`, so nothing of the toy experiments is overwritten):
 ```bash
-export CURVE_ROWS=rows_battleship
-$M train/modal_curve.py::upload --rows data/battleship/rows.jsonl
+export CURVE_ROWS=rows_battleship_v2
+$M train/modal_curve.py::upload --rows data/battleship_v2/rows.jsonl
 $M train/modal_curve.py::one --model E4B --arm grpo --steps 10 --n-eval 50 --tag bs-smoke \
     --extra-eval lab_transfer=lab_rows.jsonl                                   # smoke test first
 $M --detach train/modal_curve.py::fanout --models E4B,E2B --arms base,control,grpo \
-    --tag battleship --extra-eval lab_transfer=lab_rows.jsonl
+    --tag battleship-v2 --extra-eval lab_transfer=lab_rows.jsonl
 uv run --no-project --with modal modal volume get --env 3-sigma-submission bayesenv-curve \
-    runs/battleship results/curve/
-python scripts/analyze_curve.py --runs results/curve/battleship
+    runs/battleship-v2 results/curve/
+python scripts/analyze_curve.py --runs results/curve/battleship-v2
 ```
 If the larger models write reasoning and run out of the 128-token answer cap, add
 `--prefill "<observe>["` (as in the size-curve runs).
@@ -99,7 +102,7 @@ If the larger models write reasoning and run out of the 128-token answer cap, ad
 requests in total, counted in `results/request_budget.json`:
 ```bash
 $PY scripts/eval_design_rows.py --provider gemini --model <gemini-model-id> \
-    --rows data/battleship/rows.jsonl --n 100 \
+    --rows data/battleship_v2/rows.jsonl --n 100 \
     --extra-eval lab_transfer=data/lab_transfer/wetlab_rows.jsonl --out results/curve/battleship
 ```
 That is 100 Battleship rows + 200 wet-lab rows = 300 requests; use `--n 60` and the first 100

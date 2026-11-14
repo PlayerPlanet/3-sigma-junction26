@@ -62,3 +62,18 @@ def test_rows_hide_the_truth_and_are_deterministic():
 def test_train_and_heldout_seeds_do_not_overlap():
     tr = R.generate("train", 30)
     assert not {r["seed"] for r in tr} & {r["seed"] for r in ROWS}
+
+
+def test_no_action_type_shortcut():
+    """Picking by action type alone must not beat a random pick by much (v1 rows: +0.21)."""
+    import numpy as np
+    rng = np.random.default_rng(0)
+    gain = {"scan": [], "fire": []}
+    for r in ROWS:
+        e = np.maximum(np.asarray(r["eig"]), 0)
+        e = e / e.max()
+        for kind, cost in (("scan", 2), ("fire", 1)):
+            idx = [i for i, c in enumerate(r["cost"]) if c == cost]
+            assert len(idx) == 3
+            gain[kind].append(e[rng.choice(idx)] - e.mean())
+    assert abs(np.mean(gain["scan"])) < 0.08 and abs(np.mean(gain["fire"])) < 0.08

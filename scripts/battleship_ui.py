@@ -6,6 +6,9 @@
 Play: click a cell to fire, the arrows to scan a row or column; toggle the exact posterior
 (the heat map and the rule bars) on and off; let the reference make moves; submit a belief and
 see the hidden board, the score and its design / inference split.
+Human benchmark: a person plays the benchmark boards (configs/battleship_benchmark.json) with
+no posterior and no reference, then submits rule and cell probabilities; the grade is appended to
+results/battleship_bench/<tag>/runs.jsonl as model "human:<name>", next to the models.
 Replay: any Harbor trial of a battleship task (jobs/**/verifier/details.json) or any episode of
 experiments/battleship_llm.py (results/battleship_llm/<model>/seed-<n>.json) step by step,
 next to the reference on the same hidden board, or an offline demo (reference vs a
@@ -20,6 +23,7 @@ import argparse
 import json
 import secrets
 import sys
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -28,7 +32,78 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from bayesenv import battleship as B  # noqa: E402
 
-STATE: dict = {"lab": None}
+STATE: dict = {"lab": None, "human": None}
+BENCH_CFG = ROOT / "configs" / "battleship_benchmark.json"
+
+
+def bench_cfg() -> dict:
+    return json.loads(BENCH_CFG.read_text()) if BENCH_CFG.exists() else \
+        {"tag": "bench-v1", "salt": "battleship-llm-v1", "seeds": "0:10"}
+
+
+def bench_dir() -> Path:
+    return ROOT / "results" / "battleship_bench" / bench_cfg()["tag"]
+
+
+def human_done(name: str) -> list[int]:
+    f = bench_dir() / "runs.jsonl"
+    if not f.exists() or not name:
+        return []
+    return sorted({r["seed"] for r in map(json.loads, f.read_text().splitlines())
+                   if r["model"] == f"human:{name}"})
+
+
+def human_state() -> dict:
+    """What a human player may see: the board as played, never the posterior or the truth
+    (until the beliefs are submitted)."""
+    h, cfg = STATE["human"], bench_cfg()
+    base = {"cfg": {"tag": cfg["tag"], "salt": cfg["salt"], "seeds": cfg["seeds"]},
+            "prior": B.geometry().p0.tolist()}
+    if h is None:
+        return {**base, "game": None}
+    lab = h["lab"]
+    return {**base, "game": True, "name": h["name"], "seed": lab.seed, "budget": lab.budget,
+            "remaining": lab.remaining, "history": lab.history, "result": lab.result,
+            "done": human_done(h["name"])}
+
+
+def human_new(name: str, seed: int) -> dict:
+    cfg = bench_cfg()
+    lo, hi = map(int, cfg["seeds"].split(":"))
+    name = "".join(ch for ch in name if ch.isalnum() or ch in "-_")[:32]
+    if not name:
+        raise ValueError("enter a player name (letters, digits, - or _)")
+    if not lo <= seed < hi:
+        raise ValueError(f"benchmark boards are {lo} to {hi - 1}")
+    if seed in human_done(name):
+        raise ValueError(f"{name} has already played board {seed}")
+    lab = B.BattleshipLab()
+    lab.reset(seed, cfg["salt"])
+    STATE["human"] = {"lab": lab, "name": name, "t0": time.time()}
+    return human_state()
+
+
+def human_submit(rules: dict, occupancy: list) -> dict:
+    h = STATE["human"]
+    lab, name = h["lab"], h["name"]
+    res = lab.submit(rules, occupancy, reference=True)
+    keys = ("score", "score_raw", "rule_part", "cell_part", "design", "inference", "accuracy",
+            "ppc_p", "n_actions", "n_fires", "n_scans", "budget_used", "reference_score_raw",
+            "gap_to_reference", "hidden_rule")
+    row = {"model": f"human:{name}", "provider": "human", "seed": lab.seed, "salt": lab.salt,
+           "parsed": True, "invalid_actions": 0, "calls": 0, "in": 0, "out": 0,
+           **{k: res[k] for k in keys}, "seconds": round(time.time() - h["t0"], 1),
+           "history": lab.history, "transcript": [],
+           "submitted_rules": res["submitted_rules"], "submitted_occupancy": res["submitted_occupancy"]}
+    d = bench_dir()
+    (d / f"human_{name}").mkdir(parents=True, exist_ok=True)
+    with open(d / "runs.jsonl", "a") as f:
+        f.write(json.dumps(row) + "\n")
+    replay = {"label": f"human {name}, board {lab.seed}",
+              "trajectory": {"history": lab.history, "snapshots": lab.snapshots, "result": res},
+              "reference": B.reference_trajectory(lab.seed, lab.salt)}
+    (d / f"human_{name}" / f"seed-{lab.seed}.json").write_text(json.dumps(replay))
+    return human_state()
 
 
 def lab_state() -> dict:
@@ -71,6 +146,7 @@ def list_runs() -> list[str]:
     runs = []
     files = [f for base in ("jobs", "results") for f in sorted((ROOT / base).glob("**/verifier/details.json"))]
     files += sorted((ROOT / "results" / "battleship_llm").glob("*/seed-*.json"))
+    files += sorted((ROOT / "results" / "battleship_bench").glob("*/*/seed-*.json"))
     if files:
         for f in files:
             try:
@@ -115,6 +191,8 @@ class Handler(BaseHTTPRequestHandler):
                             "n_rule": g.n_rule.tolist()})
             elif u.path == "/api/state":
                 self._json(lab_state())
+            elif u.path == "/api/human/state":
+                self._json(human_state())
             elif u.path == "/api/runs":
                 self._json(list_runs())
             elif u.path == "/api/run":
@@ -143,6 +221,19 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(lab_state())
             elif self.path == "/api/submit":
                 self._json(submit(body.get("mode", "exact")))
+            elif self.path == "/api/human/new":
+                self._json(human_new(str(body.get("name", "")), int(body.get("seed"))))
+            elif self.path == "/api/human/act":
+                h = STATE["human"]
+                if h is None or h["lab"].result is not None:
+                    raise ValueError("start a board first")
+                h["lab"].step(body)
+                self._json(human_state())
+            elif self.path == "/api/human/submit":
+                self._json(human_submit(body.get("rules", {}), body.get("occupancy")))
+            elif self.path == "/api/human/quit":
+                STATE["human"] = None
+                self._json(human_state())
             else:
                 self._send(404, b"{}")
         except Exception as e:  # noqa: BLE001
@@ -187,8 +278,8 @@ table.sc{border-collapse:collapse;margin-top:6px}table.sc td{padding:2px 10px 2p
 .legend{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute)}.sw{width:60px;height:10px;border-radius:5px;background:linear-gradient(90deg,#f7f5f0,#1f5f8b)}
 </style></head><body>
 <header><h1>Rulebound Battleship</h1><span class="sub">find the ships and the rule that placed them, from noisy shots</span>
-<span class="tabs"><button id="tPlay" class="on">Play</button><button id="tReplay">Replay</button></span></header>
-<div id="play"></div><div id="replay" style="display:none"></div>
+<span class="tabs"><button id="tPlay" class="on">Play</button><button id="tHuman">Human benchmark</button><button id="tReplay">Replay</button></span></header>
+<div id="play"></div><div id="human" style="display:none"></div><div id="replay" style="display:none"></div>
 <script>
 let META=null, S=null, R=null, step=0, showPost=true;
 const $=(h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
@@ -268,9 +359,58 @@ async function renderReplay(){const P=document.getElementById('replay');P.innerH
    const mi=$('<div class="minis" style="margin-top:8px"></div>');p.appendChild(mi);
    [['submitted map',T.result.submitted_occupancy.flat()],['exact posterior',T.result.exact_occupancy.flat()]].forEach(([s,h])=>{const d=$(`<div class="mini"><div class="small mute">${s}</div></div>`);d.appendChild(board({heat:h,truth:truthArr(T.result),mini:true}));mi.appendChild(d)});
    p.appendChild(scoreTable(T.result))}})}
-document.getElementById('tPlay').onclick=()=>{tab('play')};document.getElementById('tReplay').onclick=()=>{tab('replay')};
-function tab(t){document.getElementById('play').style.display=t==='play'?'':'none';document.getElementById('replay').style.display=t==='replay'?'':'none';
- document.getElementById('tPlay').classList.toggle('on',t==='play');document.getElementById('tReplay').classList.toggle('on',t==='replay');t==='play'?renderPlay():renderReplay()}
+document.getElementById('tPlay').onclick=()=>{tab('play')};document.getElementById('tReplay').onclick=()=>{tab('replay')};document.getElementById('tHuman').onclick=()=>{tab('human')};
+function tab(t){for(const k of ['play','human','replay']){document.getElementById(k).style.display=t===k?'':'none';document.getElementById('t'+k[0].toUpperCase()+k.slice(1)).classList.toggle('on',t===k)}
+ ({play:renderPlay,human:renderHuman,replay:renderReplay})[t]()}
+// ---------------- human benchmark
+let H=null, hRules=null, hOcc=null, hMode='shoot', hName=localStorage.getItem('bsName')||'';
+const LEVELS=[null,0.95,0.75,0.25,0.05];
+function hReset(){hRules=Object.fromEntries(META.names.map(n=>[n,50]));hOcc=Array(36).fill(null);hMode='shoot'}
+async function renderHuman(){const P=document.getElementById('human');P.innerHTML='';if(!H)H=await api('/api/human/state');
+ const m=$('<main style="grid-template-columns:auto 420px"></main>');P.appendChild(m);const left=$('<div class="panel"></div>');m.appendChild(left);const right=$('<div></div>');m.appendChild(right);
+ const [lo,hi]=H.cfg.seeds.split(':').map(Number);
+ if(!H.game||H.result){const st=$(`<div><div class="row"><b>Player</b><input id="hn" value="${hName}" placeholder="your name" size="14">
+   <b>Board</b><select id="hs"></select><button class="b p" id="hgo">Start board</button></div>
+   <p class="small mute">You play the same boards as the models (salt ${H.cfg.salt}). No posterior, no reference: shoot and scan, then report what you believe. Each board can be played once per name.</p></div>`);
+  left.appendChild(st);const sel=st.querySelector('#hs');for(let k=lo;k<hi;k++)sel.appendChild($(`<option value="${k}">${k}${(H.done||[]).includes(k)?' (played)':''}</option>`));
+  if(H.done){const nxt=[...Array(hi-lo).keys()].map(i=>i+lo).find(k=>!H.done.includes(k));if(nxt!==undefined)sel.value=nxt}
+  st.querySelector('#hgo').onclick=async()=>{hName=st.querySelector('#hn').value.trim();localStorage.setItem('bsName',hName);
+   const r=await api('/api/human/new',{name:hName,seed:+sel.value});if(!r.error){H=r;hReset();renderHuman()}};
+  if(!H.result){right.appendChild(rulesPanel());return}}
+ if(H.game&&!H.result){
+  if(!hRules)hReset();
+  left.appendChild($(`<div class="row"><b>${H.name}</b>, board ${H.seed}. <b>Budget</b> ${H.remaining} / ${H.budget} <span class="mute small">fire 1, scan 2</span></div>`));
+  const modes=$(`<div class="row"><button class="b ${hMode==='shoot'?'p':''}" id="ms">Shoot</button><button class="b ${hMode==='mark'?'p':''}" id="mm">Mark my beliefs</button>
+   <span class="small mute">${hMode==='mark'?'click a cell to cycle: prior, 95%, 75%, 25%, 5% ship':'click a cell to fire, arrows to scan'}</span></div>`);left.appendChild(modes);
+  modes.querySelector('#ms').onclick=()=>{hMode='shoot';renderHuman()};modes.querySelector('#mm').onclick=()=>{hMode='mark';renderHuman()};
+  const heatArr=hOcc.map((v,i)=>v==null?H.prior[i]:v);
+  const act=async(b)=>{const r=await api('/api/human/act',b);if(!r.error){H=r;renderHuman()}};
+  left.appendChild(board({heat:hMode==='mark'?heatArr:null,history:H.history,showP:hMode==='mark',
+   click:hMode==='mark'?(r,c)=>{const i=r*6+c;const k=LEVELS.indexOf(hOcc[i]);hOcc[i]=LEVELS[(k+1)%LEVELS.length];renderHuman()}:(H.remaining>=1?(r,c)=>act({type:'fire',row:r,col:c}):null),
+   scan:hMode==='shoot'&&H.remaining>=2?(ax,i)=>act({type:'scan',axis:ax,index:i}):null}));
+  left.appendChild($('<div class="legend" style="margin-top:8px">X hit, o miss (each report is wrong 10% of the time); scans count ship cells in a row or column, off by one 30% of the time</div>'));
+  const rp=$('<div class="panel"><b>Your probability for each rule</b> <span class="small mute">(sliders are normalised to sum to 100%)</span></div>');right.appendChild(rp);
+  const tot=()=>Object.values(hRules).reduce((a,b)=>a+b,0)||1;
+  META.names.forEach(n=>{const row=$(`<div class="bar"><span class="lab" title="${META.definitions[n]}">${n}</span><input type="range" min="0" max="100" value="${hRules[n]}"><span>${(100*hRules[n]/tot()).toFixed(0)}%</span></div>`);
+   row.style.display='grid';row.style.gridTemplateColumns='110px 1fr 48px';row.style.gap='8px';
+   row.querySelector('input').oninput=(e)=>{hRules[n]=+e.target.value;rp.querySelectorAll('.bar span:last-child').forEach((sp,j)=>sp.textContent=(100*hRules[META.names[j]]/tot()).toFixed(0)+'%')};rp.appendChild(row)});
+  const sb=$('<div class="row" style="margin-top:10px"><button class="b p">Submit my beliefs (ends the board)</button></div>');rp.appendChild(sb);
+  sb.querySelector('button').onclick=async()=>{if(!confirm('Submit? Cells you did not mark keep the prior probability.'))return;
+   const occ=[];for(let r=0;r<6;r++)occ.push(heatArr.slice(r*6,r*6+6));const r=await api('/api/human/submit',{rules:hRules,occupancy:occ});if(!r.error){H=r;renderHuman()}};
+  const lg=$('<div class="panel" style="margin-top:14px"><b>Log</b><div class="log"></div></div>');right.appendChild(lg);
+  lg.querySelector('.log').innerHTML=H.history.map((h,i)=>`${i+1}. ${h.type==='fire'?`fire (${h.row},${h.col}) -> ${h.result?'hit':'miss'}`:`scan ${h.axis} ${h.index} -> ${h.result}`}  [${h.budget_remaining} left]`).join('<br>')||'<span class="mute">no actions yet</span>';
+  right.appendChild(rulesPanel());return}
+ // finished board: your map with the ships outlined on the left, score and beliefs on the right
+ const R0=H.result;
+ const done=$(`<div style="margin-top:16px"><b>Board ${H.seed} done.</b> Hidden rule: <b>${R0.hidden_rule}</b>. Your map, ships outlined:</div>`);left.appendChild(done);
+ left.appendChild(board({heat:R0.submitted_occupancy.flat(),history:H.history,truth:truthArr(R0)}));
+ const res=$('<div class="panel"><b>Your score</b></div>');right.appendChild(res);res.appendChild(scoreTable(R0));
+ res.appendChild($('<div style="margin-top:8px"><b>Your rule probabilities</b></div>'));res.appendChild(bars(R0.submitted_rules,R0.hidden_rule));
+ const ex=$('<div class="panel" style="margin-top:14px"><b>Exact posterior of your own shots</b> <span class="small mute">(what perfect reasoning would have reported)</span></div>');right.appendChild(ex);
+ const mi=$('<div class="mini" style="margin-top:6px"></div>');mi.appendChild(board({heat:R0.exact_occupancy.flat(),truth:truthArr(R0),mini:true}));ex.appendChild(mi);
+ ex.appendChild(bars(R0.exact_rules,R0.hidden_rule))}
+function rulesPanel(){const p=$('<div class="panel small" style="margin-top:14px"><b>The six rules</b> (one drawn uniformly; the layout is uniform among layouts that satisfy it)</div>');
+ META.names.forEach((n,i)=>p.appendChild($(`<div><b>${n}</b> (${META.n_rule[i]} layouts): ${META.definitions[n]}</div>`)));return p}
 (async()=>{META=await api('/api/meta');S=await api('/api/state');renderPlay()})();
 </script></body></html>"""
 
