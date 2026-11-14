@@ -51,3 +51,6 @@ results/request_budget.json
 results/wetlab_adaptive.jsonl
 results/spec_*.jsonl
 data/
+
+# Local editor state
+.obsidian/
