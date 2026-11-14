@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from .bayes import Posterior
-from .envs import ENVS
+from .envs import get_env
 
 N_EVAL = 30
 BUDGET = 10
@@ -36,8 +36,9 @@ BUDGET = 10
 class Task:
     env_name: str
     seed: int
-    budget: int = BUDGET
-    n_eval: int = N_EVAL
+    # None -> the environment's own value if it declares one (spec envs), else the default.
+    budget: int | None = None
+    n_eval: int | None = None
     # Optional secret mixed into every RNG stream. The code is public and seeds may be visible
     # (task names), so a deployed task must salt them or theta* is recomputable from the seed.
     salt: str | None = field(default=None, repr=False)
@@ -46,7 +47,11 @@ class Task:
     eval_y: np.ndarray = field(init=False, repr=False)  # one sampled outcome each (naive grader)
 
     def __post_init__(self) -> None:
-        self.env = ENVS[self.env_name]
+        self.env = get_env(self.env_name)
+        if self.budget is None:
+            self.budget = getattr(self.env, "budget", BUDGET)
+        if self.n_eval is None:
+            self.n_eval = getattr(self.env, "n_eval", N_EVAL)
         rng = np.random.default_rng(self._key(0xB0C5))
         self.theta = self.env.sample_prior(rng, 1)[0]
         self.eval_x = self.env.sample_designs(rng, self.n_eval)

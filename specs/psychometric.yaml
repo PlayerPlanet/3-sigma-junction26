@@ -1,0 +1,29 @@
+# Yes/no psychometric function: 3% false alarms, 2% lapses, unknown threshold and width (bernoulli).
+name: psychometric
+family: bernoulli
+params:
+  threshold: {prior: normal, mean: 5.0, sd: 2.0, min: 0.5, max: 9.5}
+  width:     {prior: lognormal, mu: -0.7, sigma: 0.4}
+design:
+  intensity: {low: 0, high: 10}
+model:
+  p: "0.03 + 0.95 * Phi((intensity - threshold) / width)"
+budget: 20
+n_eval: 30
+text:
+  story: >-
+    An observer does a yes/no detection task: on every trial a stimulus of a chosen
+    {intensity} is shown and the observer reports whether they saw it. Weak stimuli are almost
+    never reported (3% false alarms); strong ones almost always (2% lapses). {threshold} is
+    the {intensity} at the middle of the transition and {width} is how gradual it is.
+  outcome: "The outcome is 1 if the observer reports seeing the stimulus, else 0."
+  names:
+    intensity: [intensity, contrast, level]
+    threshold: [threshold, midpoint, t50]
+    width:     [width, spread, jnd]
+randomize:
+  priors:
+    threshold.mean: [3.5, 6.5]
+    threshold.sd:   [1.0, 2.5]
+    width.mu:       [-1.0, -0.3]
+  surface: [names]

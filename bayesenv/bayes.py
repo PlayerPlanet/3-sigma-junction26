@@ -13,6 +13,8 @@ from scipy.special import logsumexp
 
 
 def log_prior(env, theta: np.ndarray) -> np.ndarray:
+    if hasattr(env, "log_prior"):  # spec environments carry their own prior density
+        return env.log_prior(theta)
     if env.name == "hyperbolic":
         lp = -0.5 * ((theta[:, 0] + 4.25) / 0.5) ** 2 - 0.5 * (theta[:, 1] / 2.0) ** 2
         return np.where(theta[:, 1] > 0, lp, -np.inf)
