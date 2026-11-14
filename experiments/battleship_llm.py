@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import sys
 import traceback
 from pathlib import Path
@@ -39,6 +40,10 @@ FINAL = ("The experiment phase is over. Answer with your beliefs as one JSON obj
          'after it: {"rules": {"any": p, "no_touch": p, "parallel": p, "border": p, '
          '"center_clear": p, "clustered": p}, "occupancy": [[6 numbers], ... 6 rows]}, where '
          "occupancy[row][col] is the probability that a ship covers that cell.")
+# Reasoning models can spend more than 16k tokens thinking before the 6x6 answer (bench-v1:
+# every final answer of kimi-k3-1-pro was empty after hitting the limit).
+FINAL_TOKENS = int(os.environ.get("BATTLESHIP_FINAL_TOKENS", "32768"))
+EMPTY_RETRIES = 2
 SCALARS = ("score", "score_raw", "rule_part", "cell_part", "design", "inference", "accuracy",
            "ppc_p", "n_actions", "n_fires", "n_scans", "budget_used", "reference_score_raw",
            "gap_to_reference", "hidden_rule")
@@ -69,16 +74,24 @@ async def run_episode(model: Model, seed: int, salt: str, one_tag: bool) -> tupl
     lab.reset(seed, salt)
     system = R.system_prompt(one_tag=one_tag)
     msgs = [{"role": "user", "content": R.BEGIN}]
-    usage = {"in": 0, "out": 0, "calls": 0}
-    transcript, invalid = [], 0
+    usage = {"in": 0, "out": 0, "calls": 0, "empty": 0}
+    transcript, invalid, stops = [], 0, []
 
     async def ask(max_tokens=None):
-        text, u = await model.chat(system, msgs, max_tokens=max_tokens)
-        usage["in"] += u["in"]
-        usage["out"] += u["out"]
-        usage["calls"] += 1
+        # An empty reply (reasoning ran out of tokens, or a provider hiccup) is retried, not
+        # charged as a move, and never put in the history: some providers stall after an empty
+        # assistant turn. The stop reason of every call is kept for diagnosis.
+        for _ in range(EMPTY_RETRIES + 1):
+            text, u = await model.chat(system, msgs, max_tokens=max_tokens)
+            usage["in"] += u["in"]
+            usage["out"] += u["out"]
+            usage["calls"] += 1
+            stops.append(str(u.get("stop")))
+            if text.strip():
+                break
+            usage["empty"] += 1
         transcript.append(text)
-        msgs.append({"role": "assistant", "content": text})
+        msgs.append({"role": "assistant", "content": text if text.strip() else "(no reply)"})
         return text
 
     while lab.remaining > 0 and invalid < 4:
@@ -106,7 +119,7 @@ async def run_episode(model: Model, seed: int, salt: str, one_tag: bool) -> tupl
     msgs.append({"role": "user", "content": FINAL})
     beliefs = None
     for _ in range(3):
-        text = await ask(max_tokens=max(4 * model.max_tokens, 16384))
+        text = await ask(max_tokens=max(4 * model.max_tokens, FINAL_TOKENS))
         beliefs = parse_beliefs(text)
         if beliefs is not None:
             break
@@ -117,7 +130,7 @@ async def run_episode(model: Model, seed: int, salt: str, one_tag: bool) -> tupl
     res = lab.submit(q, occ, reference=True)
     row = {"model": model.name, "provider": model.provider, "seed": seed, "salt": salt,
            "parsed": parsed, "invalid_actions": invalid, **usage,
-           **{k: res[k] for k in SCALARS}, "history": lab.history, "transcript": transcript}
+           **{k: res[k] for k in SCALARS}, "history": lab.history, "stops": stops, "transcript": transcript}
     replay = {"label": f"{model.name} (no tools), board {seed}",
               "trajectory": {"history": lab.history, "snapshots": lab.snapshots, "result": res},
               "reference": B.reference_trajectory(seed, salt)}
