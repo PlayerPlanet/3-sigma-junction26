@@ -151,6 +151,23 @@ Figures: `results/fig_e3_decomp_{hyperbolic,location}.png`.
 
 ## E4: training a small model on the environment's experience (in progress)
 
+## E5: the same environment as Harbor tasks, through a real agent harness
+
+`tasks/bayes/{hyperbolic,location}-{0..4}`: the environment runs as an MCP sidecar, the agent
+works in a container with tools, and the verifier calls the token-protected `/grade` endpoint.
+Run on a Verda CPU VM (`infra/verda/harbor_runner.sh`), 3 attempts × 10 tasks.
+
+| Agent | Trials | Submitted | Naive (hyp acc. / loc rel.) | **Bayesian reward** | PPC flags |
+|---|---|---|---|---|---|
+| Bayesian reference (MCP-only oracle solution) | 10 | 100% | — | **0.995 / 0.959** | — |
+| do nothing / stop early | 10 | 100% | 0.80 (stop early, naive) | **0 / 0** | — |
+| OpenCode + Gemma 4 26B-A4B (Modal) | 30 | 97% | 0.702 / −1.07 | **0.000 / 0.000** | 0 / 29 |
+
+Every OpenCode+Gemma trial ran all 10 experiments and submitted predictions, and still scored
+exactly 0: within the full tool-using harness, its predictions were never better than the prior
+predictive, while naive accuracy on hyperbolic (0.60–0.87 per trial) would have suggested
+competent behaviour. The finding from E3 carries over unchanged to the harness the judges run.
+
 ## Compute and burn
 
 * Modal: Gemma 4 26B-A4B on one RTX PRO 6000 (vLLM, always warm) for agent rollouts; CPU

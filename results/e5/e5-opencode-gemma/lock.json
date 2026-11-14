@@ -1,0 +1,1289 @@
+{
+    "schema_version": 3,
+    "created_at": "2026-11-14T02:33:24.212162Z",
+    "harbor": {
+        "version": "0.25.0",
+        "is_editable": false
+    },
+    "n_concurrent_trials": 2,
+    "retry": {
+        "max_retries": 0,
+        "exclude_exceptions": [
+            "VerifierTimeoutError",
+            "UnsupportedModelParametersError",
+            "AgentSafetyRefusalError",
+            "AgentTimeoutError",
+            "VerifierOutputParseError",
+            "ApiUsageLimitError",
+            "AgentAuthenticationError",
+            "RewardFileNotFoundError",
+            "RewardFileEmptyError",
+            "ModelNotFoundError"
+        ],
+        "wait_multiplier": 1.0,
+        "min_wait_sec": 1.0,
+        "max_wait_sec": 60.0
+    },
+    "trials": [
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-0",
+                "type": "local",
+                "digest": "sha256:a58d785f29a2830cff2a0a8fd03c676029a680b08036dbdc359e5c9fd46aac7a",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-0"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-1",
+                "type": "local",
+                "digest": "sha256:4ad305b2f5c58c53ca0447850f4928dd79640ecaaf7f6b4ecf7747318ecd26dd",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-1"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-2",
+                "type": "local",
+                "digest": "sha256:3508fe4442e5bb6f0e589f655f6b88871eff2f7f7de417dac4061a2dc2087846",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-2"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-3",
+                "type": "local",
+                "digest": "sha256:934fce4037e0ece648ab8d403d082265499a6ed711ba520292d8d5b27589e5d2",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-3"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-4",
+                "type": "local",
+                "digest": "sha256:7dbb58aa07acccabe4fb0479e75c6fe41c5e028075888737c948501edd76eb8b",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-4"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-0",
+                "type": "local",
+                "digest": "sha256:1bdcf9c62fd2da528cafa160a2576b9c0904d541eb83f41dcedf29739357174f",
+                "source": "bayes",
+                "path": "tasks/bayes/location-0"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-1",
+                "type": "local",
+                "digest": "sha256:a3627776d1b6e2dfb096f84ec4051bd8a43c6da4578edad94cde47492d399e3c",
+                "source": "bayes",
+                "path": "tasks/bayes/location-1"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-2",
+                "type": "local",
+                "digest": "sha256:5848724f7c83b7d34ee630bb3239d5bfb9b245d56791feb694093801f0afb8de",
+                "source": "bayes",
+                "path": "tasks/bayes/location-2"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-3",
+                "type": "local",
+                "digest": "sha256:e672f221627652af6ff249310b9acb46d09e305855c69e4a495f46f15a819317",
+                "source": "bayes",
+                "path": "tasks/bayes/location-3"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-4",
+                "type": "local",
+                "digest": "sha256:03793310a22f1e0b23d4f035686bfea8ca3e5501c8c728415aa14b72a932491c",
+                "source": "bayes",
+                "path": "tasks/bayes/location-4"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-0",
+                "type": "local",
+                "digest": "sha256:a58d785f29a2830cff2a0a8fd03c676029a680b08036dbdc359e5c9fd46aac7a",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-0"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-1",
+                "type": "local",
+                "digest": "sha256:4ad305b2f5c58c53ca0447850f4928dd79640ecaaf7f6b4ecf7747318ecd26dd",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-1"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-2",
+                "type": "local",
+                "digest": "sha256:3508fe4442e5bb6f0e589f655f6b88871eff2f7f7de417dac4061a2dc2087846",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-2"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-3",
+                "type": "local",
+                "digest": "sha256:934fce4037e0ece648ab8d403d082265499a6ed711ba520292d8d5b27589e5d2",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-3"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-4",
+                "type": "local",
+                "digest": "sha256:7dbb58aa07acccabe4fb0479e75c6fe41c5e028075888737c948501edd76eb8b",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-4"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-0",
+                "type": "local",
+                "digest": "sha256:1bdcf9c62fd2da528cafa160a2576b9c0904d541eb83f41dcedf29739357174f",
+                "source": "bayes",
+                "path": "tasks/bayes/location-0"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-1",
+                "type": "local",
+                "digest": "sha256:a3627776d1b6e2dfb096f84ec4051bd8a43c6da4578edad94cde47492d399e3c",
+                "source": "bayes",
+                "path": "tasks/bayes/location-1"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-2",
+                "type": "local",
+                "digest": "sha256:5848724f7c83b7d34ee630bb3239d5bfb9b245d56791feb694093801f0afb8de",
+                "source": "bayes",
+                "path": "tasks/bayes/location-2"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-3",
+                "type": "local",
+                "digest": "sha256:e672f221627652af6ff249310b9acb46d09e305855c69e4a495f46f15a819317",
+                "source": "bayes",
+                "path": "tasks/bayes/location-3"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-4",
+                "type": "local",
+                "digest": "sha256:03793310a22f1e0b23d4f035686bfea8ca3e5501c8c728415aa14b72a932491c",
+                "source": "bayes",
+                "path": "tasks/bayes/location-4"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-0",
+                "type": "local",
+                "digest": "sha256:a58d785f29a2830cff2a0a8fd03c676029a680b08036dbdc359e5c9fd46aac7a",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-0"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-1",
+                "type": "local",
+                "digest": "sha256:4ad305b2f5c58c53ca0447850f4928dd79640ecaaf7f6b4ecf7747318ecd26dd",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-1"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-2",
+                "type": "local",
+                "digest": "sha256:3508fe4442e5bb6f0e589f655f6b88871eff2f7f7de417dac4061a2dc2087846",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-2"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-3",
+                "type": "local",
+                "digest": "sha256:934fce4037e0ece648ab8d403d082265499a6ed711ba520292d8d5b27589e5d2",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-3"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "hyperbolic-4",
+                "type": "local",
+                "digest": "sha256:7dbb58aa07acccabe4fb0479e75c6fe41c5e028075888737c948501edd76eb8b",
+                "source": "bayes",
+                "path": "tasks/bayes/hyperbolic-4"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-0",
+                "type": "local",
+                "digest": "sha256:1bdcf9c62fd2da528cafa160a2576b9c0904d541eb83f41dcedf29739357174f",
+                "source": "bayes",
+                "path": "tasks/bayes/location-0"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-1",
+                "type": "local",
+                "digest": "sha256:a3627776d1b6e2dfb096f84ec4051bd8a43c6da4578edad94cde47492d399e3c",
+                "source": "bayes",
+                "path": "tasks/bayes/location-1"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-2",
+                "type": "local",
+                "digest": "sha256:5848724f7c83b7d34ee630bb3239d5bfb9b245d56791feb694093801f0afb8de",
+                "source": "bayes",
+                "path": "tasks/bayes/location-2"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-3",
+                "type": "local",
+                "digest": "sha256:e672f221627652af6ff249310b9acb46d09e305855c69e4a495f46f15a819317",
+                "source": "bayes",
+                "path": "tasks/bayes/location-3"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        },
+        {
+            "schema_version": 2,
+            "task": {
+                "name": "location-4",
+                "type": "local",
+                "digest": "sha256:03793310a22f1e0b23d4f035686bfea8ca3e5501c8c728415aa14b72a932491c",
+                "source": "bayes",
+                "path": "tasks/bayes/location-4"
+            },
+            "install_only": false,
+            "timeout_multiplier": 1.0,
+            "agent": {
+                "name": "opencode",
+                "model_name": "modal/gemma-4-26b-a4b-it",
+                "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+                "model_api_key_name": "VLLM_API_KEY",
+                "model_api_format": "openai_chat_completions",
+                "skip_model_parsing": false,
+                "skills": [],
+                "resume_trajectory": false,
+                "extra_allowed_hosts": [],
+                "kwargs": {},
+                "mcp_servers": []
+            },
+            "bridge_inputs": {},
+            "skills": [],
+            "environment": {
+                "type": "docker",
+                "force_build": false,
+                "delete": true,
+                "stream": false,
+                "cpu_enforcement_policy": "auto",
+                "memory_enforcement_policy": "auto",
+                "extra_docker_compose": [],
+                "kwargs": {},
+                "extra_allowed_hosts": []
+            },
+            "verifier": {
+                "disable": false,
+                "environment_mode": "shared"
+            }
+        }
+    ]
+}

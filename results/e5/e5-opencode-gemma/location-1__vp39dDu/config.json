@@ -1,0 +1,16 @@
+{
+    "task": {
+        "path": "tasks/bayes/location-1",
+        "source": "bayes"
+    },
+    "trial_name": "location-1__vp39dDu",
+    "trials_dir": "jobs/e5-opencode-gemma",
+    "agent": {
+        "name": "opencode",
+        "model_name": "modal/gemma-4-26b-a4b-it",
+        "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+        "model_api_key_name": "VLLM_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "332542f7-701c-4419-8a28-352d88cc9635"
+}

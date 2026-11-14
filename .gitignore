@@ -24,3 +24,4 @@ mlflow.db
 *.csv
 *.parquet
 jobs/
+results/e5/**/agent/

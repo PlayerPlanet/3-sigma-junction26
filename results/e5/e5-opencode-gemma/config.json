@@ -1,0 +1,20 @@
+{
+    "job_name": "e5-opencode-gemma",
+    "n_attempts": 3,
+    "n_concurrent_trials": 2,
+    "quiet": true,
+    "agents": [
+        {
+            "name": "opencode",
+            "model_name": "modal/gemma-4-26b-a4b-it",
+            "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+            "model_api_key_name": "VLLM_API_KEY",
+            "model_api_format": "openai_chat_completions"
+        }
+    ],
+    "datasets": [
+        {
+            "path": "tasks/bayes"
+        }
+    ]
+}

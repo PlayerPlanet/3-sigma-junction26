@@ -1,0 +1,135 @@
+{
+    "id": "df4ad60a-f5f8-4d62-b22d-9d1b814590a5",
+    "task_name": "3-sigma/bayes-location-0",
+    "trial_name": "location-0__AryUUaL",
+    "trial_uri": "file:///root/work/jobs/e5-opencode-gemma/location-0__AryUUaL",
+    "task_id": {
+        "path": "tasks/bayes/location-0"
+    },
+    "source": "bayes",
+    "task_checksum": "8433c367a7bc5ac007ef6326e962709598131a2bcc0e17208009c838ae75362f",
+    "config": {
+        "task": {
+            "path": "tasks/bayes/location-0",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bayes"
+        },
+        "trial_name": "location-0__AryUUaL",
+        "trials_dir": "jobs/e5-opencode-gemma",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "opencode",
+            "import_path": null,
+            "model_name": "modal/gemma-4-26b-a4b-it",
+            "base_url": "https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1",
+            "model_api_key_name": "VLLM_API_KEY",
+            "model_api_format": "openai_chat_completions",
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "332542f7-701c-4419-8a28-352d88cc9635",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "modal/gemma-4-26b-a4b-it",
+            "provider": null
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 141078,
+        "n_cache_tokens": 0,
+        "n_output_tokens": 1411,
+        "cost_usd": null,
+        "model_usage": {
+            "modal/gemma-4-26b-a4b-it": {
+                "n_input_tokens": 141078,
+                "n_cache_tokens": 0,
+                "n_output_tokens": 1411,
+                "cost_usd": null
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0,
+            "submitted": 1.0,
+            "n_obs": 10.0,
+            "bayes_raw": -10.0,
+            "naive": -1.2968908350093011,
+            "ppc_p": 0.940149625935162
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T02:38:48.734696Z",
+    "finished_at": "2026-11-14T02:41:35.305524Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T02:38:48.740691Z",
+        "finished_at": "2026-11-14T02:38:57.173496Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T02:38:57.173522Z",
+        "finished_at": "2026-11-14T02:40:56.917704Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T02:40:56.918017Z",
+        "finished_at": "2026-11-14T02:41:19.442857Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T02:41:19.779298Z",
+        "finished_at": "2026-11-14T02:41:21.115303Z"
+    },
+    "step_results": null
+}

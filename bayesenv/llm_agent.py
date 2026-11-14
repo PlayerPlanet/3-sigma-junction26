@@ -76,7 +76,8 @@ class Model:
             self.client = anthropic.AsyncAnthropic(api_key=key)
         else:
             import openai
-            self.client = openai.AsyncOpenAI(base_url=base, api_key=key, max_retries=6, timeout=300)
+            self.client = openai.AsyncOpenAI(base_url=base, api_key=key, max_retries=6,
+                                             timeout=float(os.environ.get("LLM_TIMEOUT", "300")))
 
     async def chat(self, system: str, messages: list[dict], max_tokens: int | None = None) -> tuple[str, dict]:
         max_tokens = max_tokens or self.max_tokens
@@ -180,7 +181,7 @@ async def run_episode(model: Model, task: Task, run_id: str) -> dict:
     for _ in range(3):
         # The prediction answer is long (one entry per design) and reasoning models think
         # first, so give this phase a much larger token budget.
-        text, u = await model.chat(system, msgs, max_tokens=max(4 * model.max_tokens, 32768))
+        text, u = await model.chat(system, msgs, max_tokens=max(4 * model.max_tokens, int(os.environ.get("PRED_MIN_TOKENS", "32768"))))
         usage["in"] += u["in"]; usage["out"] += u["out"]; usage["calls"] += 1
         stops.append(u.get("stop"))
         transcript.append(text)
