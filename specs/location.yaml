@@ -1,0 +1,33 @@
+# Location finding with ONE source, re-expressed from bayesenv/envs.py::LocationFinding
+# (gaussian, 2-D design, 2 parameters). mean/loglik match the hand-written environment for the
+# same (theta, x); designs are sampled uniformly on a box here instead of Normal(0, 1.5).
+name: location
+family: gaussian
+params:
+  a: {prior: normal, mean: 0.0, sd: 1.0}
+  b: {prior: normal, mean: 0.0, sd: 1.0}
+design:
+  x1: {low: -4, high: 4}
+  x2: {low: -4, high: 4}
+model:
+  mean: "log(0.1 + 1 / (0.0001 + (x1 - a) ** 2 + (x2 - b) ** 2))"
+noise: {sd: 0.5}
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A hidden signal source sits somewhere in the plane at coordinates ({a}, {b}), a priori
+    near the origin. Each experiment measures at a point ({x1}, {x2}) and returns a noisy log
+    signal intensity that is higher the closer the point is to the source.
+  outcome: "The outcome is the measured log intensity, with additive measurement noise."
+  names:
+    x1: [x1, east, u]
+    x2: [x2, north, v]
+    a:  [a, src_east, s1]
+    b:  [b, src_north, s2]
+randomize:
+  priors:
+    a.sd: [0.7, 1.5]
+    b.sd: [0.7, 1.5]
+  noise: {sd: [0.35, 0.7]}
+  surface: [names]

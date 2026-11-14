@@ -1,0 +1,282 @@
+{
+ "hyperbolic": {
+  "means": {
+   "bayes_oracle": {
+    "naive_reward": 0.9806,
+    "naive_reward_bs": 0.0616,
+    "bayes_reward": 0.9492,
+    "bayes_raw": 0.9492
+   },
+   "constant_hedge": {
+    "naive_reward": 0.6777,
+    "naive_reward_bs": -0.2412,
+    "bayes_reward": 0.0015,
+    "bayes_raw": -6.8419
+   },
+   "do_nothing": {
+    "naive_reward": 0.919,
+    "naive_reward_bs": 0.0,
+    "bayes_reward": 0.0,
+    "bayes_raw": 0.0
+   },
+   "leaky_30pct": {
+    "naive_reward": 0.9745,
+    "naive_reward_bs": 0.0555,
+    "bayes_reward": 0.8322,
+    "bayes_raw": 0.8322
+   },
+   "leaky_full": {
+    "naive_reward": 0.9816,
+    "naive_reward_bs": 0.0626,
+    "bayes_reward": 1.0,
+    "bayes_raw": 1.0
+   },
+   "nearest_neighbour": {
+    "naive_reward": 0.7666,
+    "naive_reward_bs": -0.1524,
+    "bayes_reward": 0.0086,
+    "bayes_raw": -5.7141
+   },
+   "overconfident": {
+    "naive_reward": 0.9806,
+    "naive_reward_bs": 0.0616,
+    "bayes_reward": 0.5205,
+    "bayes_raw": 0.2188
+   },
+   "random_design": {
+    "naive_reward": 0.9542,
+    "naive_reward_bs": 0.0353,
+    "bayes_reward": 0.539,
+    "bayes_raw": 0.4537
+   },
+   "stop_early": {
+    "naive_reward": 0.9472,
+    "naive_reward_bs": 0.0282,
+    "bayes_reward": 0.4674,
+    "bayes_raw": 0.3423
+   }
+  },
+  "naive_outcome_noise_sd": 0.018762744307731036,
+  "naive_test_retest_r": 0.8106764442806581,
+  "seeds_needed": {
+   "bayes_oracle>random_design": {
+    "naive_bs": 18.0,
+    "bayes": 4.0
+   },
+   "bayes_oracle>stop_early": {
+    "naive_bs": 13.0,
+    "bayes": 3.0
+   },
+   "bayes_oracle>overconfident": {
+    "naive_bs": Infinity,
+    "bayes": 4.0
+   },
+   "bayes_oracle>nearest_neighbour": {
+    "naive_bs": 2.0,
+    "bayes": 1.0
+   }
+  },
+  "beats_or_ties_reference": {
+   "naive": [
+    "overconfident"
+   ],
+   "bayes": []
+  },
+  "ppc": {
+   "bayes_oracle": {
+    "flag_rate@0.05": 0.06,
+    "flag_rate@0.01": 0.005,
+    "ks_uniform_p": 0.1354577270245746,
+    "fisher_p_50eps": 0.42049654801145475
+   },
+   "random_design": {
+    "flag_rate@0.05": 0.045,
+    "flag_rate@0.01": 0.0025,
+    "ks_uniform_p": 0.27927514152216726,
+    "fisher_p_50eps": 0.7465640828526612
+   },
+   "do_nothing": {
+    "flag_rate@0.05": 0.06,
+    "flag_rate@0.01": 0.0075,
+    "ks_uniform_p": 0.4219487753194334,
+    "fisher_p_50eps": 0.5563110113721661
+   },
+   "stop_early": {
+    "flag_rate@0.05": 0.0425,
+    "flag_rate@0.01": 0.0025,
+    "ks_uniform_p": 0.8198054918745232,
+    "fisher_p_50eps": 0.611254769352227
+   },
+   "constant_hedge": {
+    "flag_rate@0.05": 0.04,
+    "flag_rate@0.01": 0.005,
+    "ks_uniform_p": 0.6134547435589396,
+    "fisher_p_50eps": 0.6556707260664144
+   },
+   "overconfident": {
+    "flag_rate@0.05": 0.025,
+    "flag_rate@0.01": 0.0025,
+    "ks_uniform_p": 0.040251318395366775,
+    "fisher_p_50eps": 0.8502463631854329
+   },
+   "nearest_neighbour": {
+    "flag_rate@0.05": 0.045,
+    "flag_rate@0.01": 0.0075,
+    "ks_uniform_p": 0.23762636935580939,
+    "fisher_p_50eps": 0.7202714133297248
+   },
+   "leaky_full": {
+    "flag_rate@0.05": 0.195,
+    "flag_rate@0.01": 0.03,
+    "ks_uniform_p": 7.859032091766135e-83,
+    "fisher_p_50eps": 4.387103555914276e-09
+   },
+   "leaky_30pct": {
+    "flag_rate@0.05": 0.19,
+    "flag_rate@0.01": 0.0275,
+    "ks_uniform_p": 1.2514047782505355e-85,
+    "fisher_p_50eps": 5.312693440735746e-09
+   }
+  }
+ },
+ "location": {
+  "means": {
+   "bayes_oracle": {
+    "naive_reward": 0.6954,
+    "naive_reward_bs": 0.6954,
+    "bayes_reward": 0.9904,
+    "bayes_raw": 0.9904
+   },
+   "constant_hedge": {
+    "naive_reward": -1.4676,
+    "naive_reward_bs": -1.4676,
+    "bayes_reward": 0.0041,
+    "bayes_raw": -0.9663
+   },
+   "do_nothing": {
+    "naive_reward": 0.0,
+    "naive_reward_bs": 0.0,
+    "bayes_reward": 0.0,
+    "bayes_raw": 0.0
+   },
+   "leaky_30pct": {
+    "naive_reward": 0.4974,
+    "naive_reward_bs": 0.4974,
+    "bayes_reward": 0.6157,
+    "bayes_raw": 0.6145
+   },
+   "leaky_full": {
+    "naive_reward": 0.6989,
+    "naive_reward_bs": 0.6989,
+    "bayes_reward": 1.0,
+    "bayes_raw": 1.0
+   },
+   "nearest_neighbour": {
+    "naive_reward": -0.4654,
+    "naive_reward_bs": -0.4654,
+    "bayes_reward": 0.0147,
+    "bayes_raw": -2.4031
+   },
+   "overconfident": {
+    "naive_reward": 0.6954,
+    "naive_reward_bs": 0.6954,
+    "bayes_reward": 0.0,
+    "bayes_raw": -80.9863
+   },
+   "random_design": {
+    "naive_reward": 0.5494,
+    "naive_reward_bs": 0.5494,
+    "bayes_reward": 0.7531,
+    "bayes_raw": 0.7433
+   },
+   "stop_early": {
+    "naive_reward": 0.125,
+    "naive_reward_bs": 0.125,
+    "bayes_reward": 0.2156,
+    "bayes_raw": 0.1896
+   }
+  },
+  "naive_outcome_noise_sd": 0.11404209840320721,
+  "naive_test_retest_r": 0.946736988403172,
+  "seeds_needed": {
+   "bayes_oracle>random_design": {
+    "naive_bs": 14.0,
+    "bayes": 5.0
+   },
+   "bayes_oracle>stop_early": {
+    "naive_bs": 2.0,
+    "bayes": 1.0
+   },
+   "bayes_oracle>overconfident": {
+    "naive_bs": Infinity,
+    "bayes": 1.0
+   },
+   "bayes_oracle>nearest_neighbour": {
+    "naive_bs": 6.0,
+    "bayes": 1.0
+   }
+  },
+  "beats_or_ties_reference": {
+   "naive": [
+    "overconfident"
+   ],
+   "bayes": []
+  },
+  "ppc": {
+   "bayes_oracle": {
+    "flag_rate@0.05": 0.1025,
+    "flag_rate@0.01": 0.0475,
+    "ks_uniform_p": 0.0022578262207602054,
+    "fisher_p_50eps": 0.026738460928537544
+   },
+   "random_design": {
+    "flag_rate@0.05": 0.06,
+    "flag_rate@0.01": 0.0125,
+    "ks_uniform_p": 0.5898717856082291,
+    "fisher_p_50eps": 0.42579056592666753
+   },
+   "do_nothing": {
+    "flag_rate@0.05": 0.07,
+    "flag_rate@0.01": 0.02,
+    "ks_uniform_p": 0.8844290550758869,
+    "fisher_p_50eps": 0.358108684529413
+   },
+   "stop_early": {
+    "flag_rate@0.05": 0.055,
+    "flag_rate@0.01": 0.0175,
+    "ks_uniform_p": 0.7568723190307077,
+    "fisher_p_50eps": 0.4442449892079513
+   },
+   "constant_hedge": {
+    "flag_rate@0.05": 0.0475,
+    "flag_rate@0.01": 0.015,
+    "ks_uniform_p": 0.006978143963520201,
+    "fisher_p_50eps": 0.3224087558651566
+   },
+   "overconfident": {
+    "flag_rate@0.05": 0.07,
+    "flag_rate@0.01": 0.0175,
+    "ks_uniform_p": 0.16193780455837203,
+    "fisher_p_50eps": 0.2076471674987182
+   },
+   "nearest_neighbour": {
+    "flag_rate@0.05": 0.05,
+    "flag_rate@0.01": 0.01,
+    "ks_uniform_p": 0.026376588246828425,
+    "fisher_p_50eps": 0.6400510564117309
+   },
+   "leaky_full": {
+    "flag_rate@0.05": 0.88,
+    "flag_rate@0.01": 0.57,
+    "ks_uniform_p": 0.0,
+    "fisher_p_50eps": 2.8623046156705313e-47
+   },
+   "leaky_30pct": {
+    "flag_rate@0.05": 0.865,
+    "flag_rate@0.01": 0.49,
+    "ks_uniform_p": 0.0,
+    "fisher_p_50eps": 2.820284829276167e-43
+   }
+  }
+ }
+}

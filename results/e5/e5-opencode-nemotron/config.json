@@ -1,0 +1,19 @@
+{
+    "job_name": "e5-opencode-nemotron",
+    "n_concurrent_trials": 2,
+    "quiet": true,
+    "agents": [
+        {
+            "name": "opencode",
+            "model_name": "verda/nemotron-3.5-super-vl",
+            "base_url": "http://95.133.254.110:8000/v1",
+            "model_api_key_name": "VLLM_API_KEY",
+            "model_api_format": "openai_chat_completions"
+        }
+    ],
+    "datasets": [
+        {
+            "path": "tasks/bayes"
+        }
+    ]
+}

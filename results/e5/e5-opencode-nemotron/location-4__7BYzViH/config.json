@@ -1,0 +1,16 @@
+{
+    "task": {
+        "path": "tasks/bayes/location-4",
+        "source": "bayes"
+    },
+    "trial_name": "location-4__7BYzViH",
+    "trials_dir": "jobs/e5-opencode-nemotron",
+    "agent": {
+        "name": "opencode",
+        "model_name": "verda/nemotron-3.5-super-vl",
+        "base_url": "http://95.133.254.110:8000/v1",
+        "model_api_key_name": "VLLM_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "f4086698-1035-49e0-bdf1-f9da4e85e9c8"
+}

@@ -1,0 +1,32 @@
+# A single Gaussian-shaped peak on a line: position, width and height unknown (gaussian).
+name: peak_location
+family: gaussian
+params:
+  centre: {prior: uniform, low: -6.0, high: 6.0}
+  width:  {prior: lognormal, mu: 0.0, sigma: 0.4}
+  height: {prior: uniform, low: 2.0, high: 6.0}
+design:
+  x: {low: -8, high: 8}
+model:
+  mean: "height * exp(-0.5 * ((x - centre) / width) ** 2)"
+noise: {sd: 0.3}
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A spectrometer scans a line with a single emission peak. Each experiment measures the
+    signal at a chosen position {x}. Away from the peak the signal is zero; near it the signal
+    rises in a bell shape. The peak position {centre}, its {width} and its {height} are
+    unknown.
+  outcome: "The outcome is the measured signal, with additive measurement noise."
+  names:
+    x:      [x, position, pos]
+    centre: [centre, mu, peak]
+    width:  [width, w, spread]
+    height: [height, h, top]
+randomize:
+  priors:
+    width.mu:    [-0.3, 0.5]
+    height.high: [4.0, 8.0]
+  noise: {sd: [0.2, 0.45]}
+  surface: [names]
