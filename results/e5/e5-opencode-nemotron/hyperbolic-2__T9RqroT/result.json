@@ -1,0 +1,140 @@
+{
+    "id": "0612cddd-7ded-44d8-bf63-42fc4d712deb",
+    "task_name": "3-sigma/bayes-hyperbolic-2",
+    "trial_name": "hyperbolic-2__T9RqroT",
+    "trial_uri": "file:///root/work/jobs/e5-opencode-nemotron/hyperbolic-2__T9RqroT",
+    "task_id": {
+        "path": "tasks/bayes/hyperbolic-2"
+    },
+    "source": "bayes",
+    "task_checksum": "40d1c3151855fe2e15d065f2949df6908ad53318bf43420b8342fb7d47607cf1",
+    "config": {
+        "task": {
+            "path": "tasks/bayes/hyperbolic-2",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bayes"
+        },
+        "trial_name": "hyperbolic-2__T9RqroT",
+        "trials_dir": "jobs/e5-opencode-nemotron",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "opencode",
+            "import_path": null,
+            "model_name": "verda/nemotron-3.5-super-vl",
+            "base_url": "http://95.133.254.110:8000/v1",
+            "model_api_key_name": "VLLM_API_KEY",
+            "model_api_format": "openai_chat_completions",
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "f4086698-1035-49e0-bdf1-f9da4e85e9c8",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "verda/nemotron-3.5-super-vl",
+            "provider": null
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 143223,
+        "n_cache_tokens": 95307,
+        "n_output_tokens": 13465,
+        "cost_usd": null,
+        "model_usage": {
+            "verda/nemotron-3.5-super-vl": {
+                "n_input_tokens": 143223,
+                "n_cache_tokens": 95307,
+                "n_output_tokens": 13465,
+                "cost_usd": null
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.44960702707083144,
+            "submitted": 1.0,
+            "n_obs": 10.0,
+            "bayes_raw": 0.44960702707083144,
+            "naive": 0.9666666666666667,
+            "ppc_p": 0.08229426433915212
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": {
+        "exception_type": "NonZeroAgentExitCodeError",
+        "exception_message": "Command failed (exit 1): [ -f ~/.nvm/nvm.sh ] && . ~/.nvm/nvm.sh; opencode --model=verda/nemotron-3.5-super-vl run --format=json --thinking --dangerously-skip-permissions -- '# Learn an unknown system by experimenting\n\nAn MCP server named `bayes-env` is connected to you. Start with `get_rules`.\n\nDesign experiments that teach you as much as possible about the system, within the budget.\nThen call `finish_experiments` and submit calibrated predictions for the designs it reveals.\nYour score is the expected log probability your predictions assign to the system'\"'\"'s real\nbehaviour, relative to what was learnable: confident where your evidence supports it,\nuncertain where it does not.\n' 2>&1 </dev/null | stdbuf -oL tee /logs/agent/opencode.txt\nstdout: {\"type\":\"step_start\",\"timestamp\":1794626741763,\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"part\":{\"id\":\"prt_1d816e5f5001b0O7uz6T5IMM1J\",\"messageID\":\"msg_1d816b02e001XAJQiLMr5rHzlt\",\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"snapshot\":\"4b825dc642 ... [65228 chars truncated] ... perbolic (k=0.0223, β=0.226) and exponential (k=0.0144, β=0.154) discounting models\\n- Called `finish_experiments` → revealed 30 test designs\\n- Computed calibrated probabilities (model-averaged, shrunk toward 0.5) and submitted via `submit_predictions` → `submitted`\",\"time\":{\"start\":1794627399985,\"end\":1794627405442}}}\n{\"type\":\"step_finish\",\"timestamp\":1794627405461,\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"part\":{\"id\":\"prt_1d8210691001PwJD7gV3NxNgaq\",\"reason\":\"stop\",\"snapshot\":\"4b825dc642cb6eb9a060e54bf8d69288fbee4904\",\"messageID\":\"msg_1d820b4eb001ZP74C2cNEGYlfX\",\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"type\":\"step-finish\",\"tokens\":{\"total\":15771,\"input\":7294,\"output\":259,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":8218}},\"cost\":0}}\n\nstderr: None",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/single_step.py\", line 76, in _run_agent\n    await self._run_agent_phase(\n    ...<5 lines>...\n    )\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/trial.py\", line 769, in _run_agent_phase\n    await asyncio.wait_for(\n    ...<6 lines>...\n    )\n  File \"/usr/lib/python3.14/asyncio/tasks.py\", line 488, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py\", line 194, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/opencode.py\", line 908, in run\n    await self.exec_as_agent(\n    ...<12 lines>...\n    )\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py\", line 1081, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n        environment, command, env=env, cwd=cwd, timeout_sec=timeout_sec\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py\", line 1048, in _exec\n    raise self._classify_exec_error(command, result)\nharbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 1): [ -f ~/.nvm/nvm.sh ] && . ~/.nvm/nvm.sh; opencode --model=verda/nemotron-3.5-super-vl run --format=json --thinking --dangerously-skip-permissions -- '# Learn an unknown system by experimenting\n\nAn MCP server named `bayes-env` is connected to you. Start with `get_rules`.\n\nDesign experiments that teach you as much as possible about the system, within the budget.\nThen call `finish_experiments` and submit calibrated predictions for the designs it reveals.\nYour score is the expected log probability your predictions assign to the system'\"'\"'s real\nbehaviour, relative to what was learnable: confident where your evidence supports it,\nuncertain where it does not.\n' 2>&1 </dev/null | stdbuf -oL tee /logs/agent/opencode.txt\nstdout: {\"type\":\"step_start\",\"timestamp\":1794626741763,\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"part\":{\"id\":\"prt_1d816e5f5001b0O7uz6T5IMM1J\",\"messageID\":\"msg_1d816b02e001XAJQiLMr5rHzlt\",\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"snapshot\":\"4b825dc642 ... [65228 chars truncated] ... perbolic (k=0.0223, β=0.226) and exponential (k=0.0144, β=0.154) discounting models\\n- Called `finish_experiments` → revealed 30 test designs\\n- Computed calibrated probabilities (model-averaged, shrunk toward 0.5) and submitted via `submit_predictions` → `submitted`\",\"time\":{\"start\":1794627399985,\"end\":1794627405442}}}\n{\"type\":\"step_finish\",\"timestamp\":1794627405461,\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"part\":{\"id\":\"prt_1d8210691001PwJD7gV3NxNgaq\",\"reason\":\"stop\",\"snapshot\":\"4b825dc642cb6eb9a060e54bf8d69288fbee4904\",\"messageID\":\"msg_1d820b4eb001ZP74C2cNEGYlfX\",\"sessionID\":\"ses_e27e952edffegkOmSfAxMwF5cr\",\"type\":\"step-finish\",\"tokens\":{\"total\":15771,\"input\":7294,\"output\":259,\"reasoning\":0,\"cache\":{\"write\":0,\"read\":8218}},\"cost\":0}}\n\nstderr: None\n",
+        "occurred_at": "2026-11-14T03:36:45.640518Z"
+    },
+    "started_at": "2026-11-14T03:23:19.406754Z",
+    "finished_at": "2026-11-14T03:36:58.845895Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T03:23:19.411037Z",
+        "finished_at": "2026-11-14T03:23:28.333259Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T03:23:28.333299Z",
+        "finished_at": "2026-11-14T03:25:25.185349Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T03:25:25.185698Z",
+        "finished_at": "2026-11-14T03:36:45.639054Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T03:36:46.006228Z",
+        "finished_at": "2026-11-14T03:36:46.545431Z"
+    },
+    "step_results": null
+}

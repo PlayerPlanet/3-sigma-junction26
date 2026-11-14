@@ -1,0 +1,116 @@
+{
+    "id": "f4086698-1035-49e0-bdf1-f9da4e85e9c8",
+    "started_at": "2026-11-14T03:13:38.838097",
+    "updated_at": "2026-11-14T04:10:38.019118",
+    "finished_at": "2026-11-14T04:10:38.019118",
+    "n_total_trials": 10,
+    "stats": {
+        "n_completed_trials": 10,
+        "n_errored_trials": 4,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "opencode__verda/nemotron-3.5-super-vl__bayes": {
+                "n_trials": 10,
+                "n_errors": 4,
+                "metrics": [
+                    {
+                        "bayes_raw": -0.06237365392749923,
+                        "n_obs": 10.0,
+                        "naive": 0.09956707458182926,
+                        "ppc_p": 0.026932668329177057,
+                        "reward": 0.04496070270708315,
+                        "submitted": 0.2
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "0.0": [
+                            "hyperbolic-0__5Jxijgi",
+                            "hyperbolic-1__7sYHRmt",
+                            "hyperbolic-3__dt5xD6c",
+                            "hyperbolic-4__RnAE9RE",
+                            "location-0__HpPRHbD",
+                            "location-1__MSKeuJz",
+                            "location-2__oum2Qsg",
+                            "location-3__iJEoMC5",
+                            "location-4__7BYzViH"
+                        ],
+                        "0.44960702707083144": [
+                            "hyperbolic-2__T9RqroT"
+                        ]
+                    },
+                    "submitted": {
+                        "0.0": [
+                            "hyperbolic-0__5Jxijgi",
+                            "hyperbolic-1__7sYHRmt",
+                            "hyperbolic-3__dt5xD6c",
+                            "hyperbolic-4__RnAE9RE",
+                            "location-0__HpPRHbD",
+                            "location-1__MSKeuJz",
+                            "location-2__oum2Qsg",
+                            "location-4__7BYzViH"
+                        ],
+                        "1.0": [
+                            "hyperbolic-2__T9RqroT",
+                            "location-3__iJEoMC5"
+                        ]
+                    },
+                    "n_obs": {
+                        "10.0": [
+                            "hyperbolic-0__5Jxijgi",
+                            "hyperbolic-1__7sYHRmt",
+                            "hyperbolic-2__T9RqroT",
+                            "hyperbolic-3__dt5xD6c",
+                            "hyperbolic-4__RnAE9RE",
+                            "location-0__HpPRHbD",
+                            "location-1__MSKeuJz",
+                            "location-2__oum2Qsg",
+                            "location-3__iJEoMC5",
+                            "location-4__7BYzViH"
+                        ]
+                    },
+                    "bayes_raw": {
+                        "0.44960702707083144": [
+                            "hyperbolic-2__T9RqroT"
+                        ],
+                        "-1.0733435663458237": [
+                            "location-3__iJEoMC5"
+                        ]
+                    },
+                    "naive": {
+                        "0.9666666666666667": [
+                            "hyperbolic-2__T9RqroT"
+                        ],
+                        "0.02900407915162595": [
+                            "location-3__iJEoMC5"
+                        ]
+                    },
+                    "ppc_p": {
+                        "0.08229426433915212": [
+                            "hyperbolic-2__T9RqroT"
+                        ],
+                        "0.18703241895261846": [
+                            "location-3__iJEoMC5"
+                        ]
+                    }
+                },
+                "exception_stats": {
+                    "NonZeroAgentExitCodeError": [
+                        "hyperbolic-0__5Jxijgi",
+                        "hyperbolic-2__T9RqroT",
+                        "hyperbolic-4__RnAE9RE",
+                        "location-3__iJEoMC5"
+                    ]
+                }
+            }
+        },
+        "n_input_tokens": 716370,
+        "n_cache_tokens": 525197,
+        "n_output_tokens": 100951,
+        "cost_usd": null
+    }
+}

@@ -1,0 +1,132 @@
+{
+    "id": "76d55304-f3a0-469b-b3a9-01cc217935ec",
+    "task_name": "3-sigma/bayes-hyperbolic-1",
+    "trial_name": "hyperbolic-1__7sYHRmt",
+    "trial_uri": "file:///root/work/jobs/e5-opencode-nemotron/hyperbolic-1__7sYHRmt",
+    "task_id": {
+        "path": "tasks/bayes/hyperbolic-1"
+    },
+    "source": "bayes",
+    "task_checksum": "70f89e1da9d36e40119fb382500246afbc73b7a80619e56479e5d0c6f6c9bba9",
+    "config": {
+        "task": {
+            "path": "tasks/bayes/hyperbolic-1",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bayes"
+        },
+        "trial_name": "hyperbolic-1__7sYHRmt",
+        "trials_dir": "jobs/e5-opencode-nemotron",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "opencode",
+            "import_path": null,
+            "model_name": "verda/nemotron-3.5-super-vl",
+            "base_url": "http://95.133.254.110:8000/v1",
+            "model_api_key_name": "VLLM_API_KEY",
+            "model_api_format": "openai_chat_completions",
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "f4086698-1035-49e0-bdf1-f9da4e85e9c8",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "verda/nemotron-3.5-super-vl",
+            "provider": null
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 49493,
+        "n_cache_tokens": 48439,
+        "n_output_tokens": 7094,
+        "cost_usd": null,
+        "model_usage": {
+            "verda/nemotron-3.5-super-vl": {
+                "n_input_tokens": 49493,
+                "n_cache_tokens": 48439,
+                "n_output_tokens": 7094,
+                "cost_usd": null
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0,
+            "submitted": 0.0,
+            "n_obs": 10.0
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T03:13:38.944243Z",
+    "finished_at": "2026-11-14T03:23:19.392731Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T03:13:39.025093Z",
+        "finished_at": "2026-11-14T03:13:56.094745Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T03:13:56.094774Z",
+        "finished_at": "2026-11-14T03:15:52.882167Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T03:15:52.882569Z",
+        "finished_at": "2026-11-14T03:23:06.266977Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T03:23:06.660396Z",
+        "finished_at": "2026-11-14T03:23:07.057470Z"
+    },
+    "step_results": null
+}
