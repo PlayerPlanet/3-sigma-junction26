@@ -1,5 +1,0 @@
-60 episodes to run (0 already done)
-20 done, 0 errors
-40 done, 0 errors
-60 done, 0 errors
-finished: 60 ok, 0 errors

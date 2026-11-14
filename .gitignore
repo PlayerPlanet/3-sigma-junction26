@@ -29,3 +29,25 @@ results/e5/**/agent/
 # Generated training data (scripts/gen_training_data.py); only the small sample is tracked
 data/*
 !data/sample_rows.jsonl
+
+# Generated: rendered Harbor tasks (contain per-task grader tokens). Rebuild: scripts/render_tasks.sh
+tasks/bayes/
+tasks/redteam/
+tasks/chem/
+tasks/wetlab/
+
+# Generated: deterministic simulation outputs, figures, logs, training data. See README "Regenerate".
+results/e12*.jsonl
+results/e2_*.jsonl
+results/e6_*.jsonl
+results/e3_train_pool.jsonl
+results/e3_smoke*.jsonl
+results/sft/
+results/sft_smoke/
+results/fig_*.png
+results/log_*.txt
+results/*.log
+results/request_budget.json
+results/wetlab_adaptive.jsonl
+results/spec_*.jsonl
+data/

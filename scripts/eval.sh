@@ -5,7 +5,7 @@
 #   MODEL=<provider/model> ./scripts/eval.sh            # everything
 #   SKIP_AGENT=1 ./scripts/eval.sh                      # no API key: reference + baselines only
 #
-# Env: TASK (default tasks/example-env), AGENT (default opencode), AGENT_RUNS (default 3),
+# Env: TASK (default tasks/bayes; also tasks/chem, tasks/wetlab), AGENT (default opencode), AGENT_RUNS (default 3),
 # and whatever API key OpenCode needs for MODEL's provider (e.g. ANTHROPIC_API_KEY).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -14,6 +14,7 @@ TASK="${TASK:-tasks/bayes}"
 AGENT="${AGENT:-opencode}"
 AGENT_RUNS="${AGENT_RUNS:-3}"
 RUN_DIR="jobs/$(date +%Y%m%d-%H%M%S)"
+[[ -d "$TASK" ]] || ./scripts/render_tasks.sh   # rendered tasks are not tracked in git
 export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}" PYTHONIOENCODING=utf-8
 
 run() {  # run <job-name> <harbor args...>

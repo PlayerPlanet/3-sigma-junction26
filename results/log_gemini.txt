@@ -1,3 +1,0 @@
-24 episodes to run (0 already done)
-20 done, 0 errors
-finished: 24 ok, 0 errors

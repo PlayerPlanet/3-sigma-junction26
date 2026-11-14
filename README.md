@@ -4,85 +4,120 @@
 
 > Obsessed about maximizing shareholder value.
 
-## Challenge
+An RL environment for **Bayesian experimental design**: the agent runs a limited number of
+experiments on a hidden system, then states what it believes. Because the simulator is known,
+the grader scores the agent against the **exact Bayesian posterior**. That gives a reward that
+is a proper scoring rule, is exactly 0 for doing nothing, splits an agent's loss into *bad
+experiments* and *bad belief updating*, and comes with a statistical test for leaked
+information.
 
-Build an RL environment where a frontier agent consistently scores below our reference run, for reasons
-we can explain, with a reward that can't be gamed. Judges rerun everything with
-[Harbor](https://github.com/harbor-framework/harbor) + OpenCode over MCP: our reference run, three agent
-runs, a do-nothing baseline and a stop-early baseline.
+Full results: [`docs/RESULTS.md`](docs/RESULTS.md). Preprint source: [`paper/`](paper/).
 
-TODO: the environment we chose, why, and what an agent can learn there.
+## Headline numbers
+
+Reward is normalised so the prior scores 0 and knowing the hidden parameters scores 1.
+
+| Agent | Hyperbolic discounting | Location finding |
+|---|---|---|
+| Bayesian reference | 0.95 | 0.99 |
+| Random experiments, exact inference | 0.54 | 0.75 |
+| Do nothing | 0 | 0 |
+| Claude Opus 5.5, no tools (n = 15) | 0.11 | 0.40 |
+| Claude Code + Opus 5.5, shell and Python (15 trials) | 0.24 | 0.77 |
+| Codex + GPT-6 Luna, shell and Python (15 trials) | 0.06 | 0.12 |
+| OpenCode + Gemma 4 26B (15 trials) | 0.00 | 0.00 |
+
+The tool-using rows ran in different agent harnesses, so they confound model and harness.
+A naive accuracy grader puts the same tool-free models at 0.92–0.96 against 0.98 for the
+reference, and gives 0.92 to an agent that runs no experiments.
+
+What does **not** break agents: the discrete chemistry lab (`tasks/chem`). Claude Code + Opus
+5.5 and Codex + GPT-5.6 Terra match the reference there (mean gap +0.006 and −0.002 nats).
+The stochastic wet lab (`tasks/wetlab`) has not yet been run against a language model.
 
 ## Reproduce the evaluation (one command)
 
-Requirements: Docker running, and Harbor (`uv tool install harbor`, tested with 0.25.0).
+Requirements: Docker running, Python 3.12, and Harbor (`uv tool install harbor`, tested with
+0.25.0).
 
 ```bash
 MODEL=<provider/model> ./scripts/eval.sh     # reference + 3 agent runs + do-nothing + stop-early
 SKIP_AGENT=1 ./scripts/eval.sh               # no API key needed: reference + baselines only
+TASK=tasks/wetlab SKIP_AGENT=1 ./scripts/eval.sh
 ```
 
-The agent runs need whatever API key OpenCode uses for `MODEL`'s provider (for example `ANTHROPIC_API_KEY`).
-Results go to `jobs/<timestamp>/`; `harbor view jobs` opens a browser viewer.
+The script renders the Harbor tasks on first use (`scripts/render_tasks.sh`). Agent runs need
+your own API key for `MODEL`'s provider (for example `ANTHROPIC_API_KEY`). Results go to
+`jobs/<timestamp>/`.
 
-### Current results (placeholder environment)
+## Environments
 
-| Run | Agent | Trials | Reward |
-|-----|-------|--------|--------|
-| Reference | `oracle` (runs `solution/solve.sh`) | 1 | 0.583 |
-| Do-nothing | `nop` | 1 | 0.000 |
-| Stop-early | `baselines/stop_early.py` | 1 | 0.000 |
-| Frontier agent | `opencode` | 3 | TODO |
+| Task set | Hidden | Agent submits | Reference |
+|---|---|---|---|
+| `tasks/bayes` hyperbolic-0..4 | 2 parameters of a discounting curve, binary outcomes | predictive probabilities for 30 held-out designs | exact (particle) posterior |
+| `tasks/bayes` location-0..4 | position of a signal source, continuous outcomes | Gaussian predictions for 30 held-out designs | exact (particle) posterior |
+| `tasks/chem` chem-0..4 | one of 7 reactor faults | probabilities over faults | exact, by enumeration |
+| `tasks/wetlab` wetlab-0..4 | one of 6 reaction mechanisms plus rate constants, stochastic kinetics, limited stock | probabilities over mechanisms | approximate, simulation-based |
+
+Every task runs the environment as an MCP server in its own container, keeps the hidden state
+behind a per-trial secret salt, and exposes the grade only through a token-protected endpoint.
+
+More families can be declared in a few lines of YAML (`specs/`, see
+[`docs/TASK_SPEC.md`](docs/TASK_SPEC.md)); the generator turns them into tasks and training
+rows. Its large-scale sweep has not been run yet.
 
 ## Layout
 
 ```
-tasks/example-env/              Harbor task (PLACEHOLDER game: find a hidden number under a probe budget)
-├── task.toml                   task config; declares the MCP server
-├── instruction.md              the agent's prompt
-├── environment/
-│   ├── Dockerfile              agent container (`main`)
-│   ├── docker-compose.yaml     adds the environment's MCP server as a separate container
-│   └── mcp-server/
-│       ├── game.py             environment logic + reward (pure Python, unit-tested)
-│       └── server.py           MCP tools (port 8000) + token-protected /grade (port 8001)
-├── solution/solve.sh           reference run, plays through the same MCP tools
-└── tests/                      verifier: fetches the score from /grade -> reward.json
-baselines/stop_early.py         stop-early baseline agent
-scripts/eval.sh                 the one command; scripts/summarize.py prints the table
-tests/test_env_reward.py        reward-integrity tests (CI runs these on every push)
+bayesenv/            environments, particle posterior, grader, policies, LLM text protocol
+  chem_lab.py        discrete chemistry lab        (docs/CHEM_LAB.md)
+  wetlab.py          batched Gillespie wet lab     (docs/WETLAB.md)
+  spec.py            YAML task syntax              (docs/TASK_SPEC.md)
+templates/           Harbor task templates (bayes_task, chem_task, wetlab_task)
+specs/               task families in the YAML syntax
+scripts/             render_tasks.sh, eval.sh, calibration and data-generation scripts
+experiments/         E1–E6 experiment and analysis scripts (Modal CPU fan-out)
+train/               LoRA fine-tuning and GRPO on the exact reward
+infra/, ops/         Modal and Verda launch and teardown scripts
+results/             LLM run data and small summaries (see below)
+paper/               LaTeX source of the preprint (`latexmk main.tex`)
+tests/               reward-integrity and environment tests
 ```
 
-### Replacing the placeholder
+## What is and is not in git
 
-1. Rewrite `game.py` (state, actions, `grade()`) and the tools in `server.py`.
-2. Update `instruction.md`, `solution/solve.sh` and `baselines/stop_early.py`.
-3. Rewrite `tests/test_env_reward.py`: do-nothing and stop-early must score ~0, and solving the task
-   well must be the best way to score. Turn every exploit we find into a test.
-4. Rename the task directory and `TASK` in `scripts/eval.sh`.
+Tracked: code, templates, docs, the data from paid LLM runs (`results/e3*.jsonl`,
+`results/e4.jsonl`, `results/e5/`), and small summary files that the docs cite.
 
-## Reward-integrity design
+Not tracked, because it can be regenerated:
 
-- **The score comes from the environment's state, not from the agent's files.** The verifier asks the
-  MCP server's `/grade` endpoint, so nothing the agent writes in its container can fake a pass.
-- **The agent can't see the grader.** The MCP server runs in its own container. The seed and grader token
-  live only in `docker-compose.yaml` (not mounted into the agent) and in `tests/` (Harbor uploads it only
-  after the agent finishes). Checked with a probe agent: no token on disk, no `/tests`, `/grade` without
-  the token returns 404.
-- **The grader fails closed.** If the grader is unreachable, the reward is 0.
+| Artifact | Regenerate with |
+|---|---|
+| Rendered Harbor tasks (`tasks/bayes`, `chem`, `wetlab`, `redteam`) | `./scripts/render_tasks.sh` |
+| E1/E2 policy grid (`results/e12.jsonl`) | `modal run experiments/batch.py --seeds 400 --out results/e12.jsonl` |
+| E6 attack data (`results/e6_*.jsonl`) | `modal run experiments/e6_stealth.py --seeds 400 --out results/e6_stealth.jsonl` (and the E6a script in `experiments/`) |
+| Figures (`results/fig_*.png`) | `python experiments/plots.py` |
+| Chemistry and wet lab calibration | `python scripts/chem_calibrate.py`, `python scripts/wetlab_calibrate.py` |
+| Training rows (`data/`, `results/sft/`) | `python scripts/gen_training_data.py --specs specs/*.yaml --instances N --out data/v1` |
+| Preprint PDF | `cd paper && latexmk main.tex` |
 
-## Known limitations
+Rendered tasks carry a fresh grader token per render, which is one more reason not to commit
+them.
 
-- Harbor runs multi-container (MCP sidecar) tasks only on its `docker` provider, not on Modal or
-  Daytona. Run evaluations locally or on a Verda VM.
-- Line endings are pinned to LF (`.gitattributes`); CRLF breaks the shell scripts inside containers.
+## Tests
 
-## Other code in this repo
+```bash
+uv run --no-project --with numpy --with scipy --with pyyaml --with pytest \
+  pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py tests/test_spec.py
+```
 
-`src/`, `config/`, `Dockerfile*` and `docker-compose.yml` are the MLflow train/serve scaffold from
-`cookiecutter-inference-template`, kept for the stretch goal (training a smaller model on experience
-from the environment).
+`tests/test_model.py` and `tests/test_predict.py` belong to the original project template and
+are unrelated to the environment.
 
-## Team
+## Known limits
 
-TODO: names and roles.
+- Sample sizes for the expensive models are 12–25 episodes per environment.
+- The reported reward is normalised per episode and clipped; the proofs in the preprint cover
+  the unnormalised score.
+- The wet lab's reference is approximate.
+- API keys are read from the environment; none are stored in this repository. Use your own.
