@@ -1,0 +1,439 @@
+{
+    "id": "542bf7a0-3559-4d8c-81bd-eb2ce78eefd7",
+    "started_at": "2026-11-14T06:42:04.235161",
+    "updated_at": "2026-11-14T07:32:53.656632",
+    "finished_at": "2026-11-14T07:32:53.656632",
+    "n_total_trials": 30,
+    "stats": {
+        "n_completed_trials": 30,
+        "n_errored_trials": 0,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "claude-code__claude-opus-5-5__bayes": {
+                "n_trials": 30,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "bayes_raw": 0.33067571816441443,
+                        "n_obs": 10.0,
+                        "naive": 0.8248936831225795,
+                        "ppc_p": 0.43632585203657526,
+                        "reward": 0.5043011948389858,
+                        "submitted": 1.0
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "0.3524871194278538": [
+                            "hyperbolic-0__zpGrgZx"
+                        ],
+                        "0.0": [
+                            "hyperbolic-1__F3ysZja",
+                            "hyperbolic-3__zh7xi7T",
+                            "hyperbolic-0__Mk3FKfe",
+                            "hyperbolic-2__AfGXnFY",
+                            "hyperbolic-3__2N5aWJF",
+                            "hyperbolic-1__MfreBJD",
+                            "hyperbolic-3__XgtVafM"
+                        ],
+                        "0.7682697128459258": [
+                            "hyperbolic-2__wC2kNVU"
+                        ],
+                        "0.503336583867184": [
+                            "hyperbolic-4__vEDNgSG"
+                        ],
+                        "0.6047058070282477": [
+                            "location-0__MpY69NV"
+                        ],
+                        "0.7839440585895762": [
+                            "location-1__gtcXVPo"
+                        ],
+                        "0.47530974388133124": [
+                            "location-2__7ddjoJS"
+                        ],
+                        "0.9718754721350165": [
+                            "location-3__Ukk44Ax"
+                        ],
+                        "0.717458433336732": [
+                            "location-4__zfpCodx"
+                        ],
+                        "0.5619433931994738": [
+                            "hyperbolic-1__wgNvNhD"
+                        ],
+                        "0.12155237382072474": [
+                            "hyperbolic-4__hHnMHCy"
+                        ],
+                        "0.4928948015730321": [
+                            "location-0__NUQHUd2"
+                        ],
+                        "0.8494007757023554": [
+                            "location-1__JXLWFRm"
+                        ],
+                        "0.8255056053231176": [
+                            "location-2__B3E87HX"
+                        ],
+                        "0.8783785161879512": [
+                            "location-3__fiA3prg"
+                        ],
+                        "0.7761057888207392": [
+                            "location-4__unBta2k"
+                        ],
+                        "0.6098807567140875": [
+                            "hyperbolic-0__3zDpBtP"
+                        ],
+                        "0.5328713601829086": [
+                            "hyperbolic-2__ntyjZo2"
+                        ],
+                        "0.10129229923930949": [
+                            "hyperbolic-4__r4qPdwS"
+                        ],
+                        "0.8262169817798065": [
+                            "location-0__3kZnqvj"
+                        ],
+                        "0.9062036344235234": [
+                            "location-1__FiUAhY6"
+                        ],
+                        "0.6898840159566784": [
+                            "location-2__if8LLRF"
+                        ],
+                        "0.8465443588299972": [
+                            "location-3__fdDUJqL"
+                        ],
+                        "0.9329742523040024": [
+                            "location-4__aojP6ba"
+                        ]
+                    },
+                    "submitted": {
+                        "1.0": [
+                            "hyperbolic-0__zpGrgZx",
+                            "hyperbolic-1__F3ysZja",
+                            "hyperbolic-2__wC2kNVU",
+                            "hyperbolic-3__zh7xi7T",
+                            "hyperbolic-4__vEDNgSG",
+                            "location-0__MpY69NV",
+                            "location-1__gtcXVPo",
+                            "location-2__7ddjoJS",
+                            "location-3__Ukk44Ax",
+                            "location-4__zfpCodx",
+                            "hyperbolic-0__Mk3FKfe",
+                            "hyperbolic-1__wgNvNhD",
+                            "hyperbolic-2__AfGXnFY",
+                            "hyperbolic-3__2N5aWJF",
+                            "hyperbolic-4__hHnMHCy",
+                            "location-0__NUQHUd2",
+                            "location-1__JXLWFRm",
+                            "location-2__B3E87HX",
+                            "location-3__fiA3prg",
+                            "location-4__unBta2k",
+                            "hyperbolic-0__3zDpBtP",
+                            "hyperbolic-1__MfreBJD",
+                            "hyperbolic-2__ntyjZo2",
+                            "hyperbolic-3__XgtVafM",
+                            "hyperbolic-4__r4qPdwS",
+                            "location-0__3kZnqvj",
+                            "location-1__FiUAhY6",
+                            "location-2__if8LLRF",
+                            "location-3__fdDUJqL",
+                            "location-4__aojP6ba"
+                        ]
+                    },
+                    "n_obs": {
+                        "10.0": [
+                            "hyperbolic-0__zpGrgZx",
+                            "hyperbolic-1__F3ysZja",
+                            "hyperbolic-2__wC2kNVU",
+                            "hyperbolic-3__zh7xi7T",
+                            "hyperbolic-4__vEDNgSG",
+                            "location-0__MpY69NV",
+                            "location-1__gtcXVPo",
+                            "location-2__7ddjoJS",
+                            "location-3__Ukk44Ax",
+                            "location-4__zfpCodx",
+                            "hyperbolic-0__Mk3FKfe",
+                            "hyperbolic-1__wgNvNhD",
+                            "hyperbolic-2__AfGXnFY",
+                            "hyperbolic-3__2N5aWJF",
+                            "hyperbolic-4__hHnMHCy",
+                            "location-0__NUQHUd2",
+                            "location-1__JXLWFRm",
+                            "location-2__B3E87HX",
+                            "location-3__fiA3prg",
+                            "location-4__unBta2k",
+                            "hyperbolic-0__3zDpBtP",
+                            "hyperbolic-1__MfreBJD",
+                            "hyperbolic-2__ntyjZo2",
+                            "hyperbolic-3__XgtVafM",
+                            "hyperbolic-4__r4qPdwS",
+                            "location-0__3kZnqvj",
+                            "location-1__FiUAhY6",
+                            "location-2__if8LLRF",
+                            "location-3__fdDUJqL",
+                            "location-4__aojP6ba"
+                        ]
+                    },
+                    "bayes_raw": {
+                        "0.3524871194278538": [
+                            "hyperbolic-0__zpGrgZx"
+                        ],
+                        "-0.16963877728617555": [
+                            "hyperbolic-1__F3ysZja"
+                        ],
+                        "0.7682697128459258": [
+                            "hyperbolic-2__wC2kNVU"
+                        ],
+                        "-1.2005398508159788": [
+                            "hyperbolic-3__zh7xi7T"
+                        ],
+                        "0.503336583867184": [
+                            "hyperbolic-4__vEDNgSG"
+                        ],
+                        "0.6047058070282477": [
+                            "location-0__MpY69NV"
+                        ],
+                        "0.7839440585895762": [
+                            "location-1__gtcXVPo"
+                        ],
+                        "0.47530974388133124": [
+                            "location-2__7ddjoJS"
+                        ],
+                        "0.9718754721350165": [
+                            "location-3__Ukk44Ax"
+                        ],
+                        "0.717458433336732": [
+                            "location-4__zfpCodx"
+                        ],
+                        "-1.1938311076659587": [
+                            "hyperbolic-0__Mk3FKfe"
+                        ],
+                        "0.5619433931994738": [
+                            "hyperbolic-1__wgNvNhD"
+                        ],
+                        "-0.33440296784675366": [
+                            "hyperbolic-2__AfGXnFY"
+                        ],
+                        "-0.03103285919615396": [
+                            "hyperbolic-3__2N5aWJF"
+                        ],
+                        "0.12155237382072474": [
+                            "hyperbolic-4__hHnMHCy"
+                        ],
+                        "0.4928948015730321": [
+                            "location-0__NUQHUd2"
+                        ],
+                        "0.8494007757023554": [
+                            "location-1__JXLWFRm"
+                        ],
+                        "0.8255056053231176": [
+                            "location-2__B3E87HX"
+                        ],
+                        "0.8783785161879512": [
+                            "location-3__fiA3prg"
+                        ],
+                        "0.7761057888207392": [
+                            "location-4__unBta2k"
+                        ],
+                        "0.6098807567140875": [
+                            "hyperbolic-0__3zDpBtP"
+                        ],
+                        "-1.2296457443823603": [
+                            "hyperbolic-1__MfreBJD"
+                        ],
+                        "0.5328713601829086": [
+                            "hyperbolic-2__ntyjZo2"
+                        ],
+                        "-1.049672993043761": [
+                            "hyperbolic-3__XgtVafM"
+                        ],
+                        "0.10129229923930949": [
+                            "hyperbolic-4__r4qPdwS"
+                        ],
+                        "0.8262169817798065": [
+                            "location-0__3kZnqvj"
+                        ],
+                        "0.9062036344235234": [
+                            "location-1__FiUAhY6"
+                        ],
+                        "0.6898840159566784": [
+                            "location-2__if8LLRF"
+                        ],
+                        "0.8465443588299972": [
+                            "location-3__fdDUJqL"
+                        ],
+                        "0.9329742523040024": [
+                            "location-4__aojP6ba"
+                        ]
+                    },
+                    "naive": {
+                        "0.9333333333333333": [
+                            "hyperbolic-0__zpGrgZx",
+                            "hyperbolic-3__zh7xi7T"
+                        ],
+                        "1.0": [
+                            "hyperbolic-1__F3ysZja",
+                            "hyperbolic-2__wC2kNVU",
+                            "hyperbolic-0__Mk3FKfe",
+                            "hyperbolic-2__AfGXnFY",
+                            "hyperbolic-0__3zDpBtP",
+                            "hyperbolic-4__r4qPdwS"
+                        ],
+                        "0.9": [
+                            "hyperbolic-4__vEDNgSG",
+                            "hyperbolic-1__wgNvNhD"
+                        ],
+                        "0.512668492293244": [
+                            "location-0__MpY69NV"
+                        ],
+                        "0.58526876675136": [
+                            "location-1__gtcXVPo"
+                        ],
+                        "0.5766655472286002": [
+                            "location-2__7ddjoJS"
+                        ],
+                        "0.7852441115601786": [
+                            "location-3__Ukk44Ax"
+                        ],
+                        "0.7396140110288891": [
+                            "location-4__zfpCodx"
+                        ],
+                        "0.9666666666666667": [
+                            "hyperbolic-3__2N5aWJF",
+                            "hyperbolic-4__hHnMHCy",
+                            "hyperbolic-1__MfreBJD",
+                            "hyperbolic-2__ntyjZo2",
+                            "hyperbolic-3__XgtVafM"
+                        ],
+                        "0.2761994525006143": [
+                            "location-0__NUQHUd2"
+                        ],
+                        "0.7587008562999167": [
+                            "location-1__JXLWFRm"
+                        ],
+                        "0.7697420824387342": [
+                            "location-2__B3E87HX"
+                        ],
+                        "0.8960003618886331": [
+                            "location-3__fiA3prg"
+                        ],
+                        "0.80843060451664": [
+                            "location-4__unBta2k"
+                        ],
+                        "0.6438559083837787": [
+                            "location-0__3kZnqvj"
+                        ],
+                        "0.6824823232737622": [
+                            "location-1__FiUAhY6"
+                        ],
+                        "0.6994911418657179": [
+                            "location-2__if8LLRF"
+                        ],
+                        "0.7612379975747854": [
+                            "location-3__fdDUJqL"
+                        ],
+                        "0.751208836072529": [
+                            "location-4__aojP6ba"
+                        ]
+                    },
+                    "ppc_p": {
+                        "0.2793017456359102": [
+                            "hyperbolic-0__zpGrgZx"
+                        ],
+                        "0.8827930174563591": [
+                            "hyperbolic-1__F3ysZja"
+                        ],
+                        "0.11471321695760599": [
+                            "hyperbolic-2__wC2kNVU"
+                        ],
+                        "0.2718204488778055": [
+                            "hyperbolic-3__zh7xi7T"
+                        ],
+                        "0.012468827930174564": [
+                            "hyperbolic-4__vEDNgSG"
+                        ],
+                        "0.9152119700748129": [
+                            "location-0__MpY69NV"
+                        ],
+                        "0.06982543640897755": [
+                            "location-1__gtcXVPo"
+                        ],
+                        "0.628428927680798": [
+                            "location-2__7ddjoJS"
+                        ],
+                        "0.3341645885286783": [
+                            "location-3__Ukk44Ax"
+                        ],
+                        "0.7581047381546134": [
+                            "location-4__zfpCodx"
+                        ],
+                        "0.09725685785536159": [
+                            "hyperbolic-0__Mk3FKfe"
+                        ],
+                        "0.09975062344139651": [
+                            "hyperbolic-1__wgNvNhD"
+                        ],
+                        "0.5037406483790524": [
+                            "hyperbolic-2__AfGXnFY"
+                        ],
+                        "0.034912718204488775": [
+                            "hyperbolic-3__2N5aWJF"
+                        ],
+                        "0.6259351620947631": [
+                            "hyperbolic-4__hHnMHCy"
+                        ],
+                        "0.7930174563591023": [
+                            "location-0__NUQHUd2"
+                        ],
+                        "0.5112219451371571": [
+                            "location-1__JXLWFRm"
+                        ],
+                        "0.1546134663341646": [
+                            "location-2__B3E87HX",
+                            "location-0__3kZnqvj"
+                        ],
+                        "0.6608478802992519": [
+                            "location-3__fiA3prg"
+                        ],
+                        "0.5062344139650873": [
+                            "location-4__unBta2k"
+                        ],
+                        "0.6533665835411472": [
+                            "hyperbolic-0__3zDpBtP"
+                        ],
+                        "0.4912718204488778": [
+                            "hyperbolic-1__MfreBJD"
+                        ],
+                        "0.5286783042394015": [
+                            "hyperbolic-2__ntyjZo2"
+                        ],
+                        "0.30673316708229426": [
+                            "hyperbolic-3__XgtVafM"
+                        ],
+                        "0.7281795511221946": [
+                            "hyperbolic-4__r4qPdwS"
+                        ],
+                        "0.5536159600997507": [
+                            "location-1__FiUAhY6"
+                        ],
+                        "0.286783042394015": [
+                            "location-2__if8LLRF"
+                        ],
+                        "0.7256857855361596": [
+                            "location-3__fdDUJqL"
+                        ],
+                        "0.40648379052369077": [
+                            "location-4__aojP6ba"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        },
+        "n_input_tokens": 6364333,
+        "n_cache_tokens": 6226580,
+        "n_output_tokens": 110782,
+        "cost_usd": 4.5600760000000005
+    }
+}

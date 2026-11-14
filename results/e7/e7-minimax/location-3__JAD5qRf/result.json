@@ -1,0 +1,137 @@
+{
+    "id": "827ffc3e-0faf-49f8-9d15-bd94d18ef22e",
+    "task_name": "3-sigma/bayes-location-3",
+    "trial_name": "location-3__JAD5qRf",
+    "trial_uri": "file:///root/work/jobs/e7-minimax/location-3__JAD5qRf",
+    "task_id": {
+        "path": "tasks/bayes/location-3"
+    },
+    "source": "bayes",
+    "task_checksum": "f6333d66ddabb8da0ba35b9b75dc2d32a24b57d0480b40293e3548ff931d1721",
+    "config": {
+        "task": {
+            "path": "tasks/bayes/location-3",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bayes"
+        },
+        "trial_name": "location-3__JAD5qRf",
+        "trials_dir": "jobs/e7-minimax",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "opencode",
+            "import_path": null,
+            "model_name": "minimax/MiniMax-M3",
+            "base_url": "https://api.minimax.io/v1",
+            "model_api_key_name": "MINIMAX_API_KEY",
+            "model_api_format": "openai_chat_completions",
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "74599881-19a5-4dc0-9435-a63daef33884",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "MiniMax-M3",
+            "provider": "minimax"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 1184549,
+        "n_cache_tokens": 1116651,
+        "n_output_tokens": 13386,
+        "cost_usd": 0.16336086,
+        "model_usage": {
+            "minimax/MiniMax-M3": {
+                "n_input_tokens": 1184549,
+                "n_cache_tokens": 1116651,
+                "n_output_tokens": 13386,
+                "cost_usd": 0.16336086
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0,
+            "submitted": 0.0,
+            "n_obs": 9.0
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": {
+        "exception_type": "AgentTimeoutError",
+        "exception_message": "Agent execution timed out after 1800.0 seconds",
+        "exception_traceback": "Traceback (most recent call last):\n  File \"/usr/lib/python3.14/asyncio/tasks.py\", line 488, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py\", line 194, in wrapper\n    return await fn(self, instruction, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/opencode.py\", line 908, in run\n    await self.exec_as_agent(\n    ...<12 lines>...\n    )\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py\", line 1081, in exec_as_agent\n    return await self._exec(\n           ^^^^^^^^^^^^^^^^^\n        environment, command, env=env, cwd=cwd, timeout_sec=timeout_sec\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py\", line 1032, in _exec\n    result = await environment.exec(\n             ^^^^^^^^^^^^^^^^^^^^^^^\n    ...<5 lines>...\n    )\n    ^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/environments/docker/docker.py\", line 1363, in exec\n    return await self._compose_exec(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/environments/docker/docker.py\", line 1440, in _compose_exec\n    return await self._run_docker_compose_command(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n    )\n    ^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/environments/docker/docker.py\", line 758, in _run_docker_compose_command\n    result = await self._collect_buffered_output(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    )\n    ^\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/environments/docker/docker.py\", line 788, in _collect_buffered_output\n    stdout_bytes, stderr_bytes = await process.communicate(input=stdin_data)\n                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/asyncio/subprocess.py\", line 201, in communicate\n    stdin, stdout, stderr = await tasks.gather(stdin, stdout, stderr)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/asyncio/subprocess.py\", line 181, in _read_stream\n    output = await stream.read()\n             ^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/asyncio/streams.py\", line 723, in read\n    block = await self.read(self._limit)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/asyncio/streams.py\", line 730, in read\n    await self._wait_for_data('read')\n  File \"/usr/lib/python3.14/asyncio/streams.py\", line 539, in _wait_for_data\n    await self._waiter\nasyncio.exceptions.CancelledError\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/trial.py\", line 769, in _run_agent_phase\n    await asyncio.wait_for(\n    ...<6 lines>...\n    )\n  File \"/usr/lib/python3.14/asyncio/tasks.py\", line 487, in wait_for\n    async with timeouts.timeout(timeout):\n               ~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/usr/lib/python3.14/asyncio/timeouts.py\", line 114, in __aexit__\n    raise TimeoutError from exc_val\nTimeoutError\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/single_step.py\", line 76, in _run_agent\n    await self._run_agent_phase(\n    ...<5 lines>...\n    )\n  File \"/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/trial.py\", line 778, in _run_agent_phase\n    raise AgentTimeoutError(\n        f\"Agent execution timed out after {timeout_sec} seconds\"\n    ) from exc\nharbor.trial.errors.AgentTimeoutError: Agent execution timed out after 1800.0 seconds\n",
+        "occurred_at": "2026-11-14T10:02:06.128891Z"
+    },
+    "started_at": "2026-11-14T09:30:13.914290Z",
+    "finished_at": "2026-11-14T10:02:22.074480Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T09:30:13.924231Z",
+        "finished_at": "2026-11-14T09:30:23.109734Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T09:30:23.109766Z",
+        "finished_at": "2026-11-14T09:32:06.124233Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T09:32:06.124711Z",
+        "finished_at": "2026-11-14T10:02:06.125817Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T10:02:06.669746Z",
+        "finished_at": "2026-11-14T10:02:07.251359Z"
+    },
+    "step_results": null
+}

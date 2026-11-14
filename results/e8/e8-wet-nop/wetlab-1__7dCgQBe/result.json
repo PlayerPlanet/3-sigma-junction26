@@ -1,0 +1,128 @@
+{
+    "id": "27ec7c17-e306-4df8-961a-3f545f561345",
+    "task_name": "3-sigma/wetlab-1",
+    "trial_name": "wetlab-1__7dCgQBe",
+    "trial_uri": "file:///root/work/jobs/e8-wet-nop/wetlab-1__7dCgQBe",
+    "task_id": {
+        "path": "tasks/wetlab/wetlab-1"
+    },
+    "source": null,
+    "task_checksum": "781960116a5893dbd7431684bf436c8842906bb23a20c6a520fb41f4c957571a",
+    "config": {
+        "task": {
+            "path": "tasks/wetlab/wetlab-1",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "wetlab-1__7dCgQBe",
+        "trials_dir": "jobs/e8-wet-nop",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "nop",
+            "import_path": null,
+            "model_name": null,
+            "base_url": null,
+            "model_api_key_name": null,
+            "model_api_format": null,
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "f7b6e299-cc90-48d0-abf2-8074ae90a539",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "nop",
+        "version": "1.0.0",
+        "model_info": null
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "model_usage": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0,
+            "accuracy": 0.0,
+            "submitted": 0.0,
+            "n_runs": 0.0,
+            "n_samples": 0.0,
+            "budget_used": 0.0,
+            "reference_reward": 1.6569931892033907,
+            "reference_accuracy": 1.0,
+            "gap_to_reference": -1.6569931892033907
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T10:02:30.328251Z",
+    "finished_at": "2026-11-14T10:04:08.650258Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T10:02:30.408311Z",
+        "finished_at": "2026-11-14T10:03:36.844066Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T10:03:36.844136Z",
+        "finished_at": "2026-11-14T10:03:36.844216Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T10:03:36.844302Z",
+        "finished_at": "2026-11-14T10:03:36.844955Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T10:03:38.368196Z",
+        "finished_at": "2026-11-14T10:03:54.170936Z"
+    },
+    "step_results": null
+}

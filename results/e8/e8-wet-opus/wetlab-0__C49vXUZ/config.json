@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "tasks/wetlab/wetlab-0",
+        "source": "wetlab"
+    },
+    "trial_name": "wetlab-0__C49vXUZ",
+    "trials_dir": "jobs/e8-wet-opus",
+    "agent": {
+        "name": "claude-code",
+        "model_name": "claude-opus-5-5"
+    },
+    "job_id": "5d37a24b-e810-4691-9c11-25b5518bb5b3"
+}

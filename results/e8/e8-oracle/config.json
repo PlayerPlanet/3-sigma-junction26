@@ -1,0 +1,10 @@
+{
+    "job_name": "e8-oracle",
+    "n_concurrent_trials": 2,
+    "quiet": true,
+    "datasets": [
+        {
+            "path": "tasks/chem"
+        }
+    ]
+}

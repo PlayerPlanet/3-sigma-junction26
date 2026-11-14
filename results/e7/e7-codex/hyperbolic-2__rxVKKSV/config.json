@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "tasks/bayes/hyperbolic-2",
+        "source": "bayes"
+    },
+    "trial_name": "hyperbolic-2__rxVKKSV",
+    "trials_dir": "jobs/e7-codex",
+    "agent": {
+        "name": "codex",
+        "model_name": "openai/gpt-6-luna"
+    },
+    "job_id": "3fbbcd38-8844-4272-88f4-ff8765574962"
+}

@@ -1,0 +1,9 @@
+{
+    "task": {
+        "path": "tasks/chem/chem-1",
+        "source": "chem"
+    },
+    "trial_name": "chem-1__6rq7iiz",
+    "trials_dir": "jobs/e8-oracle",
+    "job_id": "0b31e3a3-6954-47b7-8a59-6d35e2ed47af"
+}

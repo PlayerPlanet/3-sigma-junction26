@@ -1,0 +1,87 @@
+{
+    "id": "f7b6e299-cc90-48d0-abf2-8074ae90a539",
+    "started_at": "2026-11-14T10:02:30.180623",
+    "updated_at": "2026-11-14T10:04:08.655673",
+    "finished_at": "2026-11-14T10:04:08.655673",
+    "n_total_trials": 1,
+    "stats": {
+        "n_completed_trials": 1,
+        "n_errored_trials": 0,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "nop__adhoc": {
+                "n_trials": 1,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "accuracy": 0.0,
+                        "budget_used": 0.0,
+                        "gap_to_reference": -1.6569931892033907,
+                        "n_runs": 0.0,
+                        "n_samples": 0.0,
+                        "reference_accuracy": 1.0,
+                        "reference_reward": 1.6569931892033907,
+                        "reward": 0.0,
+                        "submitted": 0.0
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "0.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "accuracy": {
+                        "0.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "submitted": {
+                        "0.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "n_runs": {
+                        "0.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "n_samples": {
+                        "0.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "budget_used": {
+                        "0.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "reference_reward": {
+                        "1.6569931892033907": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "reference_accuracy": {
+                        "1.0": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    },
+                    "gap_to_reference": {
+                        "-1.6569931892033907": [
+                            "wetlab-1__7dCgQBe"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        },
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null
+    }
+}

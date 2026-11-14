@@ -90,8 +90,12 @@ snippet. `step()` returns the reading(s) and the current posterior, ready for a 
 
 ## Repo conventions
 
-- Do not commit generated files: rendered tasks under `tasks/` (they contain grader tokens),
-  simulation outputs, figures, logs, `data/`, PDFs. `.gitignore` lists them and the README
+- Rendered tasks in `tasks/bayes`, `tasks/chem` and `tasks/wetlab` are tracked so that
+  `harbor run -p tasks/...` works on a fresh clone. Never edit them by hand: change
+  `templates/` and run `scripts/render_tasks.sh`.
+- Every verifier writes one score in [0, 1] to `/logs/verifier/reward.txt` (the organisers'
+  required format) and the full breakdown to `/logs/verifier/details.json`.
+- Do not commit other generated files: simulation outputs, figures, logs, `data/`, PDFs. `.gitignore` lists them and the README
   says how to regenerate each. Data from paid LLM runs is the exception and is tracked.
 - Never commit API keys or salts. Keys come from the environment or a git-ignored `.env`.
 - Heavy computation goes to Modal CPU (`modal run --env 3-sigma-submission ...`, pattern in

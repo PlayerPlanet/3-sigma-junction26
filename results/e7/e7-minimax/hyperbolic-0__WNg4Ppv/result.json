@@ -1,0 +1,135 @@
+{
+    "id": "4ed66bb1-da32-47b4-aa01-64270709b6c2",
+    "task_name": "3-sigma/bayes-hyperbolic-0",
+    "trial_name": "hyperbolic-0__WNg4Ppv",
+    "trial_uri": "file:///root/work/jobs/e7-minimax/hyperbolic-0__WNg4Ppv",
+    "task_id": {
+        "path": "tasks/bayes/hyperbolic-0"
+    },
+    "source": "bayes",
+    "task_checksum": "41244c72cee5292f4057dfe3f23ca63abbb4996be1ca7777905c726b6317e136",
+    "config": {
+        "task": {
+            "path": "tasks/bayes/hyperbolic-0",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bayes"
+        },
+        "trial_name": "hyperbolic-0__WNg4Ppv",
+        "trials_dir": "jobs/e7-minimax",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "opencode",
+            "import_path": null,
+            "model_name": "minimax/MiniMax-M3",
+            "base_url": "https://api.minimax.io/v1",
+            "model_api_key_name": "MINIMAX_API_KEY",
+            "model_api_format": "openai_chat_completions",
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "74599881-19a5-4dc0-9435-a63daef33884",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "MiniMax-M3",
+            "provider": "minimax"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 8624359,
+        "n_cache_tokens": 8427741,
+        "n_output_tokens": 36108,
+        "cost_usd": 0.74454546,
+        "model_usage": {
+            "minimax/MiniMax-M3": {
+                "n_input_tokens": 8624359,
+                "n_cache_tokens": 8427741,
+                "n_output_tokens": 36108,
+                "cost_usd": 0.74454546
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0,
+            "submitted": 1.0,
+            "n_obs": 10.0,
+            "bayes_raw": -0.08954257561395403,
+            "naive": 0.7,
+            "ppc_p": 0.4314214463840399
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T09:38:43.414845Z",
+    "finished_at": "2026-11-14T10:01:13.818327Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T09:38:43.419231Z",
+        "finished_at": "2026-11-14T09:38:52.148585Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T09:38:52.148617Z",
+        "finished_at": "2026-11-14T09:40:31.195001Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T09:40:31.195241Z",
+        "finished_at": "2026-11-14T10:00:58.255450Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T10:00:58.725931Z",
+        "finished_at": "2026-11-14T10:00:59.754232Z"
+    },
+    "step_results": null
+}

@@ -111,6 +111,7 @@ class Grade(BaseHTTPRequestHandler):
                 out = {"reward": g["bayes_reward"], "submitted": 1.0, "n_obs": float(g["n_obs"]),
                        "bayes_raw": max(-10.0, g["bayes_raw"]), "naive": g["naive_reward"],
                        "ppc_p": g["ppc_p"]}
+        out["score"] = min(1.0, max(0.0, float(out["reward"])))  # the single 0-1 score
         body = json.dumps(out).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")

@@ -87,6 +87,10 @@ class Grade(BaseHTTPRequestHandler):
                                                "accuracy", "n_experiments", "reference_reward",
                                                "gap_to_reference")}
                 out["submitted"] = 1.0
+                out["max_reward"] = float(r["max_reward"])
+        # The single 0-1 score: share of the maximum achievable log-score gain for this fault
+        # (0 = the prior or worse, 1 = certain and correct).
+        out["score"] = min(1.0, max(0.0, out["reward"] / out["max_reward"])) if out.get("max_reward") else 0.0
         body = json.dumps(out).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")

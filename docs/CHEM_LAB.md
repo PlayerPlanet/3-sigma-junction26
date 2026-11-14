@@ -144,7 +144,7 @@ harbor run -p tasks/chem/chem-0 -a oracle -y                       # reference v
 concentration)`, `submit_posterior(posterior: {name: prob})`; grader on 8001 behind a per-task
 bearer token). `TASK_SALT` empty = a random salt per trial (a fresh hidden fault each run, not
 recomputable from the task name). The verifier (`tests/test.sh`) fetches `/grade` and writes
-`/logs/verifier/reward.json` with `reward`, `reward_norm`, `design`, `inference`, `accuracy`,
+`/logs/verifier/reward.txt` (one score in [0, 1]) and `/logs/verifier/details.json` with `reward`, `reward_norm`, `design`, `inference`, `accuracy`,
 `n_experiments`, `reference_reward`, `gap_to_reference`, `submitted` (no submission = the
 prior = reward 0). `solution/solve.sh` plays the reference through the MCP tools without access
 to the hidden state. The instruction tells the agent it has a shell with Python, numpy and

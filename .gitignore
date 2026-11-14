@@ -30,11 +30,9 @@ results/e5/**/agent/
 data/*
 !data/sample_rows.jsonl
 
-# Generated: rendered Harbor tasks (contain per-task grader tokens). Rebuild: scripts/render_tasks.sh
-tasks/bayes/
+# Rendered red-team tasks. Rebuild: scripts/render_tasks.sh
 tasks/redteam/
-tasks/chem/
-tasks/wetlab/
+**/__pycache__/
 
 # Generated: deterministic simulation outputs, figures, logs, training data. See README "Regenerate".
 results/e12*.jsonl

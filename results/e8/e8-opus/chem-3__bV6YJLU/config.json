@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "tasks/chem/chem-3",
+        "source": "chem"
+    },
+    "trial_name": "chem-3__bV6YJLU",
+    "trials_dir": "jobs/e8-opus",
+    "agent": {
+        "name": "claude-code",
+        "model_name": "claude-opus-5-5"
+    },
+    "job_id": "8689864c-3e51-4143-940f-70de5d87444f"
+}

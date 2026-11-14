@@ -149,7 +149,66 @@ made it the most expensive model per episode by an order of magnitude.
 
 Figures: `results/fig_e3_decomp_{hyperbolic,location}.png`.
 
-## E4: training a small model on the environment's experience (in progress)
+## E4: training a small model on the environment's experience
+
+Gemma 4 E4B (4B), LoRA, on one A100. Stage 1: supervised fine-tuning on Bayesian-reference
+demonstrations plus the best 30% of Gemma 26B rollouts. Stage 2: GRPO for 300 steps on the
+prediction step, with the exact Bayesian reward. Evaluation: full episodes without tools, seeds
+0-49 per environment, same protocol as E3.
+
+| Model | Hyperbolic | Location | Episodes at zero (hyp / loc) |
+|---|---|---|---|
+| base | 0.000 | 0.007 | 50 / 48 |
+| supervised (SFT) | 0.362 | 0.111 | 26 / 35 |
+| SFT + GRPO | **0.499** | 0.025 | 12 / 47 |
+
+GRPO minus SFT, paired over seeds: hyperbolic **+0.137 [+0.049, +0.225]**, location
+**-0.086 [-0.153, -0.026]**. So training on the reward helps on the binary-outcome task and
+hurts on the continuous one. On hyperbolic the trained 4B model (0.50) is above Claude Opus 5.5
+without tools (0.11, n = 15) and above Claude Code + Opus 5.5 with a shell (0.24, 15 trials).
+
+Two caveats. GRPO trained on prediction prompts only, with experiments already chosen by the
+reference, while the evaluation has the model choose its own experiments; that mismatch may be
+part of the location result. And an earlier evaluation of the GRPO adapter was invalid (the
+adapter was served without the supervised weights it was trained on top of) and has been
+removed from `results/e4.jsonl`; the rows `sft_merged` are the sanity check that the corrected
+serving path reproduces the supervised model (0.372 / 0.095).
+
+## E7: frontier agents with code execution (Harbor)
+
+Ten Bayes tasks, three attempts each, a shell with Python allowed. Job folders in
+`results/e7/`. The harnesses differ between rows, so rows confound model and harness.
+
+| Agent | Hyperbolic | Location | Trials at zero (hyp / loc) |
+|---|---|---|---|
+| Bayesian reference (oracle solution) | 0.995 | 0.959 | - |
+| Claude Code + Opus 5.5 | 0.237 | 0.772 | 7/15, 0/15 |
+| Codex + GPT-6 Luna | 0.062 | 0.117 | 12/15, 9/15 |
+| OpenCode + MiniMax-M3 (24 of 30 trials, sweep unfinished) | 0.014 | 0.202 | 13/14, 7/10 |
+
+For comparison, random experiments with exact inference score 0.54 / 0.75 (E1). Opus with code
+reaches that level on location and stays far below it on hyperbolic.
+
+## E8: held-out environments
+
+**Chemistry lab** (`tasks/chem`, seven discrete faults, closed-form likelihood). Job folders in
+`results/e8/`. Gap is the agent's log-score reward minus the reference's on the same trial.
+
+| Agent | Trials | Mean gap to reference (nats) | Fault identified |
+|---|---|---|---|
+| Claude Code + Opus 5.5 | 15 | +0.006 | 87% |
+| Codex + GPT-5.6 Terra | 15 | -0.003 | 87% |
+
+Coding agents solve this environment: with a small discrete hypothesis set and a formula for
+the likelihood they write the exact update themselves.
+
+**Wet lab** (`tasks/wetlab`, six mechanisms, stochastic kinetics, limited stock). The reference
+is approximate (simulation-based). Calibration over 300 seeds: reference 1.352 nats and 82%
+correct; an adaptive ODE-based "competent coder" baseline 1.060 and 74%; random experiments
+0.651 and 53%. First two Claude Code + Opus 5.5 trials: rewards 1.787 and 1.617 against
+reference 1.791 and 1.012 on the same trials, both mechanisms identified. The sweep was still
+running when this was written; two trials do not settle whether the wet lab separates Opus from
+the reference.
 
 ## E5: the same environment as Harbor tasks, through a real agent harness
 

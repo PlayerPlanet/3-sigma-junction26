@@ -1,0 +1,11 @@
+{
+    "task": {
+        "path": "tasks/wetlab/wetlab-1"
+    },
+    "trial_name": "wetlab-1__7dCgQBe",
+    "trials_dir": "jobs/e8-wet-nop",
+    "agent": {
+        "name": "nop"
+    },
+    "job_id": "f7b6e299-cc90-48d0-abf2-8074ae90a539"
+}

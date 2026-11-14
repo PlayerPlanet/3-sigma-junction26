@@ -1,0 +1,16 @@
+{
+    "task": {
+        "path": "tasks/bayes/hyperbolic-4",
+        "source": "bayes"
+    },
+    "trial_name": "hyperbolic-4__RN4ZLtH",
+    "trials_dir": "jobs/e7-minimax",
+    "agent": {
+        "name": "opencode",
+        "model_name": "minimax/MiniMax-M3",
+        "base_url": "https://api.minimax.io/v1",
+        "model_api_key_name": "MINIMAX_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "74599881-19a5-4dc0-9435-a63daef33884"
+}

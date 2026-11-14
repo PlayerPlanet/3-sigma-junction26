@@ -1,0 +1,135 @@
+{
+    "id": "f64d6458-5013-40d5-b73e-3a5a2f302e16",
+    "task_name": "3-sigma/bayes-location-3",
+    "trial_name": "location-3__izhGQNs",
+    "trial_uri": "file:///root/work/jobs/e7-codex/location-3__izhGQNs",
+    "task_id": {
+        "path": "tasks/bayes/location-3"
+    },
+    "source": "bayes",
+    "task_checksum": "f6333d66ddabb8da0ba35b9b75dc2d32a24b57d0480b40293e3548ff931d1721",
+    "config": {
+        "task": {
+            "path": "tasks/bayes/location-3",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bayes"
+        },
+        "trial_name": "location-3__izhGQNs",
+        "trials_dir": "jobs/e7-codex",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "codex",
+            "import_path": null,
+            "model_name": "openai/gpt-6-luna",
+            "base_url": null,
+            "model_api_key_name": null,
+            "model_api_format": null,
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "3fbbcd38-8844-4272-88f4-ff8765574962",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "codex",
+        "version": "0.169.0",
+        "model_info": {
+            "name": "gpt-6-luna",
+            "provider": "openai"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 86480,
+        "n_cache_tokens": 82304,
+        "n_output_tokens": 1118,
+        "cost_usd": 0.00179964,
+        "model_usage": {
+            "openai/gpt-6-luna": {
+                "n_input_tokens": 86480,
+                "n_cache_tokens": 82304,
+                "n_output_tokens": 1118,
+                "cost_usd": 0.00179964
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0,
+            "submitted": 1.0,
+            "n_obs": 10.0,
+            "bayes_raw": -0.10833224731515098,
+            "naive": -0.05448715214783495,
+            "ppc_p": 0.9850374064837906
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T07:01:50.200342Z",
+    "finished_at": "2026-11-14T07:07:25.180851Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T07:01:50.218818Z",
+        "finished_at": "2026-11-14T07:02:01.024362Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T07:02:01.024405Z",
+        "finished_at": "2026-11-14T07:06:24.772140Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T07:06:24.772484Z",
+        "finished_at": "2026-11-14T07:06:55.545021Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-14T07:06:56.335097Z",
+        "finished_at": "2026-11-14T07:06:58.906151Z"
+    },
+    "step_results": null
+}

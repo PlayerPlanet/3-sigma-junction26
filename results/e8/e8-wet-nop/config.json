@@ -1,0 +1,15 @@
+{
+    "job_name": "e8-wet-nop",
+    "n_concurrent_trials": 1,
+    "quiet": true,
+    "agents": [
+        {
+            "name": "nop"
+        }
+    ],
+    "tasks": [
+        {
+            "path": "tasks/wetlab/wetlab-1"
+        }
+    ]
+}

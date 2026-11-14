@@ -1,0 +1,367 @@
+{
+    "id": "8689864c-3e51-4143-940f-70de5d87444f",
+    "started_at": "2026-11-14T08:39:12.738524",
+    "updated_at": "2026-11-14T09:05:38.268264",
+    "finished_at": "2026-11-14T09:05:38.268264",
+    "n_total_trials": 15,
+    "stats": {
+        "n_completed_trials": 15,
+        "n_errored_trials": 0,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "claude-code__claude-opus-5-5__chem": {
+                "n_trials": 15,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "accuracy": 0.8666666666666667,
+                        "design": 1.6404411203993663,
+                        "gap_to_reference": 0.005793085937744199,
+                        "inference": -0.00857546618333024,
+                        "n_experiments": 8.0,
+                        "reference_reward": 1.626072568278292,
+                        "reward": 1.631865654216036,
+                        "reward_norm": 1.0199160338850224,
+                        "submitted": 1.0
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "2.0685170865216103": [
+                            "chem-0__brdNCEP",
+                            "chem-4__xWPXay9"
+                        ],
+                        "1.2872856762708098": [
+                            "chem-1__MDc8zNL"
+                        ],
+                        "2.06851708652161": [
+                            "chem-2__e2h9dUA",
+                            "chem-1__gytTH65"
+                        ],
+                        "1.3543457232249962": [
+                            "chem-3__8EhTtx2"
+                        ],
+                        "0.9625558059232943": [
+                            "chem-4__g2fcXye"
+                        ],
+                        "1.0947013537207362": [
+                            "chem-0__sZQktuY"
+                        ],
+                        "2.073554245510948": [
+                            "chem-2__B6xa6oJ",
+                            "chem-3__ia5fd5V"
+                        ],
+                        "2.063454426052386": [
+                            "chem-3__bV6YJLU"
+                        ],
+                        "0.0": [
+                            "chem-0__6tGJRKs"
+                        ],
+                        "1.8616834626419638": [
+                            "chem-1__cuvNgSb"
+                        ],
+                        "2.072548841505986": [
+                            "chem-2__uh5zNbg"
+                        ],
+                        "1.3602326867920314": [
+                            "chem-4__BBwbnoT"
+                        ]
+                    },
+                    "reward_norm": {
+                        "1.2928231790760063": [
+                            "chem-0__brdNCEP",
+                            "chem-4__xWPXay9"
+                        ],
+                        "0.8045535476692561": [
+                            "chem-1__MDc8zNL"
+                        ],
+                        "1.292823179076006": [
+                            "chem-2__e2h9dUA",
+                            "chem-1__gytTH65"
+                        ],
+                        "0.8464660770156226": [
+                            "chem-3__8EhTtx2"
+                        ],
+                        "0.6015973787020589": [
+                            "chem-4__g2fcXye"
+                        ],
+                        "0.6841883460754601": [
+                            "chem-0__sZQktuY"
+                        ],
+                        "1.2959714034443426": [
+                            "chem-2__B6xa6oJ",
+                            "chem-3__ia5fd5V"
+                        ],
+                        "1.289659016282741": [
+                            "chem-3__bV6YJLU"
+                        ],
+                        "0.0": [
+                            "chem-0__6tGJRKs"
+                        ],
+                        "1.1635521641512274": [
+                            "chem-1__cuvNgSb"
+                        ],
+                        "1.2953430259412413": [
+                            "chem-2__uh5zNbg"
+                        ],
+                        "0.8501454292450196": [
+                            "chem-4__BBwbnoT"
+                        ]
+                    },
+                    "design": {
+                        "2.075918427794219": [
+                            "chem-0__brdNCEP"
+                        ],
+                        "1.2881418446711874": [
+                            "chem-1__MDc8zNL"
+                        ],
+                        "2.0794413690228724": [
+                            "chem-2__e2h9dUA"
+                        ],
+                        "1.3550449449196955": [
+                            "chem-3__8EhTtx2"
+                        ],
+                        "0.9854008303330397": [
+                            "chem-4__g2fcXye"
+                        ],
+                        "1.0952150254537059": [
+                            "chem-0__sZQktuY"
+                        ],
+                        "2.0794131622086005": [
+                            "chem-1__gytTH65"
+                        ],
+                        "2.079441475098464": [
+                            "chem-2__B6xa6oJ"
+                        ],
+                        "2.0792037027604215": [
+                            "chem-3__bV6YJLU"
+                        ],
+                        "2.0794415160049637": [
+                            "chem-4__xWPXay9"
+                        ],
+                        "0.007577270226766242": [
+                            "chem-0__6tGJRKs"
+                        ],
+                        "1.8780474099400624": [
+                            "chem-1__cuvNgSb"
+                        ],
+                        "2.0794415365582894": [
+                            "chem-2__uh5zNbg"
+                        ],
+                        "2.0794008439985263": [
+                            "chem-3__ia5fd5V"
+                        ],
+                        "1.3654874469996796": [
+                            "chem-4__BBwbnoT"
+                        ]
+                    },
+                    "inference": {
+                        "-0.007401341272608613": [
+                            "chem-0__brdNCEP"
+                        ],
+                        "-0.0008561684003775549": [
+                            "chem-1__MDc8zNL"
+                        ],
+                        "-0.01092428250126233": [
+                            "chem-2__e2h9dUA"
+                        ],
+                        "-0.0006992216946994298": [
+                            "chem-3__8EhTtx2"
+                        ],
+                        "-0.022845024409745507": [
+                            "chem-4__g2fcXye"
+                        ],
+                        "-0.0005136717329696783": [
+                            "chem-0__sZQktuY"
+                        ],
+                        "-0.010896075686990562": [
+                            "chem-1__gytTH65"
+                        ],
+                        "-0.00588722958751628": [
+                            "chem-2__B6xa6oJ"
+                        ],
+                        "-0.01574927670803554": [
+                            "chem-3__bV6YJLU"
+                        ],
+                        "-0.010924429483353638": [
+                            "chem-4__xWPXay9"
+                        ],
+                        "-0.007577270226766242": [
+                            "chem-0__6tGJRKs"
+                        ],
+                        "-0.016363947298098452": [
+                            "chem-1__cuvNgSb"
+                        ],
+                        "-0.006892695052303377": [
+                            "chem-2__uh5zNbg"
+                        ],
+                        "-0.005846598487578197": [
+                            "chem-3__ia5fd5V"
+                        ],
+                        "-0.005254760207648198": [
+                            "chem-4__BBwbnoT"
+                        ]
+                    },
+                    "accuracy": {
+                        "1.0": [
+                            "chem-0__brdNCEP",
+                            "chem-1__MDc8zNL",
+                            "chem-2__e2h9dUA",
+                            "chem-3__8EhTtx2",
+                            "chem-4__g2fcXye",
+                            "chem-1__gytTH65",
+                            "chem-2__B6xa6oJ",
+                            "chem-3__bV6YJLU",
+                            "chem-4__xWPXay9",
+                            "chem-1__cuvNgSb",
+                            "chem-2__uh5zNbg",
+                            "chem-3__ia5fd5V",
+                            "chem-4__BBwbnoT"
+                        ],
+                        "0.0": [
+                            "chem-0__sZQktuY",
+                            "chem-0__6tGJRKs"
+                        ]
+                    },
+                    "n_experiments": {
+                        "10.0": [
+                            "chem-0__brdNCEP",
+                            "chem-1__MDc8zNL",
+                            "chem-3__8EhTtx2",
+                            "chem-4__g2fcXye",
+                            "chem-0__sZQktuY",
+                            "chem-1__gytTH65",
+                            "chem-3__bV6YJLU",
+                            "chem-0__6tGJRKs",
+                            "chem-1__cuvNgSb",
+                            "chem-4__BBwbnoT"
+                        ],
+                        "3.0": [
+                            "chem-2__e2h9dUA",
+                            "chem-2__uh5zNbg"
+                        ],
+                        "2.0": [
+                            "chem-2__B6xa6oJ"
+                        ],
+                        "6.0": [
+                            "chem-4__xWPXay9",
+                            "chem-3__ia5fd5V"
+                        ]
+                    },
+                    "reference_reward": {
+                        "2.0731966726916156": [
+                            "chem-0__brdNCEP"
+                        ],
+                        "1.2869552669227173": [
+                            "chem-1__MDc8zNL"
+                        ],
+                        "2.078566158643882": [
+                            "chem-2__e2h9dUA",
+                            "chem-2__B6xa6oJ",
+                            "chem-4__xWPXay9",
+                            "chem-2__uh5zNbg",
+                            "chem-3__ia5fd5V"
+                        ],
+                        "1.3545857902779386": [
+                            "chem-3__8EhTtx2"
+                        ],
+                        "1.0047983344834823": [
+                            "chem-4__g2fcXye"
+                        ],
+                        "0.8721155174164854": [
+                            "chem-0__sZQktuY"
+                        ],
+                        "2.078534725505982": [
+                            "chem-1__gytTH65"
+                        ],
+                        "2.0783238018799444": [
+                            "chem-3__bV6YJLU"
+                        ],
+                        "-0.005924649338333143": [
+                            "chem-0__6tGJRKs"
+                        ],
+                        "1.8917824732146467": [
+                            "chem-1__cuvNgSb"
+                        ],
+                        "1.3638897979004885": [
+                            "chem-4__BBwbnoT"
+                        ]
+                    },
+                    "gap_to_reference": {
+                        "-0.004679586170005301": [
+                            "chem-0__brdNCEP"
+                        ],
+                        "0.00033040934809247524": [
+                            "chem-1__MDc8zNL"
+                        ],
+                        "-0.010049072122272129": [
+                            "chem-2__e2h9dUA"
+                        ],
+                        "-0.00024006705294232766": [
+                            "chem-3__8EhTtx2"
+                        ],
+                        "-0.042242528560188064": [
+                            "chem-4__g2fcXye"
+                        ],
+                        "0.22258583630425077": [
+                            "chem-0__sZQktuY"
+                        ],
+                        "-0.010017638984372024": [
+                            "chem-1__gytTH65"
+                        ],
+                        "-0.00501191313293381": [
+                            "chem-2__B6xa6oJ",
+                            "chem-3__ia5fd5V"
+                        ],
+                        "-0.014869375827558429": [
+                            "chem-3__bV6YJLU"
+                        ],
+                        "-0.010049072122271685": [
+                            "chem-4__xWPXay9"
+                        ],
+                        "0.005924649338333143": [
+                            "chem-0__6tGJRKs"
+                        ],
+                        "-0.030099010572682827": [
+                            "chem-1__cuvNgSb"
+                        ],
+                        "-0.006017317137895883": [
+                            "chem-2__uh5zNbg"
+                        ],
+                        "-0.003657111108457123": [
+                            "chem-4__BBwbnoT"
+                        ]
+                    },
+                    "submitted": {
+                        "1.0": [
+                            "chem-0__brdNCEP",
+                            "chem-1__MDc8zNL",
+                            "chem-2__e2h9dUA",
+                            "chem-3__8EhTtx2",
+                            "chem-4__g2fcXye",
+                            "chem-0__sZQktuY",
+                            "chem-1__gytTH65",
+                            "chem-2__B6xa6oJ",
+                            "chem-3__bV6YJLU",
+                            "chem-4__xWPXay9",
+                            "chem-0__6tGJRKs",
+                            "chem-1__cuvNgSb",
+                            "chem-2__uh5zNbg",
+                            "chem-3__ia5fd5V",
+                            "chem-4__BBwbnoT"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        },
+        "n_input_tokens": 6325447,
+        "n_cache_tokens": 6237336,
+        "n_output_tokens": 59585,
+        "cost_usd": 3.1415512
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "tasks/chem/chem-1",
+        "source": "chem"
+    },
+    "trial_name": "chem-1__wvTVXBV",
+    "trials_dir": "jobs/e8-terra56",
+    "agent": {
+        "name": "codex",
+        "model_name": "openai/gpt-5.6-terra"
+    },
+    "job_id": "b5f88b4a-0e22-46e9-a70f-f6d1edd3b199"
+}
