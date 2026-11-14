@@ -95,7 +95,7 @@ Not tracked, because it can be regenerated:
 |---|---|
 | Rendered Harbor tasks (`tasks/bayes`, `chem`, `wetlab`, `redteam`) | `./scripts/render_tasks.sh` |
 | E1/E2 policy grid (`results/e12.jsonl`) | `modal run experiments/batch.py --seeds 400 --out results/e12.jsonl` |
-| E6 attack data (`results/e6_*.jsonl`) | `modal run experiments/e6_stealth.py --seeds 400 --out results/e6_stealth.jsonl` (and the E6a script in `experiments/`) |
+| E6 attack data (`results/e6_*.jsonl`) | `modal run experiments/e6_stealth.py --seeds 400 --out results/e6_stealth.jsonl`; the no-information attacks are policies in `bayesenv/policies.py`, run through `experiments/batch.py --policies ... --seed0 2000 --out results/e6_attacks.jsonl` |
 | Figures (`results/fig_*.png`) | `python experiments/plots.py` |
 | Chemistry and wet lab calibration | `python scripts/chem_calibrate.py`, `python scripts/wetlab_calibrate.py` |
 | Training rows (`data/`, `results/sft/`) | `python scripts/gen_training_data.py --specs specs/*.yaml --instances N --out data/v1` |
