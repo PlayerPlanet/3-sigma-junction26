@@ -8,11 +8,6 @@ build
 .venv
 venv
 
-# MLflow
-mlruns/
-mlflow.db
-*.sqlite
-
 # IDE
 .vscode
 .idea
