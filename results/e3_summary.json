@@ -1,0 +1,76 @@
+{
+ "hyperbolic": {
+  "claude-opus-5-5": {
+   "n": 3,
+   "parsed": 1.0,
+   "n_obs": 10.0,
+   "naive": 0.989,
+   "bayes": 0.27,
+   "agent_raw": 0.167,
+   "post_own": 0.98,
+   "oracle": 0.996,
+   "ppc_flag": 0.0,
+   "tok_out": 4209.667,
+   "inference_loss": 0.813,
+   "design_loss": 0.016
+  },
+  "gemini-4-hydrogen": {
+   "n": 1,
+   "parsed": 1.0,
+   "n_obs": 10.0,
+   "naive": 1.0,
+   "bayes": 0.405,
+   "agent_raw": 0.405,
+   "post_own": 0.766,
+   "oracle": 0.991,
+   "ppc_flag": 0.0,
+   "tok_out": 2556.0,
+   "inference_loss": 0.361,
+   "design_loss": 0.225
+  },
+  "gemma-4-26b-a4b-it": {
+   "n": 43,
+   "parsed": 1.0,
+   "n_obs": 9.953,
+   "naive": 0.771,
+   "bayes": 0.001,
+   "agent_raw": -0.966,
+   "post_own": 0.835,
+   "oracle": 0.933,
+   "ppc_flag": 0.093,
+   "tok_out": 2640.721,
+   "inference_loss": 1.801,
+   "design_loss": 0.098
+  }
+ },
+ "location": {
+  "claude-opus-5-5": {
+   "n": 2,
+   "parsed": 1.0,
+   "n_obs": 10.0,
+   "naive": -0.165,
+   "bayes": 0.0,
+   "agent_raw": -1.0,
+   "post_own": 0.274,
+   "oracle": 0.967,
+   "ppc_flag": 0.0,
+   "tok_out": 4197.0,
+   "inference_loss": 1.274,
+   "design_loss": 0.693
+  },
+  "gemma-4-26b-a4b-it": {
+   "n": 45,
+   "parsed": 0.978,
+   "n_obs": 9.889,
+   "naive": -0.44,
+   "bayes": 0.012,
+   "agent_raw": -0.91,
+   "post_own": 0.861,
+   "oracle": 0.987,
+   "ppc_flag": 0.067,
+   "tok_out": 2563.467,
+   "inference_loss": 1.771,
+   "design_loss": 0.126
+  }
+ }
+}
