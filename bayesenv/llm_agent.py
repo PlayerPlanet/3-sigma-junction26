@@ -34,8 +34,10 @@ PROVIDERS = {
     "gemini": ("https://generativelanguage.googleapis.com/v1beta/openai/", "GDM_API_KEY", 300),
     "nvidia": ("https://integrate.api.nvidia.com/v1", "NVIDIA_API_KEY", 2000),
     "minimax": ("https://api.minimax.io/v1", "MINIMAX_API_KEY", 1500),
-    "anthropic": (None, "ANTHROPIC_API_KEY", 600),
+    "anthropic": (None, "ANTHROPIC_API_KEY", 1500),
     "verda": ("https://inference.verda.com/v1", "VERDA_KIMI_API_KEY", None),  # billed to Verda credits
+    "local": ("http://localhost:8100/v1", "VLLM_LOCAL_KEY", None),  # trainer VM eval server
+    "nemotron": ("http://95.133.254.110:8000/v1", "VERDA_VLLM_API_KEY", None),  # Verda VM
 }
 BUDGET_FILE = Path("results/request_budget.json")
 

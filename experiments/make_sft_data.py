@@ -65,7 +65,8 @@ def oracle_conversation(env_name: str, seed: int) -> dict:
     return {"messages": msgs, "source": "oracle", "env": env_name, "seed": seed}
 
 
-def rft_conversations(path: str, model: str, min_seed: int, top: float) -> list[dict]:
+def rft_conversations(path: str, model: str, min_seed: int, top: float,
+                      relabel: bool = False) -> list[dict]:
     rows = [json.loads(l) for l in open(path)]
     rows = [r for r in rows if r["model"] == model and r["seed"] >= min_seed and r["parsed"]]
     out = []
@@ -86,9 +87,20 @@ def rft_conversations(path: str, model: str, min_seed: int, top: float) -> list[
             msgs.append({"role": "user", "content":
                          f"The experiment phase is over. Predict for these {task.n_eval} designs, in order: "
                          f"{json.dumps(np.round(task.eval_x, 3).tolist())}\nAnswer with the JSON list only."})
-            msgs.append({"role": "assistant", "content": t[-1]})
-            out.append({"messages": msgs, "source": "rft", "env": env_name, "seed": r["seed"],
-                        "bayes_raw": r["bayes_raw"]})
+            if relabel:
+                # Hindsight Bayesian relabelling: keep the model's own experiments, replace its
+                # answer with the exact posterior predictive given ITS OWN observations.
+                post = Posterior(task.env, np.random.default_rng([r["seed"], 7]), n=40_000)
+                if r["outcomes"]:
+                    post.update(np.asarray(r["designs"], float), np.asarray(r["outcomes"], float))
+                pred = post.predictive(task.eval_x)
+                ans = (np.round(pred["p"], 3).tolist() if task.env.family == "bernoulli"
+                       else np.round(np.stack([pred["mean"], pred["sd"]], 1), 3).tolist())
+                msgs.append({"role": "assistant", "content": json.dumps(ans)})
+            else:
+                msgs.append({"role": "assistant", "content": t[-1]})
+            out.append({"messages": msgs, "source": "relabel" if relabel else "rft", "env": env_name,
+                        "seed": r["seed"], "bayes_raw": r["bayes_raw"]})
     return out
 
 

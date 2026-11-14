@@ -19,6 +19,9 @@ Description=vLLM Nemotron 3.5 Super VL
 After=network-online.target
 [Service]
 Environment=HF_HUB_ENABLE_HF_TRANSFER=1
+# FlashInfer JIT-compiles sm_120 kernels with parallel nvcc; uncapped it OOMs 90 GB RAM.
+Environment=MAX_JOBS=4
+Environment=FLASHINFER_NVCC_THREADS=1
 Environment=CUDA_HOME=${CUDA_HOME}
 Environment=PATH=${CUDA_HOME}/bin:/opt/vllm/bin:/usr/bin:/bin
 ExecStartPre=/usr/bin/nvidia-smi conf-compute -srs 1

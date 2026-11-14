@@ -1,0 +1,124 @@
+# Bayes for better RL environments: experiment report
+
+**Team 3-Sigma · Junction 2026.** Branch `bayes-experiments`. All numbers are reproducible from
+the commands below; raw per-episode data is in `results/`.
+
+## Claim
+
+For agent environments where the data-generating model is known (experimental design, model
+discovery, scientific simulators), grading with the **exact Bayesian posterior** makes a better RL
+environment than grading against sampled outcomes (BoxingGym-style), on every axis of the
+AfterQuery rubric:
+
+| Rubric axis | What Bayesian grading adds | Evidence |
+|---|---|---|
+| The gap (30) | Lower-variance reward, so the frontier-vs-reference gap is reproducible in a few seeds | E1 |
+| Meaningful difficulty (30) | Each agent's loss splits exactly into *bad experiments* vs *bad belief updating* | E3 |
+| Reward integrity (25) | Do-nothing = 0 by construction; miscalibration is penalised; a posterior predictive check flags agents that know more than their experiments could tell them | E1, E2 |
+| Craft (15) | Proper scoring rule against the true distribution, no outcome-sampling noise to explain away | E1 |
+
+## Setup
+
+* **Environments** (`bayesenv/envs.py`), ported from BoxingGym (MIT) with a per-episode RNG:
+  *hyperbolic discounting* (binary choices, 2 parameters) and *location finding* (continuous
+  signal, 2-D source). 10 experiments per episode, then predictive distributions for 30 hidden
+  evaluation designs revealed only after the experiment phase.
+* **Graders** (`bayesenv/task.py`):
+  * *naive* (BoxingGym-style): point predictions vs one sampled outcome per design (accuracy /
+    relative MSE). Also reported baseline-subtracted per seed (minus the do-nothing score on the
+    same outcome draw), the fair analogue of BoxingGym's standardised error.
+  * *Bayesian*: expected log score of the submitted predictive under the **true** parameters,
+    normalised so the prior predictive scores 0 and knowing the parameters scores 1, clipped to [0, 1].
+  * *Posterior predictive ceiling check*: T = agent score minus the exact posterior predictive's
+    score given the agent's **own** data. Under "the agent only used its experiments", the true
+    parameters are a posterior draw, so T(θ*) should look like T(θ̃), θ̃ ~ posterior. p-value =
+    P(T(θ̃) ≥ T(θ*)).
+* **Policies** (`bayesenv/policies.py`): Bayesian reference (EIG-greedy design + exact
+  posterior), random design, stop-early (1 experiment), do-nothing (prior predictive), constant
+  hedge, overconfident (reference experiments, sharpened predictions), nearest-neighbour
+  (overfitting), and two **cheaters** that read θ* through a side channel (full, and blended 30%
+  into an honest prediction).
+
+## E1: grader reliability (7,200 episodes, 400 seeds × 9 policies × 2 envs, Modal CPU fan-out)
+
+Mean reward (naive raw / Bayesian):
+
+| Policy | Hyperbolic naive | Hyperbolic **Bayes** | Location naive | Location **Bayes** |
+|---|---|---|---|---|
+| Bayesian reference | 0.981 | **0.949** | 0.695 | **0.990** |
+| random design | 0.954 | 0.539 | 0.549 | 0.753 |
+| stop early (1 exp.) | 0.947 | 0.467 | 0.125 | 0.216 |
+| **do nothing** | **0.919** | **0.000** | 0.000 | 0.000 |
+| **overconfident** | **0.981 (= reference)** | 0.520 | **0.695 (= reference)** | **0.000** |
+| constant hedge | 0.678 | 0.002 | −1.468 | 0.004 |
+| nearest neighbour | 0.767 | 0.009 | −0.465 | 0.015 |
+
+Seeds needed to show reference > policy (paired, α=0.05, power 0.8):
+
+| Comparison | Hyperbolic naive (baseline-subtracted) | Hyperbolic **Bayes** | Location naive | Location **Bayes** |
+|---|---|---|---|---|
+| reference > random design | 18 | **4** | 14 | **5** |
+| reference > stop early | 13 | **3** | 2 | **1** |
+| reference > overconfident | **never (tie)** | **4** | **never (tie)** | **1** |
+| reference > nearest neighbour | 2 | 1 | 6 | 1 |
+
+Findings:
+1. **Doing nothing scores 0.92 under naive accuracy** on hyperbolic discounting (the reference
+   scores 0.98), a direct rubric violation ("doing nothing earns little or no credit"). Bayesian
+   grading gives it exactly 0 by construction.
+2. **Miscalibration is invisible to the naive grader**: the overconfident policy ties the
+   reference, so no number of seeds separates them; Bayesian grading separates them in 1–4 seeds.
+3. With baseline subtraction the naive grader can be repaired for (1), but its gap is then small
+   and noisy: **3–4× more seeds** for the same statistical power. Judges rerun 3 agent runs.
+4. Under Bayesian grading nothing ties or beats the reference; under naive grading, overconfident
+   ties it in both environments.
+
+Figures: `results/fig_e1_forest_{hyperbolic,location}.png`.
+
+## E2: catching reward hacking through side channels (posterior predictive check)
+
+Flag rate at p < 0.05 (honest policies should be ≈ 5%):
+
+| Policy | Hyperbolic | Location (80k-particle grader) |
+|---|---|---|
+| reference | 6.0% | 5.8% |
+| random design | 4.5% | 6.2% |
+| constant hedge | 4.0% | 4.8% |
+| nearest neighbour | 4.5% | 5.0% |
+| **cheater, 30% leak** | 19.0% | **87.8%** |
+| **cheater, full leak** | 19.5% | **88.0%** |
+
+Combining 50 episodes (Fisher), both cheaters are detected with p ≈ 0 in both environments,
+while honest policies' combined p-values are uniform (`results/fig_e2_ppc_ecdf_*.png`: honest
+ECDF inside the simultaneous 95% uniform band, cheaters far outside).
+
+Notes: binary outcomes carry little information, so single-episode power on hyperbolic is low
+(19%); the check is meant to run over a judge's batch of episodes. A first run with a 20k-particle
+grader over-flagged the reference on location (10.2%): the grader's own Monte Carlo error must be
+well below any agent's, fixed with 80k particles (5.8%).
+
+The check needs no knowledge of *how* the agent cheats: it only asks whether the agent's
+predictions are better than its own evidence allows.
+
+## E3: LLM agents: where do they fail? (in progress)
+
+_Filled in from `results/e3_summary.json` when the runs finish._
+
+## E4: training a small model on the environment's experience (in progress)
+
+## Compute and burn
+
+* Modal: Gemma 4 26B-A4B on one RTX PRO 6000 (vLLM, always warm) for agent rollouts; CPU
+  fan-out (≤ 40 containers) for the 7,200-episode grid and 1,200 reference demonstrations.
+* Verda: Nemotron 3.5 Super VL (NVFP4) on an RTX PRO 6000 (confidential-computing VM); A100 80GB
+  trainer for SFT + GRPO; Inference API for Kimi K3.1 Pro.
+* Spend is tracked against a linear burn-to-zero line in `results/burn_ledger.csv`.
+
+## Reproduce
+
+```bash
+modal run --env 3-sigma-submission experiments/batch.py --seeds 400 --out results/e12.jsonl
+python experiments/analyze_e12.py results/e12.jsonl results/e12_summary.json
+python experiments/llm_runs.py --provider modal --model gemma-4-26b-a4b-it --seeds 0:200 --concurrency 64
+python experiments/plots.py
+```
