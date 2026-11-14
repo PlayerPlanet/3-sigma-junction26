@@ -14,7 +14,7 @@ mkdir -p logs results
 
 if [ ! -f results/.ablation_train ]; then
   $PY train/grpo_predict.py --prompts results/sft/grpo_prompts.jsonl --model $MODEL \
-     --out /root/ckpt/grpo_base --steps 300 > logs/grpo_base.log 2>&1
+     --out /root/ckpt/grpo_base --steps 200 > logs/grpo_base.log 2>&1
   touch results/.ablation_train
 fi
 if [ ! -f results/.ablation_eval ]; then

@@ -1,0 +1,26 @@
+✓ Initialized. View run at 
+https://modal.com/apps/playerplanet/3-sigma-submission/ap-Kf1wxDi8eV9kRrzr6PfrU
+X
+✓ Created objects.
+├── ✓ Uploaded 
+│   C:\Users\Käyttäjä\documents\projects\hackathons\3-sigma-junction26\experime
+│   nts\batch.py
+├── ✓ Uploaded PythonPackage:bayesenv
+└── ✓ Created Function run_chunk.
+500/6400 episodes
+1000/6400 episodes
+1500/6400 episodes
+2000/6400 episodes
+2500/6400 episodes
+3000/6400 episodes
+3500/6400 episodes
+4000/6400 episodes
+4500/6400 episodes
+5000/6400 episodes
+5500/6400 episodes
+6000/6400 episodes
+done: 6400 episodes -> results/e6_attacks.jsonl
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/playerplanet/3-sigma-submission/ap-Kf1wxDi8eV9kRrzr6PfrU
+X
