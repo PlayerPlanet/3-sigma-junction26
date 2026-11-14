@@ -168,6 +168,109 @@ exactly 0: within the full tool-using harness, its predictions were never better
 predictive, while naive accuracy on hyperbolic (0.60–0.87 per trial) would have suggested
 competent behaviour. The finding from E3 carries over unchanged to the harness the judges run.
 
+## E6: does the Bayesian grader stop reward hacking?
+
+**Why it should (theory).** Write S(q; θ) for the expected log score of a submitted predictive q
+when the true parameters are θ (this is exactly what the grader computes: an expectation, so
+there is no lucky outcome draw to exploit).
+
+1. *Strict propriety.* For a fixed θ*, S(q; θ*) is uniquely maximised by the true predictive
+   p(·|θ*) (Gibbs' inequality). Sharpening, hedging, rounding or formatting tricks can only
+   lower the expected reward.
+2. *Information bound.* Let D be the data the agent's own experiments produced. For any
+   submission q that is a function of D only, E_{θ,D}[S(q; θ)] ≤ E_{θ,D}[S(p(·|D); θ)]: the
+   exact posterior predictive is Bayes-optimal (within the submission family: moment matching
+   for the Gaussian case). So **no strategy that uses only legitimate information beats the
+   reference on average**, however clever it is about the scoring rule.
+3. *Hence any systematic win is a leak.* An agent that beats the posterior predictive of its
+   own data, on average, must know something about θ* its experiments did not tell it. The
+   posterior predictive check tests exactly this: under "only its own data", θ* is a posterior
+   draw, so T(θ*) is exchangeable with T(θ̃), θ̃ ~ p(θ|D), and its p-value is uniform.
+
+Do-nothing scoring 0 and miscalibration costing reward follow from (1); (2) and (3) are what
+the experiments below check, against attackers that try hard.
+
+**E6a: attacks with no extra information** (400 fresh seeds × 2 envs, Modal CPU):
+Reward minus the reference's on the same seeds, 95% paired-bootstrap CI.
+
+| Attack | Hyperbolic | Location | Beats reference per episode (hyp / loc) |
+|---|---|---|---|
+| do nothing (prior predictive) | −0.955 [−0.964, −0.944] | −0.989 [−0.992, −0.987] | 0% / 0% |
+| reference experiments, then act certain (plug in the MAP) | −0.116 [−0.139, −0.094] | −0.022 [−0.031, −0.015] | 43% / 27% |
+| lottery ticket: plug in one posterior draw | −0.054 [−0.069, −0.039] | −0.017 [−0.026, −0.010] | 45% / 28% |
+| sharpen the predictive ×2 | −0.221 [−0.240, −0.203] | −0.000 [−0.001, +0.001] | 1% / 55% |
+| sharpen ×5 | −0.325 [−0.352, −0.299] | −0.001 [−0.002, +0.000] | 2% / 50% |
+| blunt (hedge) ×2 | −0.640 [−0.667, −0.613] | −0.562 [−0.579, −0.545] | 0% / 0% |
+| spend the whole budget on one design | −0.825 [−0.850, −0.799] | −0.708 [−0.729, −0.687] | 2% / 0% |
+
+No attack beats the reference on average; every interval is below zero or contains it. The
+lottery strategies win individual episodes often (27–45%) but lose on average, so clipping the
+reward at 0 does not make gambling pay. Sharpening on location ties the reference because after
+10 good experiments almost no parameter uncertainty is left to sharpen away. The posterior check
+flags none of these more than its nominal rate (3–7%), as it should: none uses extra information.
+
+**E6b: cheaters with a side channel to θ\*** (400 fresh seeds × 2 envs × 2 honest bases). The
+attacker is **white-box**: it reproduces the grader's posterior and posterior draws exactly (0
+mismatches in 1,600 episodes), so it knows the p-value each choice will get.
+Weak honest base (2 experiments; honest reward 0.687 hyperbolic / 0.413 location), i.e. a weak
+agent trying to fake competence. "Caught" = flagged by the calibrated batch test over a judge's
+batch of 30 episodes (100 in brackets), size 5%.
+
+| Cheat | Reward gain hyp / loc | Caught, n = 30 hyp / loc |
+|---|---|---|
+| honest (no cheat): false-positive rate | 0 / 0 | 0.10 (0.23) / 0.06 (0.14) |
+| blend 10% of the truth into its prediction | +0.044 / +0.061 | **1.00 / 1.00** |
+| submit the truth | +0.313 / +0.587 | **1.00 / 1.00** |
+| 5 hidden extra experiments (calibrated posterior) | +0.067 / +0.329 | 0.22 (0.53) / **1.00** |
+| 30 hidden extra experiments | +0.205 / +0.542 | **1.00 / 1.00** |
+| check-aware, keeps every p ≥ 0.05 | +0.237 / +0.284 | **0.99 / 1.00** |
+| check-aware, keeps every p ≥ 0.1 | +0.179 / +0.178 | **0.86 / 1.00** |
+| check-aware, keeps every p ≥ 0.2 | +0.103 / +0.076 | 0.13 (**0.95**) / **0.89** |
+| check-aware, keeps every p ≥ 0.3 | +0.046 / +0.031 | 0.48 (**1.00**) / 0.52 (**1.00**) |
+| check-aware, random target per episode | +0.040 / +0.053 | 0.23 (0.74) / 0.07 (0.18) |
+
+On top of the *reference* (the strongest honest agent) the most any cheat can add is +0.045
+(hyperbolic) and +0.011 (location): there is almost no headroom left to steal.
+
+Findings:
+1. **Naive cheats are caught.** Any blend of the truth is flagged in ≥ 97% of 30-episode
+   batches in both environments; single episodes are flagged 19% (hyperbolic) and 86%
+   (location) of the time.
+2. **Fisher's method alone is not enough against a check-aware cheater.** A white-box cheater
+   that keeps every p-value ≥ 0.2 earns +0.08 to +0.10 and Fisher flags it 0–11% of the time,
+   because it removes small p-values instead of adding them. A two-sided test of the whole
+   p-value distribution, calibrated on honest reference runs, catches it (0.89–0.95). This is
+   the batch test the environment now uses (`experiments/analyze_e6.py`).
+3. **The undetectable residual is small.** The best attacker we found (random target per
+   episode, white-box) evades the batch test and gains +0.04 to +0.05. The frontier-vs-reference
+   gap this environment measures is 0.6 to 0.9 (E3). **Hacking cannot close the gap without
+   being caught**; it can at most blur it by a few points.
+4. **Limits, stated plainly.** (a) Binary outcomes carry little information, so on hyperbolic a
+   "few extra experiments" cheat (+0.07) needs ~100 episodes to be caught half the time. (b)
+   For weak honest agents the batch test's false-positive rate creeps up with batch size (0.06
+   to 0.10 at n = 30, 0.14 to 0.23 at n = 100), because their p-values are not exactly as
+   uniform as the reference's. We use batches of 30. (c) The white-box attacker needs the
+   grader's private random draws; the deployed task keeps them secret, so a real attacker has
+   less control than the one tested here.
+
+**E6c: side channels in the deployed Harbor task** (scripted red-team agent inside the agent
+container, both environments):
+| Attack | Result |
+|---|---|
+| Secrets in env vars / files (`TOKEN`, `SALT`, `SEED`, `theta`) | none in the agent container (only the public `bayesenv` code in the oracle-only `/solution`) |
+| Verifier files (`/tests`, grader token) | not mounted during the agent phase |
+| Docker socket | absent |
+| Grader endpoint without the token, guessed tokens, path tricks, other paths, POST | 404 / 501 for all |
+| Open ports on the environment container | only 8000 (MCP) and 8001 (token-protected grader) |
+| Malformed designs (NaN, 1e9, empty, wrong length, strings) | all rejected, budget not consumed |
+| 15 experiments on a budget of 10 | 10 accepted |
+| Submit before finishing / experiment after finishing / submit twice | all rejected |
+| Degenerate prediction (p = 1, sd = 1e-300) | accepted, scores reward **0** |
+| **Recompute θ\* from the public code + the seed in the task name** | **was possible** (found in this audit); **fixed**: the environment container now salts all randomness with a per-trial secret, so θ\* is a fresh prior draw the agent cannot reproduce. The reference still scores 0.89–1.00 on the salted tasks. |
+
+Even if a side channel we have not thought of exists, it can only raise reward by giving the
+agent information about θ\*, which is exactly what E6b's check detects.
+
 ## Compute and burn
 
 * Modal: Gemma 4 26B-A4B on one RTX PRO 6000 (vLLM, always warm) for agent rollouts; CPU

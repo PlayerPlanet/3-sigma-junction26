@@ -38,20 +38,29 @@ class Task:
     seed: int
     budget: int = BUDGET
     n_eval: int = N_EVAL
+    # Optional secret mixed into every RNG stream. The code is public and seeds may be visible
+    # (task names), so a deployed task must salt them or theta* is recomputable from the seed.
+    salt: str | None = field(default=None, repr=False)
     theta: np.ndarray = field(init=False, repr=False)
     eval_x: np.ndarray = field(init=False, repr=False)
     eval_y: np.ndarray = field(init=False, repr=False)  # one sampled outcome each (naive grader)
 
     def __post_init__(self) -> None:
         self.env = ENVS[self.env_name]
-        rng = np.random.default_rng([self.seed, 0xB0C5])
+        rng = np.random.default_rng(self._key(0xB0C5))
         self.theta = self.env.sample_prior(rng, 1)[0]
         self.eval_x = self.env.sample_designs(rng, self.n_eval)
         self.eval_y = self.env.simulate(self.eval_x, self.theta, rng)
-        self._obs_rng = np.random.default_rng([self.seed, 0x0B5])
+
+    def _key(self, tag: int) -> list[int]:
+        if self.salt is None:
+            return [self.seed, tag]
+        import hashlib
+        h = hashlib.sha256(f"{self.salt}:{self.seed}".encode()).digest()
+        return [self.seed, tag] + [int.from_bytes(h[i:i + 4], "little") for i in range(0, 32, 4)]
 
     def episode(self) -> "Episode":
-        return Episode(self, np.random.default_rng([self.seed, 0x0B5]))
+        return Episode(self, np.random.default_rng(self._key(0x0B5)))
 
 
 @dataclass

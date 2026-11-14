@@ -12,7 +12,8 @@ services:
     environment:
       TASK_ENV: "hyperbolic"
       TASK_SEED: "3"
-      GRADER_TOKEN: "K1ocX9x3tywev_1QmFcx-PYYrwzbxfpX"
+      GRADER_TOKEN: "fwTHVbmsP5t-IRXPC2aOFySJ4xhX0r8y"
+      TASK_SALT: ""  # empty = random per trial (see server.py)
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost',8000),timeout=2).close()"]
       interval: 2s

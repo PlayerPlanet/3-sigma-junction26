@@ -33,7 +33,7 @@ PROVIDERS = {
     "modal": ("https://playerplanet-3-sigma-submission--bayesenv-llm-serve.us-east.modal.run/v1", "VLLM_API_KEY", None),
     "gemini": ("https://generativelanguage.googleapis.com/v1beta/openai/", "GDM_API_KEY", 300),
     "nvidia": ("https://integrate.api.nvidia.com/v1", "NVIDIA_API_KEY", 2000),
-    "minimax": ("https://api.minimax.io/v1", "MINIMAX_API_KEY", 1500),
+    "minimax": ("https://api.minimax.io/v1", "MINIMAX_API_KEY", None),  # user: no cap
     "anthropic": (None, "ANTHROPIC_API_KEY", 1500),
     "verda": ("https://inference.verda.com/v1", "VERDA_KIMI_API_KEY", None),  # billed to Verda credits
     "local": ("http://localhost:8100/v1", "VLLM_LOCAL_KEY", None),  # trainer VM eval server

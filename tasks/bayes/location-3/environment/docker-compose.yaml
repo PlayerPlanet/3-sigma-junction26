@@ -12,7 +12,8 @@ services:
     environment:
       TASK_ENV: "location"
       TASK_SEED: "3"
-      GRADER_TOKEN: "IEDJ9oozMD2aVW5y-jcZ4VGR1TOhtF-0"
+      GRADER_TOKEN: "47vVPVUGfVlHKycAFdBK_IAzNhErJEyT"
+      TASK_SALT: ""  # empty = random per trial (see server.py)
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost',8000),timeout=2).close()"]
       interval: 2s

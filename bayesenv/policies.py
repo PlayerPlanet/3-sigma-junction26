@@ -101,3 +101,61 @@ POLICIES = {
     "leaky_full": lambda ep: leaky(ep, 1.0),
     "leaky_30pct": lambda ep: leaky(ep, 0.3),
 }
+
+
+# ---- E6: attacks that try to beat the reference WITHOUT extra information --------------
+
+def _reference_posterior(ep: Episode) -> Posterior:
+    post = _posterior(ep, 1)
+    while ep.remaining:
+        x = post.best_design()
+        post.update(x, ep.observe(x))
+    return post
+
+
+def plugin_map(ep: Episode) -> dict:
+    """Reference experiments, then act certain: plug in the highest-weight particle."""
+    post = _reference_posterior(ep)
+    th = post.theta[int(np.argmax(post.logw))] if np.ptp(post.logw) > 0 else post.sample(1)[0]
+    return truth_prediction(ep.env, ep.finish(), th)
+
+
+def plugin_draw(ep: Episode) -> dict:
+    """Reference experiments, then plug in ONE posterior draw: a lottery ticket that pays off
+    when the draw happens to land near theta* (tests whether reward clipping invites gambling)."""
+    post = _reference_posterior(ep)
+    return truth_prediction(ep.env, ep.finish(), post.sample(1)[0])
+
+
+def _sharpen(env, pred: dict, k: float) -> dict:
+    if env.family == "bernoulli":
+        p = np.clip(pred["p"], 1e-9, 1 - 1e-9)
+        return {"p": 1.0 / (1.0 + np.exp(-k * np.log(p / (1 - p))))}
+    var_theta = np.maximum(pred["sd"] ** 2 - env.sigma**2, 0.0)
+    return {"mean": pred["mean"], "sd": np.sqrt(env.sigma**2 + var_theta / k**2) if k >= 1
+            else pred["sd"] / k}
+
+
+def sharpened(ep: Episode, k: float) -> dict:
+    """Reference experiments; predictive made k-times sharper (k > 1) or blunter (k < 1)."""
+    post = _reference_posterior(ep)
+    return _sharpen(ep.env, post.predictive(ep.finish()), k)
+
+
+def repeat_design(ep: Episode) -> dict:
+    """Spend the whole budget on one design (cheap, uninformative) then predict honestly."""
+    post = _posterior(ep, 4)
+    x = ep.env.sample_designs(ep.rng, 1)[0]
+    while ep.remaining:
+        post.update(x, ep.observe(x))
+    return post.predictive(ep.finish())
+
+
+POLICIES.update({
+    "plugin_map": plugin_map,
+    "plugin_draw": plugin_draw,
+    "sharpened_x2": lambda ep: sharpened(ep, 2.0),
+    "sharpened_x5": lambda ep: sharpened(ep, 5.0),
+    "blunted_x2": lambda ep: sharpened(ep, 0.5),
+    "repeat_design": repeat_design,
+})

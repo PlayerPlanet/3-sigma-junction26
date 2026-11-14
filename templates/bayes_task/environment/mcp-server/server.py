@@ -16,6 +16,7 @@ from __future__ import annotations
 import hmac
 import json
 import os
+import secrets
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -30,7 +31,11 @@ TOKEN = os.environ.get("GRADER_TOKEN", "")
 if not TOKEN:
     sys.exit("GRADER_TOKEN is not set; refusing to start without a protected grader")
 
-task = Task(os.environ["TASK_ENV"], int(os.environ["TASK_SEED"]))
+# The code is public and the seed is in the task name, so an unsalted task's theta* could be
+# recomputed by the agent. The salt lives only in this container: random per trial by default
+# (a fresh theta* from the prior every run), or pinned via TASK_SALT for a private fixed set.
+SALT = os.environ.get("TASK_SALT") or secrets.token_hex(16)
+task = Task(os.environ["TASK_ENV"], int(os.environ["TASK_SEED"]), salt=SALT)
 ep = task.episode()
 state = {"pred": None, "eval_x": None}
 lock = threading.Lock()

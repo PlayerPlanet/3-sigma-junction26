@@ -81,6 +81,13 @@ class Hyperbolic:
             "that the person picks the delayed reward."
         )
 
+    def model_card(self) -> str:
+        return (
+            "Exact generative model: log k ~ Normal(-4.25, 0.5), alpha ~ HalfNormal(2), eps = 0.01. "
+            "P(outcome=1 | iR, dR, D) = eps + (1 - 2 eps) * Phi((dR / (1 + k D) - iR) / alpha), "
+            "where Phi is the standard normal CDF."
+        )
+
 
 @dataclass(frozen=True)
 class LocationFinding:
@@ -126,6 +133,12 @@ class LocationFinding:
             "Measuring at a point [x1, x2] (|xi| <= 10) returns a noisy log signal intensity "
             "that is higher the closer you are to the source. Predict, for new points, the "
             "mean and standard deviation of the measured value."
+        )
+
+    def model_card(self) -> str:
+        return (
+            "Exact generative model: source theta ~ Normal(0, I_2). Measurement at x: "
+            "y = log(0.1 + 1 / (1e-4 + |x - theta|^2)) + Normal(0, 0.5^2)."
         )
 
 
