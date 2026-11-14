@@ -34,7 +34,7 @@ mkdir -p logs results
 if [ ! -f results/.stage0 ]; then serve base; evaluate base; stop_serve; touch results/.stage0; fi
 if [ ! -f results/.stage1 ]; then
   $PY train/sft_lora.py --data results/sft/oracle.jsonl results/sft/rft.jsonl --model $MODEL \
-     --out /root/ckpt/sft --epochs 2 > logs/sft.log 2>&1
+     --out /root/ckpt/sft --epochs 1 > logs/sft.log 2>&1
   serve sft /root/ckpt/sft; evaluate sft; stop_serve; touch results/.stage1
 fi
 if [ ! -f results/.stage2 ]; then

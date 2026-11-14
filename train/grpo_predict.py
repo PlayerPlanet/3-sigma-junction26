@@ -48,7 +48,7 @@ def main(a) -> None:
     cfg = GRPOConfig(
         output_dir=a.out, learning_rate=a.lr, per_device_train_batch_size=8,
         gradient_accumulation_steps=2, num_generations=8, max_completion_length=1536,
-        max_prompt_length=6144, temperature=1.0, beta=0.0, logging_steps=5,
+        temperature=1.0, beta=0.0, logging_steps=5,
         save_steps=50, bf16=True, gradient_checkpointing=True, max_steps=a.steps,
         use_vllm=a.vllm, vllm_mode="colocate", report_to="none",
     )

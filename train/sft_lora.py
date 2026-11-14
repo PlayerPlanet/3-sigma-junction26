@@ -22,7 +22,15 @@ def load(paths: list[str], max_per_source: int | None) -> Dataset:
     for p in paths:
         conv = [json.loads(l) for l in open(p)]
         random.Random(0).shuffle(conv)
-        rows += [{"messages": c["messages"]} for c in conv[:max_per_source]]
+        for c in conv[:max_per_source]:
+            # Gemma 4's chat template has no {% generation %} markers, so TRL cannot mask
+            # non-assistant tokens in a conversation. Split each conversation into one
+            # prompt/completion example per assistant turn: completion-only loss then trains
+            # every agent decision (experiments and the final prediction) and nothing else.
+            m = c["messages"]
+            for i, msg in enumerate(m):
+                if msg["role"] == "assistant":
+                    rows.append({"prompt": m[:i], "completion": [msg]})
     random.Random(1).shuffle(rows)
     return Dataset.from_list(rows)
 
@@ -33,8 +41,8 @@ def main(a) -> None:
     cfg = SFTConfig(
         output_dir=a.out, num_train_epochs=a.epochs, per_device_train_batch_size=2,
         gradient_accumulation_steps=8, learning_rate=a.lr, lr_scheduler_type="cosine",
-        warmup_ratio=0.05, logging_steps=5, save_strategy="epoch", bf16=True,
-        max_length=8192, assistant_only_loss=True, gradient_checkpointing=True,
+        warmup_steps=20, logging_steps=5, save_strategy="epoch", bf16=True,
+        max_length=8192, completion_only_loss=True, gradient_checkpointing=True,
         report_to="none",
     )
     lora = LoraConfig(r=32, lora_alpha=64, lora_dropout=0.05, target_modules="all-linear",

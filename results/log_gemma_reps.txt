@@ -1,1 +1,12 @@
 200 episodes to run (399 already done)
+20 done, 0 errors
+40 done, 0 errors
+60 done, 0 errors
+80 done, 0 errors
+100 done, 0 errors
+120 done, 0 errors
+140 done, 0 errors
+160 done, 0 errors
+180 done, 0 errors
+200 done, 0 errors
+finished: 200 ok, 0 errors

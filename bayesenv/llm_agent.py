@@ -109,8 +109,12 @@ def system_prompt(task: Task) -> str:
     fmt = ("a JSON list of probabilities that the outcome is 1, one per design"
            if env.family == "bernoulli" else
            "a JSON list of [mean, sd] pairs for the measured value, one per design")
+    # FULL_INFO=1 (experiment E3b) also states the exact generative model, to test whether
+    # agents fail for lack of information or for lack of correct belief updating.
+    card = f"{env.model_card()}\n\n" if os.environ.get("FULL_INFO") == "1" else ""
     return (
         f"You are a scientist running experiments on an unknown system.\n\n{env.describe()}\n\n"
+        f"{card}"
         f"You may run at most {task.budget} experiments. Choose each one to learn as much as "
         "possible; you will then be asked to predict outcomes for new designs you have not seen. "
         "Your predictions are scored by how much probability they assign to what the system "
