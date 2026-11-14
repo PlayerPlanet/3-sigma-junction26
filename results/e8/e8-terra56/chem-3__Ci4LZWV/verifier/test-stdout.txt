@@ -1,0 +1,1 @@
+{"reward": 1.3746504380741758, "reward_norm": 0.8591565237963598, "design": 1.3753979784217287, "inference": -0.0007475403475530815, "accuracy": 1.0, "n_experiments": 10.0, "reference_reward": 1.3730553923896243, "gap_to_reference": 0.0015950456845514882, "submitted": 1.0}

@@ -1,0 +1,17 @@
+{
+    "job_name": "e8-wet-opus",
+    "n_attempts": 3,
+    "n_concurrent_trials": 3,
+    "quiet": true,
+    "agents": [
+        {
+            "name": "claude-code",
+            "model_name": "claude-opus-5-5"
+        }
+    ],
+    "datasets": [
+        {
+            "path": "tasks/wetlab"
+        }
+    ]
+}

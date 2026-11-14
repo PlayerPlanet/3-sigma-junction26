@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "tasks/bayes/hyperbolic-2",
+        "source": "bayes"
+    },
+    "trial_name": "hyperbolic-2__wC2kNVU",
+    "trials_dir": "jobs/e7-opus",
+    "agent": {
+        "name": "claude-code",
+        "model_name": "claude-opus-5-5"
+    },
+    "job_id": "542bf7a0-3559-4d8c-81bd-eb2ce78eefd7"
+}

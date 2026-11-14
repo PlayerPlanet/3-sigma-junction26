@@ -1,0 +1,125 @@
+{
+    "id": "5d37a24b-e810-4691-9c11-25b5518bb5b3",
+    "started_at": "2026-11-14T10:02:36.691777",
+    "updated_at": "2026-11-14T10:28:41.123474Z",
+    "finished_at": null,
+    "n_total_trials": 15,
+    "stats": {
+        "n_completed_trials": 3,
+        "n_errored_trials": 0,
+        "n_running_trials": 3,
+        "n_pending_trials": 9,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "claude-code__claude-opus-5-5__wetlab": {
+                "n_trials": 3,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "accuracy": 0.6666666666666666,
+                        "budget_used": 0.706111111111111,
+                        "gap_to_reference": -0.7350031946902855,
+                        "n_runs": 3.0,
+                        "n_samples": 11.0,
+                        "reference_accuracy": 1.0,
+                        "reference_reward": 1.5295523820876469,
+                        "reward": 0.7945491873973616,
+                        "submitted": 1.0
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "1.786918436984009": [
+                            "wetlab-0__C49vXUZ"
+                        ],
+                        "1.616604173338801": [
+                            "wetlab-2__JinECMv"
+                        ],
+                        "-1.0198750481307255": [
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "accuracy": {
+                        "1.0": [
+                            "wetlab-0__C49vXUZ",
+                            "wetlab-2__JinECMv"
+                        ],
+                        "0.0": [
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "submitted": {
+                        "1.0": [
+                            "wetlab-0__C49vXUZ",
+                            "wetlab-2__JinECMv",
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "n_runs": {
+                        "3.0": [
+                            "wetlab-0__C49vXUZ",
+                            "wetlab-2__JinECMv",
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "n_samples": {
+                        "9.0": [
+                            "wetlab-0__C49vXUZ"
+                        ],
+                        "12.0": [
+                            "wetlab-2__JinECMv",
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "budget_used": {
+                        "0.6575": [
+                            "wetlab-0__C49vXUZ"
+                        ],
+                        "0.7783333333333333": [
+                            "wetlab-2__JinECMv"
+                        ],
+                        "0.6825": [
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "reference_reward": {
+                        "1.7908968930435831": [
+                            "wetlab-0__C49vXUZ"
+                        ],
+                        "1.0117904571155447": [
+                            "wetlab-2__JinECMv"
+                        ],
+                        "1.7859697961038135": [
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "reference_accuracy": {
+                        "1.0": [
+                            "wetlab-0__C49vXUZ",
+                            "wetlab-2__JinECMv",
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    },
+                    "gap_to_reference": {
+                        "-0.0039784560595741425": [
+                            "wetlab-0__C49vXUZ"
+                        ],
+                        "0.6048137162232563": [
+                            "wetlab-2__JinECMv"
+                        ],
+                        "-2.8058448442345387": [
+                            "wetlab-1__6Tte9tc"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        },
+        "n_input_tokens": 1843203,
+        "n_cache_tokens": 1785324,
+        "n_output_tokens": 32455,
+        "cost_usd": 1.4686448
+    }
+}

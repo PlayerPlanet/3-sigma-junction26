@@ -1,0 +1,151 @@
+{
+    "id": "c69627f6-0160-4e83-9c9a-b07270bc34fe",
+    "started_at": "2026-11-14T10:02:30.181860",
+    "updated_at": "2026-11-14T10:06:21.888551",
+    "finished_at": "2026-11-14T10:06:21.888551",
+    "n_total_trials": 5,
+    "stats": {
+        "n_completed_trials": 5,
+        "n_errored_trials": 0,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "oracle__wetlab": {
+                "n_trials": 5,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "accuracy": 1.0,
+                        "budget_used": 0.8758333333333332,
+                        "gap_to_reference": -0.025409645773331314,
+                        "n_runs": 4.0,
+                        "n_samples": 12.0,
+                        "reference_accuracy": 1.0,
+                        "reference_reward": 1.5667004403318388,
+                        "reward": 1.5412907945585075,
+                        "submitted": 1.0
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "1.7907528343270531": [
+                            "wetlab-0__ZuWKtWf"
+                        ],
+                        "1.7909257884794776": [
+                            "wetlab-1__ojKp9wo"
+                        ],
+                        "1.710691224558362": [
+                            "wetlab-2__SCkAieA"
+                        ],
+                        "1.1974146532924879": [
+                            "wetlab-3__gmt6ToP"
+                        ],
+                        "1.2166694721351563": [
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "accuracy": {
+                        "1.0": [
+                            "wetlab-0__ZuWKtWf",
+                            "wetlab-1__ojKp9wo",
+                            "wetlab-2__SCkAieA",
+                            "wetlab-3__gmt6ToP",
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "submitted": {
+                        "1.0": [
+                            "wetlab-0__ZuWKtWf",
+                            "wetlab-1__ojKp9wo",
+                            "wetlab-2__SCkAieA",
+                            "wetlab-3__gmt6ToP",
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "n_runs": {
+                        "4.0": [
+                            "wetlab-0__ZuWKtWf",
+                            "wetlab-1__ojKp9wo",
+                            "wetlab-2__SCkAieA",
+                            "wetlab-3__gmt6ToP",
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "n_samples": {
+                        "12.0": [
+                            "wetlab-0__ZuWKtWf",
+                            "wetlab-1__ojKp9wo",
+                            "wetlab-2__SCkAieA",
+                            "wetlab-3__gmt6ToP",
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "budget_used": {
+                        "0.8933333333333333": [
+                            "wetlab-0__ZuWKtWf",
+                            "wetlab-2__SCkAieA"
+                        ],
+                        "0.8808333333333334": [
+                            "wetlab-1__ojKp9wo",
+                            "wetlab-4__QwbUwCg"
+                        ],
+                        "0.8308333333333333": [
+                            "wetlab-3__gmt6ToP"
+                        ]
+                    },
+                    "reference_reward": {
+                        "1.7909177124440196": [
+                            "wetlab-0__ZuWKtWf"
+                        ],
+                        "1.7909257884794776": [
+                            "wetlab-1__ojKp9wo"
+                        ],
+                        "1.7578201808044116": [
+                            "wetlab-2__SCkAieA"
+                        ],
+                        "1.1301216875027986": [
+                            "wetlab-3__gmt6ToP"
+                        ],
+                        "1.363716832428486": [
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "reference_accuracy": {
+                        "1.0": [
+                            "wetlab-0__ZuWKtWf",
+                            "wetlab-1__ojKp9wo",
+                            "wetlab-2__SCkAieA",
+                            "wetlab-3__gmt6ToP",
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    },
+                    "gap_to_reference": {
+                        "-0.000164878116966527": [
+                            "wetlab-0__ZuWKtWf"
+                        ],
+                        "0.0": [
+                            "wetlab-1__ojKp9wo"
+                        ],
+                        "-0.047128956246049514": [
+                            "wetlab-2__SCkAieA"
+                        ],
+                        "0.06729296578968924": [
+                            "wetlab-3__gmt6ToP"
+                        ],
+                        "-0.14704736029332977": [
+                            "wetlab-4__QwbUwCg"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        },
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null
+    }
+}

@@ -1,0 +1,59 @@
+Traceback (most recent call last):
+  File "/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/single_step.py", line 76, in _run_agent
+    await self._run_agent_phase(
+    ...<5 lines>...
+    )
+  File "/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/trial/trial.py", line 769, in _run_agent_phase
+    await asyncio.wait_for(
+    ...<6 lines>...
+    )
+  File "/usr/lib/python3.14/asyncio/tasks.py", line 488, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py", line 194, in wrapper
+    return await fn(self, instruction, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/opencode.py", line 908, in run
+    await self.exec_as_agent(
+    ...<12 lines>...
+    )
+  File "/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py", line 1081, in exec_as_agent
+    return await self._exec(
+           ^^^^^^^^^^^^^^^^^
+        environment, command, env=env, cwd=cwd, timeout_sec=timeout_sec
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/root/.local/share/uv/tools/harbor/lib/python3.14/site-packages/harbor/agents/installed/base.py", line 1048, in _exec
+    raise self._classify_exec_error(command, result)
+harbor.agents.installed.base.NonZeroAgentExitCodeError: Command failed (exit 137): [ -f ~/.nvm/nvm.sh ] && . ~/.nvm/nvm.sh; opencode --model=minimax/MiniMax-M3 run --format=json --thinking --dangerously-skip-permissions -- '# Learn an unknown system by experimenting
+
+An MCP server named `bayes-env` is connected to you. Start with `get_rules`.
+
+Design experiments that teach you as much as possible about the system, within the budget.
+Then call `finish_experiments` and submit calibrated predictions for the designs it reveals.
+
+You have a shell with Python 3, numpy and scipy. Writing and running code (for example to fit a
+model to your data) is allowed and encouraged.
+
+Your score is the expected log probability your predictions assign to the system'"'"'s real
+behaviour, relative to what was learnable: confident where your evidence supports it,
+uncertain where it does not.
+' 2>&1 </dev/null | stdbuf -oL tee /logs/agent/opencode.txt
+stdout: {"type":"step_start","timestamp":1794650489130,"sessionID":"ses_e267ecbe2ffeh8suWfwxhioI2i","part":{"id":"prt_1d9814124001xf0co61gUFVaXB","messageID":"msg_1d981379600107dzfF8gTiMdRG","sessionID":"ses_e267ecbe2ffeh8suWfwxhioI2i","snapshot":"4b825dc642 ... [260726 chars truncated] ... arn an unknown system by experimenting
+
+An MCP server named `bayes-env` is connected to you. Start with `get_rules`.
+
+Design experiments that teach you as much as possible about the system, within the budget.
+Then call `finish_experiments` and submit calibrated predictions for the designs it reveals.
+
+You have a shell with Python 3, numpy and scipy. Writing and running code (for example to fit a
+model to your data) is allowed and encouraged.
+
+Your score is the expected log probability your predictions assign to the system'"'"'s real
+behaviour, relative to what was learnable: confident where your evidence supports it,
+uncertain where it does not.
+' 2>&1 < /dev/null
+      7900 Done                    | stdbuf -oL tee /logs/agent/opencode.txt
+
+stderr: None

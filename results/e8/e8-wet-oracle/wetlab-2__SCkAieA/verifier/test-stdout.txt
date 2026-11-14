@@ -1,0 +1,1 @@
+{"reward": 1.710691224558362, "accuracy": 1.0, "submitted": 1.0, "n_runs": 4.0, "n_samples": 12.0, "budget_used": 0.8933333333333333, "reference_reward": 1.7578201808044116, "reference_accuracy": 1.0, "gap_to_reference": -0.047128956246049514}

@@ -13,6 +13,30 @@ information.
 
 Full results: [`docs/RESULTS.md`](docs/RESULTS.md). Preprint source: [`paper/`](paper/).
 
+## The task, in the organisers' three questions
+
+**What the agent has to do.** It is dropped into a small lab with a hidden system (how a
+person trades money now against money later; where a signal source sits; which fault a reactor
+has; which reaction mechanism is at work). Through MCP tools it runs a limited number of
+experiments of its own choosing, sees noisy results, and then submits what it believes:
+predictive distributions for held-out conditions, or probabilities over the candidate
+hypotheses. It has a shell with Python and may write code.
+
+**Why it is hard.** Two skills are needed and both are graded: choosing experiments that
+actually discriminate, and turning noisy data into *calibrated* probabilities. Being roughly
+right is not enough; overconfidence is penalised and hedging earns nothing. Frontier models
+mostly choose reasonable experiments and then fail the second part: their stated beliefs do
+not follow from their own data. On hyperbolic discounting, where each experiment yields a
+single yes/no, Claude Code with Opus 5.5 scores 0.24 against 0.95 for the reference.
+
+**How it is scored.** The verifier writes one number in [0, 1] to `/logs/verifier/reward.txt`
+(and a breakdown to `/logs/verifier/details.json`). 0 is what you get for submitting the prior,
+i.e. for learning nothing; 1 is what you would get if you knew the hidden truth. In between it
+is the normalised expected log score of the submission under the true hidden state, a proper
+scoring rule, so the best strategy is to report honest, calibrated beliefs. The score is
+computed inside the environment container from its own state, never from files the agent
+wrote, and the hidden state is salted per trial so it cannot be recomputed from the code.
+
 ## Headline numbers
 
 Reward is normalised so the prior scores 0 and knowing the hidden parameters scores 1.
@@ -26,6 +50,9 @@ Reward is normalised so the prior scores 0 and knowing the hidden parameters sco
 | Claude Code + Opus 5.5, shell and Python (15 trials) | 0.24 | 0.77 |
 | Codex + GPT-6 Luna, shell and Python (15 trials) | 0.06 | 0.12 |
 | OpenCode + Gemma 4 26B (15 trials) | 0.00 | 0.00 |
+| Gemma 4 4B, no tools, untrained (n = 50) | 0.00 | 0.01 |
+| Gemma 4 4B after supervised fine-tuning (n = 50) | 0.36 | 0.11 |
+| Gemma 4 4B after fine-tuning + GRPO on the reward (n = 50) | 0.50 | 0.03 |
 
 The tool-using rows ran in different agent harnesses, so they confound model and harness.
 A naive accuracy grader puts the same tool-free models at 0.92–0.96 against 0.98 for the
@@ -46,9 +73,29 @@ SKIP_AGENT=1 ./scripts/eval.sh               # no API key needed: reference + ba
 TASK=tasks/wetlab SKIP_AGENT=1 ./scripts/eval.sh
 ```
 
-The script renders the Harbor tasks on first use (`scripts/render_tasks.sh`). Agent runs need
-your own API key for `MODEL`'s provider (for example `ANTHROPIC_API_KEY`). Results go to
-`jobs/<timestamp>/`.
+Or run Harbor directly on any task, with the OpenCode harness:
+
+```bash
+harbor run -p tasks/bayes/hyperbolic-0 -a opencode -m <provider/model>
+harbor run -p tasks/bayes -a oracle          # the reference solution on all ten tasks
+```
+
+Agent runs need your own API key for `MODEL`'s provider (for example `ANTHROPIC_API_KEY`).
+Results go to `jobs/<timestamp>/`.
+
+## Run logs
+
+Harbor job folders from our own runs are in `results/`:
+
+| Folder | What |
+|---|---|
+| `results/e5/` | OpenCode + Gemma 4 26B and OpenCode + Nemotron on the ten Bayes tasks |
+| `results/e7/` | Claude Code + Opus 5.5, Codex + GPT-6 Luna and OpenCode + MiniMax-M3 on the ten Bayes tasks, 3 attempts each |
+| `results/e8/` | reference, do-nothing, Opus 5.5 and GPT-5.6 Terra on the chemistry lab and the wet lab |
+| `results/playthroughs/` | four complete agent trajectories (tool calls and reasoning), one per harness plus one success |
+
+These runs predate the switch to `reward.txt`; their score is the `reward` field of
+`verifier/reward.json` in each trial folder.
 
 ## Environments
 
@@ -93,7 +140,7 @@ Not tracked, because it can be regenerated:
 
 | Artifact | Regenerate with |
 |---|---|
-| Rendered Harbor tasks (`tasks/bayes`, `chem`, `wetlab`, `redteam`) | `./scripts/render_tasks.sh` |
+| Red-team tasks (`tasks/redteam`) | `./scripts/render_tasks.sh` |
 | E1/E2 policy grid (`results/e12.jsonl`) | `modal run experiments/batch.py --seeds 400 --out results/e12.jsonl` |
 | E6 attack data (`results/e6_*.jsonl`) | `modal run experiments/e6_stealth.py --seeds 400 --out results/e6_stealth.jsonl`; the no-information attacks are policies in `bayesenv/policies.py`, run through `experiments/batch.py --policies ... --seed0 2000 --out results/e6_attacks.jsonl` |
 | Figures (`results/fig_*.png`) | `python experiments/plots.py` |
@@ -101,8 +148,9 @@ Not tracked, because it can be regenerated:
 | Training rows (`data/`, `results/sft/`) | `python scripts/gen_training_data.py --specs specs/*.yaml --instances N --out data/v1` |
 | Preprint PDF | `cd paper && latexmk main.tex` |
 
-Rendered tasks carry a fresh grader token per render, which is one more reason not to commit
-them.
+The rendered Harbor tasks in `tasks/bayes`, `tasks/chem` and `tasks/wetlab` are tracked, so
+that `harbor run -p tasks/...` works on a fresh clone. They are generated from `templates/` by
+`scripts/render_tasks.sh`; edit the templates, not the rendered copies.
 
 ## Tests
 

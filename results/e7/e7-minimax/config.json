@@ -1,0 +1,20 @@
+{
+    "job_name": "e7-minimax",
+    "n_attempts": 3,
+    "n_concurrent_trials": 3,
+    "quiet": true,
+    "agents": [
+        {
+            "name": "opencode",
+            "model_name": "minimax/MiniMax-M3",
+            "base_url": "https://api.minimax.io/v1",
+            "model_api_key_name": "MINIMAX_API_KEY",
+            "model_api_format": "openai_chat_completions"
+        }
+    ],
+    "datasets": [
+        {
+            "path": "tasks/bayes"
+        }
+    ]
+}

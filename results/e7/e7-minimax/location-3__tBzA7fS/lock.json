@@ -1,0 +1,42 @@
+{
+    "schema_version": 2,
+    "task": {
+        "name": "location-3",
+        "type": "local",
+        "digest": "sha256:8a5f26ceb417cce8cfe0b8dacf8b4855268921320720c41e02ca42db6aac8a49",
+        "source": "bayes",
+        "path": "tasks/bayes/location-3"
+    },
+    "install_only": false,
+    "timeout_multiplier": 1.0,
+    "agent": {
+        "name": "opencode",
+        "model_name": "minimax/MiniMax-M3",
+        "base_url": "https://api.minimax.io/v1",
+        "model_api_key_name": "MINIMAX_API_KEY",
+        "model_api_format": "openai_chat_completions",
+        "skip_model_parsing": false,
+        "skills": [],
+        "resume_trajectory": false,
+        "extra_allowed_hosts": [],
+        "kwargs": {},
+        "mcp_servers": []
+    },
+    "bridge_inputs": {},
+    "skills": [],
+    "environment": {
+        "type": "docker",
+        "force_build": false,
+        "delete": true,
+        "stream": false,
+        "cpu_enforcement_policy": "auto",
+        "memory_enforcement_policy": "auto",
+        "extra_docker_compose": [],
+        "kwargs": {},
+        "extra_allowed_hosts": []
+    },
+    "verifier": {
+        "disable": false,
+        "environment_mode": "shared"
+    }
+}
