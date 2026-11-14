@@ -215,8 +215,26 @@ capture, the budget and the queries were tuned.
   with the solution token, byte-identical to the local one; 48 s), a second submission and an
   assay after the end rejected, `/grade` with the right token (oracle raw 0.917, equal to the
   reference replayed by the server; gap 0).
-- Harbor runs: see `docs/RESULTS.md` / the run log once they finish (tmux session `e21` on
-  the Harbor VM, jobs `e8-lfi-oracle` and `e8-lfi-opus`).
+- Harbor (VM, tmux session `e21`): oracle `e8-lfi-oracle`, 3/3 trials, rewards 0.389, 0.481,
+  0.936, each equal to the server's own replay of the reference (gap < 2e-7), 3 m 48 s total
+  including the image build. Claude Code + Opus 5.5 `e8-lfi-opus` (3 tasks x 2, concurrency
+  1) was still running at the time of writing; the first trial (lfi-0) scored 0.931, 0.015
+  ABOVE the reference: its inference gap was 0 (-2e-8). Opus solved the master equation
+  exactly for all 10,000 hypotheses in about 13 minutes and checked its pipeline against the
+  disclosed prior predictives ("match the server's p0 to 4 decimals"). Its only difference
+  from the reference was the design (4 assays, mostly at t = 8, 34/33/67/66 cells).
+
+## Finding: Opus takes the exact route
+
+On the first trial Opus did not use the simulator for inference at all: it recognised that
+the likelihood is computable, built the FSP, and matched the exact posterior. The large
+shortcut gaps in the calibration therefore do not bind Opus; what remains is the design gap
+(0.02 to 0.14 for the baselines, and the greedy reference can be beaten). Ways to make the
+exact route genuinely hard, not tried: do not disclose the prior predictives (they act as a
+correctness oracle for the agent's pipeline); a continuous prior (the agent then needs
+quadrature or MCMC around the FSP); a second species (protein, or a two-gene circuit) so that
+the CME is two-dimensional and too large for 2 vCPU in 60 minutes while the grader still
+solves it offline; shorter time limits.
 
 ## Demo use
 
