@@ -1,0 +1,93 @@
+{
+  "seeds": 4000,
+  "seconds": 73.2,
+  "policies": {
+    "reference": {
+      "reward": 1.5992417010513456,
+      "design": 1.5999252618911097,
+      "inference": -0.00068356083976446,
+      "accuracy": 0.866,
+      "n_experiments": 10.0,
+      "reward_ci": [
+        1.5787725108432726,
+        1.6185471735552015
+      ],
+      "accuracy_by_hypothesis": {
+        "nominal": 0.9216080402010051,
+        "catalyst_mild": 0.9543650793650794,
+        "catalyst_severe": 1.0,
+        "temp_high": 0.9452054794520548,
+        "temp_low": 0.7069306930693069,
+        "stock_dilute": 0.4850894632206759,
+        "impurity": 1.0
+      }
+    },
+    "random": {
+      "reward": 0.9760329158721722,
+      "design": 0.9763808021466671,
+      "inference": -0.00034788627449457865,
+      "accuracy": 0.61975,
+      "n_experiments": 10.0,
+      "reward_ci": [
+        0.9493054217862156,
+        1.0029523604141646
+      ],
+      "accuracy_by_hypothesis": {
+        "nominal": 0.7839195979899497,
+        "catalyst_mild": 0.75,
+        "catalyst_severe": 0.9960159362549801,
+        "temp_high": 0.7045009784735812,
+        "temp_low": 0.42574257425742573,
+        "stock_dilute": 0.11133200795228629,
+        "impurity": 0.3958333333333333
+      }
+    },
+    "prior": {
+      "reward": 0.0,
+      "design": 0.0,
+      "inference": 0.0,
+      "accuracy": 0.24875,
+      "n_experiments": 0.0,
+      "reward_ci": [
+        0.0,
+        0.0
+      ],
+      "accuracy_by_hypothesis": {
+        "nominal": 1.0,
+        "catalyst_mild": 0.0,
+        "catalyst_severe": 0.0,
+        "temp_high": 0.0,
+        "temp_low": 0.0,
+        "stock_dilute": 0.0,
+        "impurity": 0.0
+      }
+    }
+  },
+  "reference_minus_random": {
+    "mean": 0.6232087851791733,
+    "ci": [
+      0.6008665498040929,
+      0.6453022534191096
+    ],
+    "accuracy_diff": 0.24625,
+    "reference_wins_frac": 0.9295
+  },
+  "reference_minus_prior": {
+    "mean": 1.5992417010513456,
+    "ci": [
+      1.5798014238862277,
+      1.61851907187659
+    ],
+    "accuracy_diff": 0.61725,
+    "reference_wins_frac": 0.9715
+  },
+  "hidden_frequency": {
+    "nominal": 0.24875,
+    "catalyst_mild": 0.126,
+    "catalyst_severe": 0.1255,
+    "temp_high": 0.12775,
+    "temp_low": 0.12625,
+    "stock_dilute": 0.12575,
+    "impurity": 0.12
+  }
+}
