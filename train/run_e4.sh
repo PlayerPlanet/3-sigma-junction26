@@ -17,7 +17,7 @@ serve() {  # serve <name> [adapter-path]
   local lora=()
   [ -n "${2:-}" ] && lora=(--enable-lora --max-lora-rank 32 --lora-modules "$1=$2")
   /opt/train/bin/vllm serve $MODEL --served-model-name base --port 8100 --api-key "$KEY" \
-     --max-model-len 16384 --gpu-memory-utilization 0.85 "${lora[@]}" > "logs/serve_$1.log" 2>&1 &
+     --max-model-len 49152 --gpu-memory-utilization 0.85 "${lora[@]}" > "logs/serve_$1.log" 2>&1 &
   echo $! > /tmp/serve.pid
   until curl -sf -o /dev/null http://localhost:8100/v1/models -H "Authorization: Bearer $KEY"; do
     kill -0 "$(cat /tmp/serve.pid)" 2>/dev/null || { echo "vLLM serve for $1 died; see logs/serve_$1.log"; exit 1; }
