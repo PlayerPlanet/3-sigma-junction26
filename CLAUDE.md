@@ -107,3 +107,11 @@ snippet. `step()` returns the reading(s) and the current posterior, ready for a 
   project template and are expected to fail.
 - Every new lab gets a `tests/test_<lab>.py` (determinism under seed and salt, prior scores 0,
   invalid actions rejected, budget enforced, reference beats random) and a `docs/<LAB>.md`.
+
+## External benchmark: NeuronBench
+
+`tasks/neuron/` wraps NeuronBench (forecasting held-out interventions on a hidden neuron) with
+`templates/neuron_task/`, `bayesenv/neuron.py` and `bayesenv/neuron_ref.py`. Read
+`docs/NEURON.md` first: the public package contains the truth of every world, so the hidden
+cell is a salted private world, and two of the six worlds have almost no room in the score.
+`tests/test_neuron.py` needs `NEURONBENCH_SRC` pointing at a checkout of the pinned commit.
