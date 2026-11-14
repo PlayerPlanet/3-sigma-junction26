@@ -1,0 +1,33 @@
+# Logistic population growth from a known inoculum of 0.5: carrying capacity and rate unknown.
+name: logistic_growth
+family: gaussian
+params:
+  cap:  {prior: uniform, low: 5.0, high: 20.0}
+  rate: {prior: loguniform, low: 0.1, high: 2.0}
+design:
+  t: {low: 0, high: 40}
+model:
+  mean: "cap / (1 + (cap / 0.5 - 1) * exp(-rate * t))"
+noise: {sd: 0.5}
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A bacterial culture is started from a known small density of 0.5 and grows logistically
+    until it saturates. Each experiment starts a fresh culture and measures its density at a
+    chosen time {t} (in {t.unit}). The carrying capacity {cap} and the growth rate {rate} (per
+    hour) are unknown.
+  outcome: "The outcome is the measured density, with additive measurement noise."
+  names:
+    t:    [t, age, elapsed]
+    cap:  [cap, k_max, plateau]
+    rate: [rate, r, growth]
+  units:
+    t: {h: 1, min: 60}
+randomize:
+  priors:
+    cap.high:  [12, 28]
+    rate.low:  [0.05, 0.3]
+    rate.high: [1.0, 3.0]
+  noise: {sd: [0.3, 0.8]}
+  surface: [names, units]

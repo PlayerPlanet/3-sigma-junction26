@@ -1,0 +1,33 @@
+# Exponential decay with unknown initial amount and half-life (gaussian).
+name: exp_decay
+family: gaussian
+params:
+  amount:    {prior: normal, mean: 10.0, sd: 2.0, min: 2.0}
+  half_life: {prior: loguniform, low: 0.5, high: 50}
+design:
+  t: {low: 0.1, high: 200, scale: log}
+model:
+  mean: "amount * exp(-log(2) * t / half_life)"
+noise: {sd: 0.5}
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A substance is injected and its concentration then falls exponentially. Each experiment
+    prepares a fresh sample and measures the concentration at a chosen time {t} (in {t.unit})
+    after injection. The initial concentration {amount} and the {half_life} (in hours) are
+    unknown.
+  outcome: "The outcome is the measured concentration, with additive measurement noise."
+  names:
+    t:         [t, delay, elapsed]
+    amount:    [amount, c0, initial]
+    half_life: [half_life, t_half, halving_time]
+  units:
+    t: {h: 1, min: 60}
+randomize:
+  priors:
+    amount.mean:    [6.0, 14.0]
+    half_life.low:  [0.3, 2.0]
+    half_life.high: [20, 80]
+  noise: {sd: [0.3, 0.8]}
+  surface: [names, units]

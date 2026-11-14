@@ -1,0 +1,33 @@
+# Michaelis-Menten enzyme kinetics: saturating rate (gaussian).
+name: michaelis_menten
+family: gaussian
+params:
+  vmax: {prior: uniform, low: 2.0, high: 20.0}
+  km:   {prior: loguniform, low: 0.1, high: 100}
+design:
+  s: {low: 0.01, high: 1000, scale: log}
+model:
+  mean: "vmax * s / (km + s)"
+noise: {sd: 0.4}
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    An enzyme converts a substrate at a rate that grows with the substrate concentration {s}
+    (in {s.unit}) and then saturates. Each experiment measures the initial reaction rate at a
+    chosen {s}. The saturation rate {vmax} and the concentration {km} (in mM) at which the
+    rate is half of {vmax} are unknown.
+  outcome: "The outcome is the measured reaction rate, with additive measurement noise."
+  names:
+    s:    [s, substrate, conc]
+    vmax: [vmax, v_sat, top_rate]
+    km:   [km, k_half, half_conc]
+  units:
+    s: {mM: 1, uM: 1000}
+randomize:
+  priors:
+    vmax.high: [10, 30]
+    km.low:    [0.05, 0.5]
+    km.high:   [30, 300]
+  noise: {sd: [0.25, 0.6]}
+  surface: [names, units]

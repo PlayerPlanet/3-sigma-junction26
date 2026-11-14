@@ -104,6 +104,7 @@ These runs predate the switch to `reward.txt`; their score is the `reward` field
 | `tasks/bayes` hyperbolic-0..4 | 2 parameters of a discounting curve, binary outcomes | predictive probabilities for 30 held-out designs | exact (particle) posterior |
 | `tasks/bayes` location-0..4 | position of a signal source, continuous outcomes | Gaussian predictions for 30 held-out designs | exact (particle) posterior |
 | `tasks/chem` chem-0..4 | one of 7 reactor faults | probabilities over faults | exact, by enumeration |
+| `tasks/spec` spec-dose_response-0..4 | 2 parameters of a dose-response curve, binary outcomes (a family written in the YAML syntax) | predictive probabilities for 30 held-out designs | exact (particle) posterior |
 | `tasks/wetlab` wetlab-0..4 | one of 6 reaction mechanisms plus rate constants, stochastic kinetics, limited stock | probabilities over mechanisms | approximate, simulation-based |
 
 Every task runs the environment as an MCP server in its own container, keeps the hidden state

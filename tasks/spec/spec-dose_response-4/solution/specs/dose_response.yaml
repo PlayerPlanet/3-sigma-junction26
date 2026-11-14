@@ -1,0 +1,31 @@
+# Hill dose-response curve with a small lapse rate (bernoulli).
+name: dose_response
+family: bernoulli
+params:
+  ec50:  {prior: loguniform, low: 0.1, high: 100}
+  slope: {prior: normal, mean: 3.0, sd: 1.0, min: 1.0}
+design:
+  dose: {low: 0.01, high: 1000, scale: log}
+model:
+  p: "0.02 + 0.96 / (1 + (ec50 / dose) ** slope)"
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A new compound is tested on patients, one patient per experiment. Each patient receives a
+    {dose} (in {dose.unit}) of the compound and either responds or does not. The chance of
+    responding rises with the {dose}: {ec50} (in mg) is the {dose} at which the effect is
+    half-maximal and {slope} sets how sharply the response switches on.
+  outcome: "The outcome is 1 if the patient responds, else 0."
+  names:
+    dose:  [dose, amount, quantity]
+    ec50:  [ec50, d50, midpoint]
+    slope: [slope, hill, steepness]
+  units:
+    dose: {mg: 1, ug: 1000}
+randomize:
+  priors:
+    ec50.low:   [0.05, 0.5]
+    ec50.high:  [30, 300]
+    slope.mean: [2.0, 4.0]
+  surface: [names, units]

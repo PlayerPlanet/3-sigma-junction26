@@ -1,0 +1,33 @@
+# Hyperbolic discounting, re-expressed from bayesenv/envs.py::Hyperbolic (bernoulli, 3-D integer
+# design with a constraint). prob/loglik match the hand-written environment exactly for the same
+# (theta, x); the design SAMPLING distribution differs (uniform box + constraint here).
+name: hyperbolic
+family: bernoulli
+params:
+  k:     {prior: lognormal, mu: -4.25, sigma: 0.5}
+  alpha: {prior: halfnormal, sd: 2.0}
+design:
+  iR: {low: 1, high: 299, integer: true}
+  dR: {low: 2, high: 300, integer: true}
+  D:  {low: 1, high: 365, integer: true}
+constraints:
+  - "iR < dR"
+model:
+  p: "0.01 + 0.98 * Phi((dR / (1 + k * D) - iR) / maximum(alpha, 0.000001))"
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A person chooses between an immediate reward {iR} and a larger delayed reward {dR}
+    received after {D} days. Delayed rewards are discounted at an unknown rate {k} and
+    choices are noisy with unknown noise level {alpha}.
+  outcome: "The outcome is 1 if the person picks the delayed reward, else 0."
+  names:
+    iR: [iR, now, immediate]
+    dR: [dR, later, delayed]
+    D:  [D, days, delay]
+randomize:
+  priors:
+    k.mu:     [-5.0, -3.5]
+    alpha.sd: [1.0, 3.0]
+  surface: [names]

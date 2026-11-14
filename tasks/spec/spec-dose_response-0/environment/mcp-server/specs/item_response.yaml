@@ -1,0 +1,33 @@
+# Adaptive testing: the experimenter picks each item's difficulty AND discrimination (2-D design);
+# the examinee has a latent ability and a slip rate. Open-answer items: 2% lucky guesses.
+name: item_response
+family: bernoulli
+params:
+  ability: {prior: normal, mean: 0.0, sd: 1.5}
+  slip:    {prior: uniform, low: 0.0, high: 0.2}
+design:
+  difficulty:     {low: -4, high: 4}
+  discrimination: {low: 1, high: 5}
+model:
+  p: "0.02 + (0.98 - slip) * sigmoid(discrimination * (ability - difficulty))"
+budget: 20
+n_eval: 30
+text:
+  story: >-
+    An examinee answers open-answer test items. You write each item, choosing its
+    {difficulty} and its {discrimination} (how sharply it separates examinees above and below
+    that {difficulty}). The examinee has an unknown {ability} on the same scale as
+    {difficulty}, almost never (2%) gets an item that is far too hard, and
+    makes careless errors at an unknown rate {slip} on items that are easy.
+  outcome: "The outcome is 1 if the examinee answers the item correctly, else 0."
+  names:
+    ability:        [ability, skill, proficiency]
+    slip:           [slip, carelessness, lapse]
+    difficulty:     [difficulty, hardness, b]
+    discrimination: [discrimination, sharpness, a]
+randomize:
+  priors:
+    ability.mean: [-1.0, 1.0]
+    ability.sd:   [1.0, 2.0]
+    slip.high:    [0.1, 0.3]
+  surface: [names]

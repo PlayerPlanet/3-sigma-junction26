@@ -48,6 +48,7 @@ class BudgetExceeded(RuntimeError):
 
 def _charge(provider: str) -> None:
     cap = PROVIDERS[provider][2]
+    cap = int(os.environ.get(f"LLM_CAP_{provider.upper()}", cap or 0)) or cap  # explicit per-run override
     if cap is None:
         return
     BUDGET_FILE.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,37 @@
+# Damped oscillator: amplitude, decay rate and angular frequency unknown (gaussian, 3 parameters,
+# multimodal likelihood in the frequency).
+name: damped_oscillation
+family: gaussian
+params:
+  amp:   {prior: uniform, low: 1.0, high: 3.0}
+  decay: {prior: loguniform, low: 0.02, high: 0.5}
+  omega: {prior: uniform, low: 0.5, high: 3.0}
+design:
+  t: {low: 0, high: 20}
+model:
+  mean: "amp * exp(-decay * t) * cos(omega * t)"
+noise: {sd: 0.2}
+budget: 10
+n_eval: 30
+text:
+  story: >-
+    A mass on a spring is released from rest and oscillates while friction slowly damps the
+    motion. Each experiment restarts the system and measures the displacement (in {y.unit}) at
+    a chosen time {t} seconds after release. The initial amplitude {amp} (in cm), the damping
+    rate {decay} (per second) and the angular frequency {omega} (radians per second) are
+    unknown.
+  outcome: "The outcome is the measured displacement in {y.unit}, with additive measurement noise."
+  names:
+    t:     [t, tau, moment]
+    amp:   [amp, a0, amplitude]
+    decay: [decay, gamma, damping]
+    omega: [omega, w, freq]
+  units:
+    y: {cm: 1, mm: 10}
+randomize:
+  priors:
+    amp.high:   [2.0, 4.0]
+    decay.high: [0.3, 0.8]
+    omega.high: [2.0, 4.0]
+  noise: {sd: [0.15, 0.3]}
+  surface: [names, units]
