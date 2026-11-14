@@ -1,0 +1,18 @@
+{
+  "id": "analyzer",
+  "name": "Analyzer",
+  "assetId": "equip.analyzer",
+  "size": [
+    0.6,
+    0.45,
+    0.4
+  ],
+  "controls": [
+    "run"
+  ],
+  "holdOffset": [
+    0.18,
+    0.45,
+    -0.04
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "waste_bin",
+  "name": "Waste bin",
+  "assetId": "equip.waste_bin",
+  "size": [
+    0.3,
+    0.35,
+    0.3
+  ],
+  "controls": [
+    "open_lid"
+  ]
+}

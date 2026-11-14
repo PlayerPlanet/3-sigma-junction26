@@ -1,0 +1,20 @@
+{
+  "id": "soap",
+  "name": "Bar soap",
+  "product": "soap",
+  "summary": "Combine plant oil with lye solution, then cook it warm and stirred until it turns to soap. The lye must meet the oil inside a fume hood. The best lye share and cooking temperature change from batch to batch.",
+  "reagents": [
+    { "id": "oil", "name": "Plant oil", "color": "#f2cc8f" },
+    { "id": "lye", "name": "Lye solution", "color": "#9c89b8" },
+    { "id": "water", "name": "Water", "color": "#3d85c6" }
+  ],
+  "combine": { "base": "oil", "add": "lye", "shareRange": [0.3, 0.45], "shareTolerance": 0.15, "inHood": true },
+  "heat": { "tempRange": [55, 75], "tempTolerance": 25, "cookFrom": 40, "minTicks": 300, "stir": true },
+  "filter": false,
+  "runNoise": 3,
+  "analyzerNoise": 4,
+  "clues": {
+    "notInHood": "A sharp smell drifts across the table.",
+    "overheated": "The mixture smells scorched."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "balance",
+  "name": "Balance",
+  "assetId": "equip.balance",
+  "size": [
+    0.35,
+    0.15,
+    0.35
+  ],
+  "controls": [
+    "tare",
+    "read"
+  ],
+  "holdOffset": [
+    0,
+    0.13,
+    0.03
+  ]
+}

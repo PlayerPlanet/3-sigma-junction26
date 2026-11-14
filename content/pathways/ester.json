@@ -1,0 +1,17 @@
+{
+  "id": "ester",
+  "name": "Fruit-scented ester",
+  "product": "pear ester",
+  "summary": "Combine a light alcohol with a sharp acid inside a fume hood, then warm it gently and stirred; it should end up smelling of pears. Too hot and it boils off.",
+  "reagents": [
+    { "id": "alcohol", "name": "Light alcohol", "color": "#cfe8f5" },
+    { "id": "acid", "name": "Sharp acid", "color": "#e07a5f" },
+    { "id": "water", "name": "Water", "color": "#3d85c6" }
+  ],
+  "combine": { "base": "alcohol", "add": "acid", "shareRange": [0.4, 0.55], "shareTolerance": 0.2, "inHood": true },
+  "heat": { "tempRange": [45, 60], "tempTolerance": 15, "cookFrom": 35, "minTicks": 250, "stir": true },
+  "filter": false,
+  "runNoise": 4,
+  "analyzerNoise": 4,
+  "clues": { "notInHood": "Eye-watering vapour hangs over the table.", "overheated": "Most of the sweet smell is gone." }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "order",
+  "id": "soap_order",
+  "title": "Order: bar soap",
+  "brief": "A customer wants a batch of bar soap at 70% yield or better. Make it in a flask or beaker, check it on the analyzer if you like, then commit the vessel. You have 10 minutes and 300 u of reagents. Waste and overspending cost points; committing nothing scores zero.",
+  "pathway": "soap",
+  "targetYield": 70,
+  "budget": { "ticks": 6000, "reagents": 300 },
+  "faults": [{ "id": "contaminated_glassware", "chance": 0.35 }]
+}

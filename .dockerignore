@@ -12,3 +12,6 @@ build
 mlruns
 *.sqlite
 .venv
+node_modules
+apps/web/dist
+data

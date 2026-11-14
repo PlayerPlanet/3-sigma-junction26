@@ -1,0 +1,17 @@
+{
+  "id": "aspirin_style",
+  "name": "Aspirin-style crystals",
+  "product": "white crystals",
+  "summary": "Combine the willow powder with the activator, heat it, then filter out the crystals. Unfiltered product is mostly mush.",
+  "reagents": [
+    { "id": "willow", "name": "Willow powder slurry", "color": "#f4efe6" },
+    { "id": "activator", "name": "Activator", "color": "#81b29a" },
+    { "id": "water", "name": "Water", "color": "#3d85c6" }
+  ],
+  "combine": { "base": "willow", "add": "activator", "shareRange": [0.2, 0.35], "shareTolerance": 0.12, "inHood": false },
+  "heat": { "tempRange": [70, 90], "tempTolerance": 20, "cookFrom": 50, "minTicks": 350, "stir": false },
+  "filter": true,
+  "runNoise": 4,
+  "analyzerNoise": 5,
+  "clues": { "notInHood": "A faint vinegar smell.", "overheated": "Brown streaks appear in the mix." }
+}

@@ -1,0 +1,493 @@
+{
+  "id": "default",
+  "room": {
+    "width": 16,
+    "depth": 10,
+    "height": 3
+  },
+  "table": {
+    "shape": "stadium",
+    "center": {
+      "x": 0,
+      "z": 0
+    },
+    "straightLength": 5.0,
+    "radius": 1.2,
+    "height": 0.9
+  },
+  "rails": {
+    "nodes": [
+      {
+        "id": "loop_nw",
+        "x": -2.5,
+        "z": -2.0
+      },
+      {
+        "id": "loop_n",
+        "x": 0,
+        "z": -2.0
+      },
+      {
+        "id": "loop_ne",
+        "x": 2.5,
+        "z": -2.0
+      },
+      {
+        "id": "loop_e",
+        "x": 4.5,
+        "z": 0
+      },
+      {
+        "id": "loop_se",
+        "x": 2.5,
+        "z": 2.0
+      },
+      {
+        "id": "loop_s",
+        "x": 0,
+        "z": 2.0
+      },
+      {
+        "id": "loop_sw",
+        "x": -2.5,
+        "z": 2.0
+      },
+      {
+        "id": "loop_w",
+        "x": -4.5,
+        "z": 0
+      },
+      {
+        "id": "wall_n_w",
+        "x": -6.5,
+        "z": -3.3
+      },
+      {
+        "id": "wall_n_1",
+        "x": -4.5,
+        "z": -3.3
+      },
+      {
+        "id": "wall_n_2",
+        "x": 0,
+        "z": -3.3
+      },
+      {
+        "id": "wall_n_3",
+        "x": 4.5,
+        "z": -3.3
+      },
+      {
+        "id": "wall_n_e",
+        "x": 6.5,
+        "z": -3.3
+      },
+      {
+        "id": "wall_s_w",
+        "x": -6.5,
+        "z": 3.3
+      },
+      {
+        "id": "wall_s_1",
+        "x": -4.5,
+        "z": 3.3
+      },
+      {
+        "id": "wall_s_2",
+        "x": 0,
+        "z": 3.3
+      },
+      {
+        "id": "wall_s_3",
+        "x": 4.5,
+        "z": 3.3
+      },
+      {
+        "id": "wall_s_e",
+        "x": 6.5,
+        "z": 3.3
+      }
+    ],
+    "segments": [
+      {
+        "id": "loop_n_west",
+        "from": "loop_nw",
+        "to": "loop_n"
+      },
+      {
+        "id": "loop_n_east",
+        "from": "loop_n",
+        "to": "loop_ne"
+      },
+      {
+        "id": "loop_ne_arc",
+        "from": "loop_ne",
+        "to": "loop_e",
+        "arc": {
+          "cx": 2.5,
+          "cz": 0,
+          "ccw": true
+        }
+      },
+      {
+        "id": "loop_se_arc",
+        "from": "loop_e",
+        "to": "loop_se",
+        "arc": {
+          "cx": 2.5,
+          "cz": 0,
+          "ccw": true
+        }
+      },
+      {
+        "id": "loop_s_east",
+        "from": "loop_se",
+        "to": "loop_s"
+      },
+      {
+        "id": "loop_s_west",
+        "from": "loop_s",
+        "to": "loop_sw"
+      },
+      {
+        "id": "loop_sw_arc",
+        "from": "loop_sw",
+        "to": "loop_w",
+        "arc": {
+          "cx": -2.5,
+          "cz": 0,
+          "ccw": true
+        }
+      },
+      {
+        "id": "loop_nw_arc",
+        "from": "loop_w",
+        "to": "loop_nw",
+        "arc": {
+          "cx": -2.5,
+          "cz": 0,
+          "ccw": true
+        }
+      },
+      {
+        "id": "wall_n_w_1",
+        "from": "wall_n_w",
+        "to": "wall_n_1"
+      },
+      {
+        "id": "wall_n_1_2",
+        "from": "wall_n_1",
+        "to": "wall_n_2"
+      },
+      {
+        "id": "wall_n_2_3",
+        "from": "wall_n_2",
+        "to": "wall_n_3"
+      },
+      {
+        "id": "wall_n_3_e",
+        "from": "wall_n_3",
+        "to": "wall_n_e"
+      },
+      {
+        "id": "conn_n",
+        "from": "loop_n",
+        "to": "wall_n_2"
+      },
+      {
+        "id": "wall_s_w_1",
+        "from": "wall_s_w",
+        "to": "wall_s_1"
+      },
+      {
+        "id": "wall_s_1_2",
+        "from": "wall_s_1",
+        "to": "wall_s_2"
+      },
+      {
+        "id": "wall_s_2_3",
+        "from": "wall_s_2",
+        "to": "wall_s_3"
+      },
+      {
+        "id": "wall_s_3_e",
+        "from": "wall_s_3",
+        "to": "wall_s_e"
+      },
+      {
+        "id": "conn_s",
+        "from": "loop_s",
+        "to": "wall_s_2"
+      }
+    ]
+  },
+  "stations": [
+    {
+      "id": "st_shelf",
+      "node": "loop_w",
+      "label": "Reagent shelf"
+    },
+    {
+      "id": "st_dispenser",
+      "node": "loop_nw",
+      "label": "Dispenser"
+    },
+    {
+      "id": "st_balance",
+      "node": "loop_n",
+      "label": "Balance"
+    },
+    {
+      "id": "st_hotplate",
+      "node": "loop_ne",
+      "label": "Hotplate-stirrer"
+    },
+    {
+      "id": "st_analyzer",
+      "node": "loop_e",
+      "label": "Analyzer"
+    },
+    {
+      "id": "st_filter",
+      "node": "loop_se",
+      "label": "Filter station"
+    },
+    {
+      "id": "st_glassware",
+      "node": "loop_s",
+      "label": "Glassware rack"
+    },
+    {
+      "id": "st_waste",
+      "node": "loop_sw",
+      "label": "Waste bin"
+    },
+    {
+      "id": "st_hood_n1",
+      "node": "wall_n_1",
+      "label": "Fume hood N1"
+    },
+    {
+      "id": "st_hood_n2",
+      "node": "wall_n_2",
+      "label": "Fume hood N2"
+    },
+    {
+      "id": "st_hood_n3",
+      "node": "wall_n_3",
+      "label": "Fume hood N3"
+    },
+    {
+      "id": "st_hood_s1",
+      "node": "wall_s_1",
+      "label": "Fume hood S1"
+    },
+    {
+      "id": "st_hood_s2",
+      "node": "wall_s_2",
+      "label": "Fume hood S2"
+    },
+    {
+      "id": "st_hood_s3",
+      "node": "wall_s_3",
+      "label": "Fume hood S3"
+    }
+  ],
+  "hoods": [
+    {
+      "id": "hood_n1",
+      "wall": "north",
+      "x": -4.5,
+      "width": 1.6,
+      "depth": 0.9,
+      "station": "st_hood_n1"
+    },
+    {
+      "id": "hood_n2",
+      "wall": "north",
+      "x": 0,
+      "width": 1.6,
+      "depth": 0.9,
+      "station": "st_hood_n2"
+    },
+    {
+      "id": "hood_n3",
+      "wall": "north",
+      "x": 4.5,
+      "width": 1.6,
+      "depth": 0.9,
+      "station": "st_hood_n3"
+    },
+    {
+      "id": "hood_s1",
+      "wall": "south",
+      "x": -4.5,
+      "width": 1.6,
+      "depth": 0.9,
+      "station": "st_hood_s1"
+    },
+    {
+      "id": "hood_s2",
+      "wall": "south",
+      "x": 0,
+      "width": 1.6,
+      "depth": 0.9,
+      "station": "st_hood_s2"
+    },
+    {
+      "id": "hood_s3",
+      "wall": "south",
+      "x": 4.5,
+      "width": 1.6,
+      "depth": 0.9,
+      "station": "st_hood_s3"
+    }
+  ],
+  "equipment": [
+    {
+      "id": "shelf_1",
+      "type": "reagent_shelf",
+      "position": {
+        "x": -3.2,
+        "z": 0
+      },
+      "surface": "table",
+      "rotationY": 1.570796,
+      "station": "st_shelf"
+    },
+    {
+      "id": "dispenser_1",
+      "type": "dispenser",
+      "position": {
+        "x": -2.5,
+        "z": -0.85
+      },
+      "surface": "table",
+      "rotationY": 0,
+      "station": "st_dispenser"
+    },
+    {
+      "id": "balance_1",
+      "type": "balance",
+      "position": {
+        "x": 0,
+        "z": -0.85
+      },
+      "surface": "table",
+      "rotationY": 0,
+      "station": "st_balance"
+    },
+    {
+      "id": "hotplate_1",
+      "type": "hotplate_stirrer",
+      "position": {
+        "x": 2.5,
+        "z": -0.85
+      },
+      "surface": "table",
+      "rotationY": 0,
+      "station": "st_hotplate"
+    },
+    {
+      "id": "analyzer_1",
+      "type": "analyzer",
+      "position": {
+        "x": 3.2,
+        "z": 0
+      },
+      "surface": "table",
+      "rotationY": -1.570796,
+      "station": "st_analyzer"
+    },
+    {
+      "id": "filter_1",
+      "type": "filter_station",
+      "position": {
+        "x": 2.5,
+        "z": 0.85
+      },
+      "surface": "table",
+      "rotationY": 3.141593,
+      "station": "st_filter"
+    },
+    {
+      "id": "rack_1",
+      "type": "glassware_rack",
+      "position": {
+        "x": 0,
+        "z": 0.85
+      },
+      "surface": "table",
+      "rotationY": 3.141593,
+      "station": "st_glassware"
+    },
+    {
+      "id": "waste_1",
+      "type": "waste_bin",
+      "position": {
+        "x": -2.5,
+        "z": 0.85
+      },
+      "surface": "table",
+      "rotationY": 0,
+      "station": "st_waste"
+    }
+  ],
+  "items": [
+    {
+      "id": "flask_1",
+      "type": "flask",
+      "on": "rack_1",
+      "slot": 0
+    },
+    {
+      "id": "flask_2",
+      "type": "flask",
+      "on": "rack_1",
+      "slot": 1
+    },
+    {
+      "id": "beaker_1",
+      "type": "beaker",
+      "on": "rack_1",
+      "slot": 2
+    },
+    {
+      "id": "beaker_2",
+      "type": "beaker",
+      "on": "rack_1",
+      "slot": 3
+    },
+    {
+      "id": "beaker_3",
+      "type": "beaker",
+      "on": "rack_1",
+      "slot": 4
+    }
+  ],
+  "robotSpec": {
+    "mastHeight": 1.5,
+    "handLevels": 6,
+    "maxReach": 1.0
+  },
+  "robots": [
+    {
+      "id": "r1",
+      "label": "Robot 1",
+      "color": "#e07a5f",
+      "start": "st_dispenser"
+    },
+    {
+      "id": "r2",
+      "label": "Robot 2",
+      "color": "#3d85c6",
+      "start": "wall_n_e"
+    },
+    {
+      "id": "r3",
+      "label": "Robot 3",
+      "color": "#81b29a",
+      "start": "wall_s_w"
+    }
+  ]
+}

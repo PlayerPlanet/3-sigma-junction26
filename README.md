@@ -13,6 +13,40 @@ runs, a do-nothing baseline and a stop-early baseline.
 
 TODO: the environment we chose, why, and what an agent can learn there.
 
+## Lab Rats (the game, work in progress)
+
+A browser game set in an automated chemistry lab: robots on floor rails run experiments, things go wrong,
+and an LLM (Gemini or Claude), a script or a human who takes over a robot has to get the result. The simulation is
+deterministic and event-sourced, so every run is replayable and doubles as RL data.
+
+```bash
+npm install
+cp .env.example .env        # optional; LLM_PROVIDER + LLM_MODEL + its API key enable the AI controller
+npm run dev                 # server on :8790, web on http://localhost:5173
+npm test                    # vitest
+npm run typecheck
+npm run headless -- 1        # headless demo run (seed 1): prints the lab log and checks replay
+npm run -s play -- --seed 7  # play headlessly as an agent (JSON lines); see docs/AGENT_API.md
+```
+
+**Playing:** open http://localhost:5173, press `1`, then `T` to take over Robot 1, and `H` for the
+controls. The goal (a soap order) is at the top; commit the product vessel when the analyzer looks good.
+Agents can play the same session over HTTP (`/api/agent/*`) or headlessly with `npm run play`.
+Server env: `SCENARIO` (default `soap_order`, `none` = sandbox), `SEED`, `SPEED` (ticks per 100 ms).
+
+Requires Node >= 22. Fully playable offline; without an LLM key robots fall back to a mock controller.
+
+```
+apps/web/            Vite + React + react-three-fiber; renders snapshots, sends actions
+apps/server/         Fastify + WebSocket + SQLite; authoritative sim sessions, event log
+packages/sim-core/   pure deterministic simulation (no DOM / network); imported headlessly by RL later
+packages/shared/     types, zod schemas, WS protocol
+content/             layouts, equipment, pathways, scenarios as JSON
+assets/              art, addressed by id via assets/MANIFEST.md
+rl/                  PLACEHOLDER for the RL stack on top of sim-core
+docs/                ARCHITECTURE, ACTION_SPACE, CONTENT_GUIDE, DECISIONS
+```
+
 ## Reproduce the evaluation (one command)
 
 Requirements: Docker running, and Harbor (`uv tool install harbor`, tested with 0.25.0).
@@ -79,7 +113,8 @@ tests/test_env_reward.py        reward-integrity tests (CI runs these on every p
 
 ## Other code in this repo
 
-`src/`, `config/`, `Dockerfile*` and `docker-compose.yml` are the MLflow train/serve scaffold from
+The Node workspaces (`apps/`, `packages/`, `content/`, `assets/`, `rl/`, `docs/`) are Lab Rats, described
+above. `src/`, `config/`, `Dockerfile*` and `docker-compose.yml` are the MLflow train/serve scaffold from
 `cookiecutter-inference-template`, kept for the stretch goal (training a smaller model on experience
 from the environment).
 

@@ -24,3 +24,11 @@ mlflow.db
 *.csv
 *.parquet
 jobs/
+
+# Node / Lab Rats
+node_modules/
+apps/web/dist/
+data/*
+!data/.gitkeep
+*.sqlite-wal
+*.sqlite-shm

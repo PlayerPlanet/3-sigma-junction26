@@ -1,0 +1,20 @@
+{
+  "id": "hotplate_stirrer",
+  "name": "Hotplate-stirrer",
+  "assetId": "equip.hotplate_stirrer",
+  "size": [
+    0.35,
+    0.14,
+    0.35
+  ],
+  "controls": [
+    "heat_up",
+    "heat_down",
+    "stir_toggle"
+  ],
+  "holdOffset": [
+    0,
+    0.14,
+    0
+  ]
+}

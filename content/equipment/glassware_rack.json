@@ -1,0 +1,12 @@
+{
+  "id": "glassware_rack",
+  "name": "Glassware rack",
+  "assetId": "equip.glassware_rack",
+  "size": [
+    1.0,
+    0.04,
+    0.3
+  ],
+  "controls": [],
+  "slots": 5
+}

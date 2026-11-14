@@ -1,0 +1,13 @@
+{
+  "id": "reagent_shelf",
+  "name": "Reagent shelf",
+  "assetId": "equip.reagent_shelf",
+  "size": [
+    0.9,
+    0.7,
+    0.35
+  ],
+  "controls": [
+    "take_reagent"
+  ]
+}
