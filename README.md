@@ -71,6 +71,8 @@ Requirements: Docker running, Python 3.12, and Harbor (`uv tool install harbor`,
 MODEL=<provider/model> ./scripts/eval.sh     # reference + 3 agent runs + do-nothing + stop-early
 SKIP_AGENT=1 ./scripts/eval.sh               # no API key needed: reference + baselines only
 TASK=tasks/wetlab SKIP_AGENT=1 ./scripts/eval.sh
+TASK=tasks/battleship MODEL=<provider/model> ./scripts/eval.sh   # also runs a gamble baseline
+                                                                # and prints unclipped scores
 ```
 
 Or run Harbor directly on any task, with the OpenCode harness:
@@ -105,6 +107,13 @@ These runs predate the switch to `reward.txt`; their score is the `reward` field
 | `tasks/bayes` location-0..4 | position of a signal source, continuous outcomes | Gaussian predictions for 30 held-out designs | exact (particle) posterior |
 | `tasks/chem` chem-0..4 | one of 7 reactor faults | probabilities over faults | exact, by enumeration |
 | `tasks/wetlab` wetlab-0..4 | one of 6 reaction mechanisms plus rate constants, stochastic kinetics, limited stock | probabilities over mechanisms | approximate, simulation-based |
+| `tasks/battleship` battleship-0..4 | one of 6 ship-placement rules plus the ship layout; noisy shots and row/column scans on a budget | probabilities over rules + probability per cell | exact, by enumeration ([`docs/BATTLESHIP.md`](docs/BATTLESHIP.md)) |
+
+**Rulebound Battleship** is the wet lab with the domain swapped (rule = mechanism, ship
+positions = rate constants, a shot = an experiment), small enough that everything is exact.
+Over 400 paired boards the reference scores 0.53 (unclipped) and every honest baseline,
+gaming strategy and coding-bug proxy scores below it; a noise-ignoring coder loses 0.45. Play
+it or replay agent runs with `python scripts/battleship_ui.py` (http://localhost:8050).
 
 Every task runs the environment as an MCP server in its own container, keeps the hidden state
 behind a per-trial secret salt, and exposes the grade only through a token-protected endpoint.
