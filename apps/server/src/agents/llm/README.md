@@ -1,9 +1,13 @@
 # agents/llm/
 
-LLM tool-use controller. The tools are the action-space macros (`go_to`, `pick`, `place`, `transfer`,
-`operate`, `analyze`, `read_log`, `commit`). Milestone 7.
+LLM tool-use controller. `LlmDriver` drives one robot as the `llm` actor: when the robot is idle it sends
+the model an observation and queues the actions the model calls. The tools (`tools.ts`) are generated
+from the shared action schemas: every primitive and macro, plus `read_log` and `commit`.
 
-Provider-neutral: `LLM_PROVIDER` picks the backend (`gemini` by default, or `anthropic`), `LLM_MODEL` the
-model id, and the key comes from `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`. One adapter file per provider
-behind a shared interface; the rest of the server only sees "an llm controller". No model id is hardcoded.
-Without a key + model, robots fall back to `../mock/`.
+Provider-neutral: `client.ts` is the interface, with one adapter per provider: `gemini.ts` (REST) and
+`anthropic.ts` (official SDK). `LLM_PROVIDER` picks the adapter (`gemini` by default), `LLM_MODEL` the
+model id, and the key comes from `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`. No model id is hardcoded.
+Without a key + model, `llm` robots are driven by `../mock/`.
+
+The adapters have not been run against the live APIs yet (no key at the time of writing); the driver is
+unit-tested with a fake client.

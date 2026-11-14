@@ -3,6 +3,9 @@
 Goal: replace the placeholder number-guessing game in `tasks/example-env/` with the lab sim, so
 `./scripts/eval.sh` runs a frontier agent against Lab Rats and it scores below our reference run.
 
+Status (after milestones 1–8): step 1 is covered by `soap_order` and its scoring, and one fault exists for
+step 4; steps 2 and 3 are not started. See `docs/NEXT_STEPS.md`.
+
 Rule for every step: take the simplest option that works end to end. One scenario, one grader, one
 fault. Anything not listed here waits until all four steps are done.
 

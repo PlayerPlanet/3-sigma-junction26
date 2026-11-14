@@ -5,7 +5,7 @@ import { coolItems } from "./chemistry/thermal.js";
 import { LOG_LIMIT } from "./constants.js";
 import { tickEquipment } from "./equipment/run.js";
 import { tickPathway } from "./chemistry/pathway.js";
-import { checkTimeout, commitOrder } from "./scoring/scenario.js";
+import { checkTimeout, commitScenario } from "./scoring/scenario.js";
 import { advanceRobot } from "./robots/advance.js";
 import { cloneState, log, type SimState } from "./state.js";
 import type { World } from "./world/compile.js";
@@ -55,7 +55,7 @@ function apply(world: World, s: SimState, { actor, action }: StepInput): ActionR
     case "commit": {
       const { item, answer } = action.result;
       if (item && !s.items[item]) return { ok: false, reason: `unknown item "${item}"` };
-      const problem = commitOrder(world, s, item);
+      const problem = commitScenario(world, s, action.result);
       if (problem) return { ok: false, reason: problem };
       s.commits.push({ tick: s.tick, actor, ...(item ? { item } : {}), ...(answer ? { answer } : {}) });
       log(s, "info", "session", `${actor} committed ${item ? `item ${item}` : "an answer"}`);

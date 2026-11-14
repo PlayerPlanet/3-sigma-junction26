@@ -11,7 +11,7 @@
  *   replay(world, seed, events, endTick)
  *   snapshot(world, state)       render/controller view
  */
-export const SIM_CORE_VERSION = "0.2.0";
+export const SIM_CORE_VERSION = "0.3.0";
 
 export * from "./constants.js";
 export * from "./rng/index.js";
@@ -30,9 +30,9 @@ export { expandMacro } from "./actions/macros.js";
 export { behaviorFor } from "./equipment/index.js";
 export { DISPENSE_UNITS } from "./equipment/dispenser.js";
 export { evaluateYield } from "./chemistry/pathway.js";
-export { scoreOrder } from "./scoring/scenario.js";
+export { scoreOrder, scoreResearch, researchTruth } from "./scoring/scenario.js";
 export { FAULTS } from "./faults/index.js";
 export { ANALYSIS_TICKS } from "./equipment/analyzer.js";
 export { runDemo } from "./demo.js";
-export { playSoapOrder, oracleSoapPlan, FAIR_SOAP_PLAN, type SoapPlan } from "./players/soapOrder.js";
+export { playSoapOrder, oracleSoapPlan, soapScript, planConditions, FAIR_SOAP_PLAN, type SoapPlan, type ScenarioScript } from "./players/soapOrder.js";
 export { briefing, RULES } from "./agent/briefing.js";

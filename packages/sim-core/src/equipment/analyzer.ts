@@ -7,8 +7,8 @@ import { fail, ok } from "./types.js";
 export const ANALYSIS_TICKS = 30;
 
 /**
- * Noisy reading of the sample's composition. M3 placeholder: reports volume, temperature and component
- * shares; the yield/purity reading arrives with pathways in M5.
+ * Noisy reading of the sample: the pathway's yield once its reagents have met, otherwise volume,
+ * temperature and component shares. Research scenarios budget the number of runs.
  */
 export const analyzer: EquipmentBehavior = {
   initialSettings: () => ({ sample: "" }),
@@ -16,6 +16,9 @@ export const analyzer: EquipmentBehavior = {
     if (control !== "run") return fail(`unknown control ${control}`);
     if (ctx.eq.busyUntil !== null) return fail("analyzer is busy");
     if (!ctx.item) return fail("no sample in the analyzer");
+    const sc = ctx.world.scenario;
+    if (sc?.type === "research" && ctx.state.analyses >= sc.budget.analyses) return fail("no analyzer runs left in the budget");
+    ctx.state.analyses++;
     ctx.eq.busyUntil = ctx.state.tick + ANALYSIS_TICKS;
     ctx.eq.settings.sample = ctx.item.id;
     ctx.log("info", `Analyzer: running ${ctx.item.id} (${ANALYSIS_TICKS / 10} s).`);

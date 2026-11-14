@@ -47,11 +47,17 @@ see `sim-core/src/chemistry/pathway.ts`. Shipped: soap (playable), ester and asp
 (ticks, reagent units) and fault chances. Score: below target 0–40, at/above target 60–100, minus 0.1 per
 unit of waste and 0.2 per unit over the reagent budget. Doing nothing scores 0.
 
+A `research` scenario names a pathway, a budget (ticks, reagent units and `analyses`, the number of
+analyzer runs; the analyzer refuses more) and an `answerTolerance`. The player commits
+`{ add_share, temp }`: the hidden optimum's share of the added reagent in whole percent and its
+temperature in whole °C. Score: 50 points for each half, falling linearly to 0 at the tolerance, minus 0.2
+per unit over the reagent budget. Shipped: `soap_order` and `soap_research`.
+
 ## Equipment types
 
 `content/equipment/<id>.json` (schema `EquipmentType`): `assetId` must be listed in `assets/MANIFEST.md`;
 `size` is the footprint `[width, height, depth]` the primitive or model is fitted to; `controls` are the
-names `press` will accept (milestone 5); `slots` is how many items it holds.
+names `press` accepts; `slots` is how many items it holds.
 
 ## Conventions
 

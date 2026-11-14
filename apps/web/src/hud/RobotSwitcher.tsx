@@ -17,7 +17,7 @@ export function RobotSwitcher({ state }: { state: ClientState }) {
       <div className="muted small">
         <span className="dot" style={{ background: STATUS_COLORS[status] }} />
         {status}
-        {hello && <> · AI: {hello.llm.available ? `${hello.llm.provider} / ${hello.llm.model}` : "not configured (mock)"}</>}
+        {hello && <> · AI: {hello.llm.available ? `${hello.llm.provider} / ${hello.llm.model}` : "not configured (llm robots wander)"}</>}
       </div>
       {lab && snapshot && (
         <ul className="robots">
@@ -41,7 +41,7 @@ export function RobotSwitcher({ state }: { state: ClientState }) {
         </ul>
       )}
       <div className="muted small">
-        <kbd>H</kbd> help · <kbd>T</kbd> take over
+        <kbd>H</kbd> help · <kbd>T</kbd> take over · set a robot to <b>script</b> to watch it play
       </div>
     </div>
   );

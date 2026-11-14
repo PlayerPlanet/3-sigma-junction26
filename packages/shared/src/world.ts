@@ -125,12 +125,19 @@ export const Snapshot = z.object({
   session: z
     .object({
       scenario: z.string(),
+      type: z.enum(["order", "research"]),
       status: z.enum(["running", "committed", "timeout"]),
       score: z.number().int().nullable(),
+      /** Orders: true yield of the committed vessel, revealed on commit. */
       trueYield: z.number().int().nullable(),
       committedItem: z.string().nullable(),
+      /** Research: the committed answer and, once the session is over, the hidden truth. */
+      answer: z.object({ add_share: z.number().int(), temp: z.number().int() }).nullable(),
+      truth: z.object({ add_share: z.number().int(), temp: z.number().int() }).nullable(),
       ticksLeft: z.number().int(),
       reagentsLeft: z.number().int(),
+      /** Research: analyzer runs left; null for orders. */
+      analysesLeft: z.number().int().nullable(),
     })
     .nullable(),
 });

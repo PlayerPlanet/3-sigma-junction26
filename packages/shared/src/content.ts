@@ -147,17 +147,44 @@ export type Pathway = z.infer<typeof Pathway>;
 
 export const FaultChance = z.object({ id: Id, chance: z.number().min(0).max(1) });
 
-export const Scenario = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("order"),
-    id: Id,
-    title: z.string(),
-    brief: z.string(),
-    pathway: Id,
-    /** Minimum true yield (%) the customer accepts. */
-    targetYield: z.number().int().min(1).max(100),
-    budget: z.object({ ticks: z.number().int().positive(), reagents: z.number().int().positive() }),
-    faults: z.array(FaultChance).default([]),
+/** An order: make the product at or above a target yield, then commit the vessel. */
+export const OrderScenario = z.object({
+  type: z.literal("order"),
+  id: Id,
+  title: z.string(),
+  brief: z.string(),
+  pathway: Id,
+  /** Minimum true yield (%) the customer accepts. */
+  targetYield: z.number().int().min(1).max(100),
+  budget: z.object({ ticks: z.number().int().positive(), reagents: z.number().int().positive() }),
+  faults: z.array(FaultChance).default([]),
+});
+export type OrderScenario = z.infer<typeof OrderScenario>;
+
+/**
+ * A research question: find the pathway's hidden best conditions with a limited number of analyzer runs,
+ * then commit an answer `{ add_share, temp }` (whole percent of the added reagent, whole °C).
+ */
+export const ResearchScenario = z.object({
+  type: z.literal("research"),
+  id: Id,
+  title: z.string(),
+  brief: z.string(),
+  pathway: Id,
+  budget: z.object({
+    ticks: z.number().int().positive(),
+    reagents: z.number().int().positive(),
+    /** Analyzer runs allowed; the analyzer refuses further runs. */
+    analyses: z.number().int().positive(),
   }),
-]);
+  /** An answer this far from the truth (percentage points of share, °C) scores zero on that half. */
+  answerTolerance: z.object({ share: z.number().positive(), temp: z.number().positive() }),
+  faults: z.array(FaultChance).default([]),
+});
+export type ResearchScenario = z.infer<typeof ResearchScenario>;
+
+export const Scenario = z.discriminatedUnion("type", [OrderScenario, ResearchScenario]);
 export type Scenario = z.infer<typeof Scenario>;
+
+/** Keys of a research answer (`commit { answer }`). */
+export const RESEARCH_ANSWER_KEYS = ["add_share", "temp"] as const;

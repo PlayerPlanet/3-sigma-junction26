@@ -99,6 +99,8 @@ export interface ScenarioState {
   score: number | null;
   trueYield: number | null;
   committedItem: string | null;
+  /** Research: the committed answer (whole percent of the added reagent, whole °C). */
+  answer: { add_share: number; temp: number } | null;
   endTick: number | null;
 }
 
@@ -130,6 +132,8 @@ export interface SimState {
   waste: number;
   /** Units dispensed (for the reagent budget). */
   reagentsUsed: number;
+  /** Analyzer runs started (research scenarios budget them). */
+  analyses: number;
   commits: CommitRecord[];
   scenario: ScenarioState | null;
 }
@@ -191,6 +195,7 @@ export function createInitialState(world: World, seed: number): SimState {
     log: [],
     waste: 0,
     reagentsUsed: 0,
+    analyses: 0,
     commits: [],
     scenario: null,
   };

@@ -12,8 +12,8 @@ apps/server         Fastify + WebSocket + SQLite; owns sessions, steps sim-core,
 apps/web            Vite + React + react-three-fiber; renders snapshots, sends actions
 content/            JSON data (layouts, equipment, pathways, scenarios, faults), validated by zod
 assets/             art files, addressed by id via assets/MANIFEST.md
-rl/                 PLACEHOLDER: the RL stack (see docs/DECISIONS.md for how it relates to tasks/)
-scripts/            seed-db, replay, headless-run (run from the repo root with tsx)
+rl/                 PLACEHOLDER: the RL stack (see docs/PLAN.md and docs/NEXT_STEPS.md)
+scripts/            seed-db, replay, headless-run, play (run from the repo root with tsx)
 ```
 
 Dependency direction (enforced by convention, and for sim-core by `packages/sim-core/test/purity.test.ts`):
@@ -79,8 +79,52 @@ controllers --submit(actor, action)--> Sim (runner)            pure
   percent, liquids as integer units per reagent, the PRNG as one uint32. `hashState` hashes its canonical
   JSON. Trig and metres exist only in `world/view.ts` (`snapshot()`), which never feeds back into state.
 - Equipment rules live in one file per type in `sim-core/src/equipment/`.
-- The server owns wall-clock timing only: `LiveSession` calls `sim.tick()` every 100 ms and streams a
+- The server owns wall-clock timing only: `SessionHost` calls `sim.tick()` every 100 ms and streams a
   `snapshot` message per tick. Browser actions arrive as `action` messages and are attributed to `human`.
+
+## Scenarios and scoring (milestones 5 and 8)
+
+A scenario gives the session a goal, a budget and a hidden truth drawn from the seed (the pathway's best
+share and temperature, and faults). `scoring/scenario.ts` ends the session on `commit` or timeout and
+writes the score into state, so a replay reproduces it:
+
+- **order**: commit the product vessel; the score comes from its true yield (`chemistry/pathway.ts`).
+- **research**: commit an answer `{ add_share, temp }`; the score is its distance from the hidden truth.
+  Analyzer runs are budgeted.
+
+Snapshots never contain the hidden truth while the session runs; it is revealed on commit.
+
+## Sessions and persistence (milestone 6)
+
+```
+SessionHost.advance() --new events--> SessionRecorder --> SQLite: players, sessions, events
+                                                              |
+        npm run replay -- <id>  <--- seed + ordered events ---+---> leaderboard view --> GET /api/leaderboard
+```
+
+- `apps/server/src/db/`: append-only migrations and `SessionStore` (every query). A session row holds the
+  player, scenario, seed and sim-core version; its events are stored in order as JSON. That is all a
+  replay needs (`sim-core` `replay()`); a test checks a stored session replays to the same state hash.
+- A session ends as `committed`, `timeout`, or `abandoned` (restarted or server stopped before it ended).
+- The leaderboard is a SQL view: best finished score per player and scenario.
+
+## Controllers (milestone 7)
+
+A robot's controller slot (`human`, `llm`, `script`, `idle`) lives in sim state; who actually sends the
+actions is the server's business:
+
+```
+human  -> browser keyboard over WebSocket
+script -> agents/scripted/ScriptedDriver   plays a ScenarioScript from sim-core/players, then commits
+llm    -> agents/llm/LlmDriver             tool-use loop over a provider adapter (gemini | anthropic)
+          agents/mock/MockDriver           when no LLM key + model is set: wanders, never commits
+external agents -> HTTP /api/agent/* as the llm or script actor (they drive the robots they claim)
+```
+
+`SessionHost` attaches a built-in driver when a human or the session config sets a robot to `script` or
+`llm`, calls it after every advance with the completion notices for that robot, and detaches it on any
+later `set_controller` (takeover). Drivers see what any agent sees: snapshots, the briefing and the lab
+log. The LLM's tools are generated from the zod action schemas, so they cannot drift from the sim.
 
 ## Rules
 

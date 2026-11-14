@@ -52,7 +52,7 @@ Applied at the next tick, not queued on a robot.
 | action | args | effect |
 |--------|------|--------|
 | `read_log` | `limit?` | returns the recent lab log immediately; logged, no sim effect |
-| `commit` | `result: { item?, answer? }` | records a submission (scored in M5 / M8) |
+| `commit` | `result: { item?, answer? }` | ends the scenario and scores it. Order: `{ item }`, the product vessel. Research question: `{ answer: { add_share, temp } }`, whole percent of the added reagent and whole °C. A commit of the wrong kind is rejected and the session continues. |
 | `cancel` | `robot` | clears the robot's queue; the primitive in flight stops at its next safe point |
 | `set_controller` | `robot`, `controller` | `human` / `llm` / `script` / `idle`; also clears the queue and cancels (takeover / hand-back) |
 

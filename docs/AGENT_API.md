@@ -29,8 +29,21 @@ GET  /api/agent/briefing
 GET  /api/agent/observe?actor=llm
 POST /api/agent/act     { "action": {...}, "actor": "llm" | "script" }
 POST /api/agent/wait    { "robot"?: "r1", "maxTicks"?: 600, "actor"?: "llm" }   blocks until your robots are idle
-POST /api/session       { "scenario"?: "soap_order", "seed"?: 1, "speed"?: 5 }   restart (all browsers follow)
+POST /api/session       { "scenario"?: "soap_order", "seed"?: 1, "speed"?: 5, "player"?: "name",
+                          "controllers"?: { "r1": "script" } }                    restart (all browsers follow)
+GET  /api/session       id, scenario, seed, tick, status, score, built-in controller per robot
+GET  /api/scenarios     the scenarios that can be started
+GET  /api/leaderboard?scenario=soap_order      best finished score per player
+GET  /api/sessions      stored sessions, newest first;  GET /api/sessions/:id adds the event log
 ```
+
+Scenarios: `soap_order` ends with `{"type":"commit","result":{"item":"flask_1"}}`; `soap_research` ends with
+`{"type":"commit","result":{"answer":{"add_share":38,"temp":63}}}` and budgets analyzer runs
+(`snapshot.session.analysesLeft`). `player` is the name the session is recorded under.
+
+A robot you claim yourself (`set_controller` sent as `llm` or `script`) is yours to drive. A robot a
+human sets to `script` or `llm` in the browser, or one listed in `controllers` at session start, is
+driven by the server's built-in controller instead.
 
 Example with curl:
 

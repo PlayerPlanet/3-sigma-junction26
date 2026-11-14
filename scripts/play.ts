@@ -5,6 +5,7 @@
 //
 // Requests:  {"cmd":"briefing"}  {"cmd":"observe"}  {"cmd":"act","action":{...}}  {"cmd":"wait","robot"?:"r1","maxTicks"?:600}
 //            or just an action object, e.g. {"type":"go_to","robot":"r1","station":"st_balance"} (= act)
+// Scenarios: soap_order (commit the vessel), soap_research (commit an answer), none (sandbox).
 // The run ends on commit or when time runs out; the reply to the last request includes the final score.
 import { createInterface } from "node:readline";
 import { writeFileSync } from "node:fs";
@@ -35,7 +36,7 @@ const Request = z.union([
 
 const status = () => sim.state.scenario?.status ?? "sandbox";
 const ended = () => status() === "committed" || status() === "timeout";
-const summary = () => ({ status: status(), tick: sim.state.tick, score: sim.state.scenario?.score ?? null, trueYield: sim.state.scenario?.trueYield ?? null });
+const summary = () => ({ status: status(), tick: sim.state.tick, score: sim.state.scenario?.score ?? null, trueYield: sim.state.scenario?.trueYield ?? null, answer: sim.state.scenario?.answer ?? null });
 const idle = (id: string) => !sim.state.robots[id]!.task && sim.queueLength(id) === 0;
 
 function handle(line: string): unknown {

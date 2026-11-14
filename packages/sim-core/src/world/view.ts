@@ -6,6 +6,7 @@ import type { RobotState, SimState } from "../state.js";
 import { compileWorld, HAND_BASE_REACH, type World } from "./compile.js";
 import { samplePolyline } from "./rails.js";
 import { handAtPlace } from "../actions/spot.js";
+import { researchTruth } from "../scoring/scenario.js";
 
 /**
  * Render-only derivations from integer state: positions, headings and heights in metres. Uses trig, so
@@ -151,12 +152,17 @@ export function snapshot(world: World, state: SimState, logTail = 40): Snapshot 
       state.scenario && world.scenario
         ? {
             scenario: state.scenario.id,
+            type: world.scenario.type,
             status: state.scenario.status,
             score: state.scenario.score,
             trueYield: state.scenario.trueYield,
             committedItem: state.scenario.committedItem,
+            answer: state.scenario.answer,
+            // The truth is revealed only once a research session is over.
+            truth: world.scenario.type === "research" && state.scenario.status !== "running" ? researchTruth(state.scenario) : null,
             ticksLeft: Math.max(0, world.scenario.budget.ticks - state.tick),
             reagentsLeft: world.scenario.budget.reagents - state.reagentsUsed,
+            analysesLeft: world.scenario.type === "research" ? Math.max(0, world.scenario.budget.analyses - state.analyses) : null,
           }
         : null,
   };

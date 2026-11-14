@@ -13,7 +13,7 @@ runs, a do-nothing baseline and a stop-early baseline.
 
 TODO: the environment we chose, why, and what an agent can learn there.
 
-## Lab Rats (the game, work in progress)
+## Lab Rats (the game, first working version)
 
 A browser game set in an automated chemistry lab: robots on floor rails run experiments, things go wrong,
 and an LLM (Gemini or Claude), a script or a human who takes over a robot has to get the result. The simulation is
@@ -25,16 +25,27 @@ cp .env.example .env        # optional; LLM_PROVIDER + LLM_MODEL + its API key e
 npm run dev                 # server on :8790, web on http://localhost:5173
 npm test                    # vitest
 npm run typecheck
-npm run headless -- 1        # headless demo run (seed 1): prints the lab log and checks replay
+npm run headless -- 1        # the scripted player, headless (seed 1): lab log, score, replay check
 npm run -s play -- --seed 7  # play headlessly as an agent (JSON lines); see docs/AGENT_API.md
+npm run seed-db              # demo players and finished sessions, so the leaderboard has rows
+npm run replay -- 3          # re-run stored session 3 from its seed + events and check the score
 ```
 
 **Playing:** open http://localhost:5173, press `1`, then `T` to take over Robot 1, and `H` for the
-controls. The goal (a soap order) is at the top; commit the product vessel when the analyzer looks good.
-Agents can play the same session over HTTP (`/api/agent/*`) or headlessly with `npm run play`.
+controls. The goal is in the top panel, with the Commit button that ends the session. Two scenarios ship:
+an order (`soap_order`: make soap at 70 % yield, commit the vessel) and a research question
+(`soap_research`: find the best recipe in six analyzer runs, commit the answer). After a session the top
+panel shows your score, the leaderboard and a form to start the next one under your name.
+
+**Controllers:** each robot is driven by a human, the script, the AI or nobody; switch in the robot list.
+`script` plays one careful batch and commits. `llm` is the LLM controller when `LLM_PROVIDER`,
+`LLM_MODEL` and the provider's key are set; without them it is a mock that only wanders. Agents can also
+play the same session over HTTP (`/api/agent/*`) or headlessly with `npm run play`.
+
+Every session is stored in SQLite (`DB_PATH`) as seed + events, which is enough to replay it exactly.
 Server env: `SCENARIO` (default `soap_order`, `none` = sandbox), `SEED`, `SPEED` (ticks per 100 ms).
 
-Requires Node >= 22. Fully playable offline; without an LLM key robots fall back to a mock controller.
+Requires Node >= 22. Fully playable offline. What is not done yet is in `docs/NEXT_STEPS.md`.
 
 ```
 apps/web/            Vite + React + react-three-fiber; renders snapshots, sends actions
@@ -43,8 +54,8 @@ packages/sim-core/   pure deterministic simulation (no DOM / network); imported 
 packages/shared/     types, zod schemas, WS protocol
 content/             layouts, equipment, pathways, scenarios as JSON
 assets/              art, addressed by id via assets/MANIFEST.md
-rl/                  PLACEHOLDER for the RL stack on top of sim-core
-docs/                ARCHITECTURE, ACTION_SPACE, CONTENT_GUIDE, DECISIONS
+rl/                  PLACEHOLDER for the RL stack on top of sim-core (plan: docs/PLAN.md)
+docs/                ARCHITECTURE, ACTION_SPACE, AGENT_API, CONTENT_GUIDE, DECISIONS, PLAN, NEXT_STEPS
 ```
 
 ## Reproduce the evaluation (one command)

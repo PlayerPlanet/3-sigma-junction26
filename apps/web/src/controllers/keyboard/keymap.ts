@@ -34,7 +34,7 @@ export const POUR_LARGE = 50;
 
 export const KEY_HELP: [string, string][] = [
   ["1–9", "select robot"],
-  ["T", "take over / hand back"],
+  ["T", "take over / hand back (to whoever had the robot)"],
   ["← → ↑ ↓", "drive to the next rail node that way"],
   ["click station", "drive there (go_to)"],
   ["Q / E", "select hand A / B"],
@@ -80,12 +80,12 @@ export function handleKey(k: KeyInput, ctx: KeyContext): KeyResult {
 
   if (k.code === "KeyT") {
     if (pose.controller === "human") {
-      const back: ControllerKind = ui.handBack[robot] ?? "llm";
+      const back: ControllerKind = ui.handBack[robot] ?? "idle";
       return { action: { type: "set_controller", robot, controller: back }, toast: `${label} handed back to ${back}` };
     }
     return {
       action: { type: "set_controller", robot, controller: "human" },
-      ui: { handBack: { ...ui.handBack, [robot]: pose.controller === "idle" ? "llm" : pose.controller } },
+      ui: { handBack: { ...ui.handBack, [robot]: pose.controller } },
       toast: `You took over ${label}`,
     };
   }

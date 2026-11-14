@@ -1,0 +1,10 @@
+{
+  "type": "research",
+  "id": "soap_research",
+  "title": "Research: the best soap recipe",
+  "brief": "Find this batch of oil's best lye share and cooking temperature. Make test batches, read them on the analyzer (6 runs only), then commit your answer: the lye share in whole percent and the temperature in whole °C. You have 30 minutes and 900 u of reagents. The closer the answer, the higher the score; committing nothing scores zero.",
+  "pathway": "soap",
+  "budget": { "ticks": 18000, "reagents": 900, "analyses": 6 },
+  "answerTolerance": { "share": 10, "temp": 15 },
+  "faults": []
+}

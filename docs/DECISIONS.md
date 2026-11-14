@@ -139,3 +139,51 @@ Notable choices, newest last. When the spec was ambiguous, the simpler option wa
     pure); server, tests and scripts share it.
 14. **`npm run replay -- run.json`** replays runs saved by the CLI. Replaying sessions stored in SQLite
     remains milestone 6.
+
+## 2026-11-14 · Milestones 6–8 (persistence, controllers, research scoring)
+
+No written spec existed for these milestones; their scope was rebuilt from the notes earlier milestones
+left in the code and READMEs. Where that left a choice, the simpler option was taken.
+
+1. **Schema:** `players`, `sessions`, `events` and a `leaderboard` view, in one migration. Events are
+   stored in order as JSON rows; a session is seed + scenario + events. Sandbox sessions are stored too.
+2. **Session outcomes are `committed`, `timeout` or `abandoned`.** A session that is restarted, or still
+   running when the server stops, is closed as abandoned and never reaches the leaderboard.
+3. **Players are just names.** The browser sends the name with `POST /api/session` and remembers it in
+   localStorage; without one the session is recorded for `anonymous`. No accounts or auth.
+4. **Wall-clock timestamps exist only in SQLite** (`started_at`, `ended_at`), never in sim state.
+5. **`npm run replay -- <id>` replays a stored session**; `-- run.json` still replays CLI saves. A stored
+   session ends one tick after its `end_tick`, so replay runs to `end_tick + 1`.
+6. **`npm run seed-db` stores real runs** of the reference player (careful, no-hood, research guess), not
+   invented rows, so every seeded session replays.
+7. **Built-in controllers are server-side "drivers"** behind one small interface (`agents/types.ts`),
+   using the same action space and information as external agents. sim-core knows nothing about them.
+8. **Who gets a driver:** a robot set to `script` or `llm` by a human, or by the session config, is driven
+   by the server. A robot an external agent claims as the `llm`/`script` actor is not, so the HTTP agent
+   API keeps working unchanged. Any later `set_controller` on the robot detaches the driver.
+9. **The scripted controller plays one batch and commits.** It reuses the reference soap player, now
+   split into phases (`soapScript`) so the same script runs headlessly and tick by tick on the server. It
+   is tied to the default lab's ids. If a step fails it sets the robot idle and logs why.
+10. **The mock controller only wanders** between free stations: no glassware, no commit. It is the `llm`
+    controller when no key + model is set, enough to try takeover and rail blocking offline.
+11. **The LLM controller is a tool-use loop per robot**, called when the robot is idle. Tools are all
+    primitives and macros plus `read_log` and `commit`, generated from the zod schemas; the robot is
+    implied. The conversation is capped at 40 messages. Three failed model calls in a row hand the robot
+    back. Gemini goes through REST, Claude through the official SDK. **Neither adapter has been run
+    against its live API yet** (no key); the loop is tested with a fake client and the Gemini request
+    shape with a fake fetch.
+12. **T hands a robot back to whoever had it** (idle stays idle). Before, an idle robot was handed to
+    `llm`, which would now start the mock wandering.
+13. **Research questions reuse the pathway's hidden optimum** as the truth. The answer is two whole
+    numbers (`add_share` in percent, `temp` in °C) so state stays integer-only. Score: 50 points each,
+    linear to zero at the scenario's tolerance, minus the reagent overspend penalty; waste is not
+    penalised because test batches must be discarded.
+14. **"N runs" is a budget of analyzer runs**, counted in state (`analyses`); the analyzer refuses more.
+    Time and reagents are budgeted as for orders.
+15. **A commit of the wrong kind is rejected** (a vessel for a research question, an answer for an
+    order) and the session continues.
+16. **The browser got a commit form** (vessel picker or answer fields), the leaderboard and a
+    new-session form in the top panel. Before this there was no way to commit from the browser.
+17. **Unlisted robots default to idle** when a session is started with a partial `controllers` map.
+18. **Two M5 implementations existed for a while.** A parallel "citrus ester" M5 was built in a separate
+    worktree and dropped in favour of the soap M5 already in the main tree; nothing from it is merged.

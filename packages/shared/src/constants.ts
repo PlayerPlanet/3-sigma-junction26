@@ -1,5 +1,5 @@
 /** Bump when the WebSocket message shapes change incompatibly. */
-export const PROTOCOL_VERSION = 4;
+export const PROTOCOL_VERSION = 5;
 
 /** Controller kinds a robot's slot can hold. `llm` is provider-neutral (Gemini or Claude, see LLM_PROVIDER). */
 export const CONTROLLER_KINDS = ["human", "llm", "script", "idle"] as const;

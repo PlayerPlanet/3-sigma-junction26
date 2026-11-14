@@ -1,3 +1,5 @@
 # agents/scripted/
 
-Deterministic scripted controller that completes scenarios via macros. Milestone 7.
+Deterministic scripted controller. `ScriptedDriver` plays a `ScenarioScript` from
+`sim-core/src/players/` (the reference soap player) through the public action space as the `script`
+actor: one batch, then the commit.
