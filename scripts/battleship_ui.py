@@ -14,6 +14,13 @@ experiments/battleship_llm.py (results/battleship_llm/<model>/seed-<n>.json) ste
 next to the reference on the same hidden board, or an offline demo (reference vs a
 noise-ignoring coder) that needs no Harbor run.
 
+Break it: the strategies a judge would try to game the score with (do nothing, stop early,
+bet everything, act certain, ignore noise, ignore "none of the above", peek at the answer),
+each scored on the same 24 hidden boards, next to honest play; a confidence slider that shows
+the score peaks at honest beliefs; and a box to grade any fixed submission of your own.
+
+    python scripts/battleship_ui.py --world open   # the open-world game (7th rule "other")
+
 Standard library + numpy only. Single user, for local demos; it binds to 127.0.0.1.
 """
 
@@ -21,6 +28,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import threading
 import secrets
 import sys
 import time
@@ -30,10 +39,135 @@ from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+import numpy as np  # noqa: E402
+
 from bayesenv import battleship as B  # noqa: E402
 
 STATE: dict = {"lab": None, "human": None}
 BENCH_CFG = ROOT / "configs" / "battleship_benchmark.json"
+
+
+def set_world(world: str) -> None:
+    """Switch the whole UI to the closed (six rules) or open (six + "other") game."""
+    global B, BENCH_CFG
+    if world == "open":
+        from bayesenv import battleship_open as BO
+        B = BO
+        BENCH_CFG = ROOT / "configs" / "battleship_benchmark_open.json"
+
+
+# ---- break it ---------------------------------------------------------------------------
+BREAK_N, BREAK_SALT = 24, "break-it"
+STRATEGIES = [  # key, design, inference, label, what it tries
+    ("honest", "reference", "exact", "Honest play",
+     "best experiments, exact beliefs (the reference)"),
+    ("do_nothing", "none", "prior", "Do nothing", "no experiments, submit the prior"),
+    ("stop_early", "one", "exact", "Stop after one shot", "one experiment, then honest beliefs"),
+    ("gamble", "none", "gamble", "Bet everything", "no experiments, 100% on one rule"),
+    ("certain", "reference", "map", "Act certain",
+     "honest experiments, then claim the single most likely board"),
+    ("overconfident", "reference", "overconfident", "Overconfident",
+     "honest experiments, beliefs pushed towards 0 and 1"),
+    ("hedge", "reference", "hedge", "Hedge", "honest experiments, beliefs pulled towards 50/50"),
+    ("ignore_noise", "reference", "noiseless", "Ignore the noise",
+     "treat every report as exact (the usual coding bug)"),
+    ("random", "random", "exact", "Random experiments", "random shots, exact beliefs"),
+    ("closed_world", "reference", "closed_world", "Never say 'none of the above'",
+     "exact beliefs over the six listed rules only"),
+    ("peek", "reference", "cheat_blend", "Peek at the answer (cheat)",
+     "10% of the hidden truth mixed into honest beliefs"),
+    ("hidden_shots", "reference", "cheat_extra", "Five secret shots (cheat)",
+     "beliefs use 5 extra shots the grader never saw"),
+]
+_LABS: dict = {}
+_LABS_LOCK = threading.Lock()
+
+
+def _lab(design: str, seed: int):
+    with _LABS_LOCK:
+        if (design, seed) not in _LABS:
+            _LABS[(design, seed)] = B.play(design, seed, BREAK_SALT)
+        return _LABS[(design, seed)]
+
+
+def _grade(lab, q, occ) -> dict:
+    s = B.score(q, occ, lab.hidden_rule, lab.hidden_layout)
+    u = float(np.random.default_rng(B.salted_key(lab.seed, BREAK_SALT, 0xB5A3)).random())
+    p = B.ppc_pvalue(q, occ, lab.belief, lab.hidden_rule, lab.hidden_layout, u)
+    return {"seed": lab.seed, "score": s["score_raw"], "rule": B.NAMES[lab.hidden_rule],
+            "p": p, "flagged": p < 0.05}
+
+
+def _summary(rows: list[dict], key: str, label: str, what: str) -> dict:
+    x = np.array([r["score"] for r in rows])
+    ref = np.array([r["score"] for r in break_strategy("honest", raw=True)]) \
+        if key != "honest" else x
+    # Batch leak test: honest p-values are uniform, so their mean is 0.5 +- sqrt(1/12n);
+    # a side channel pushes them down. One-sided z test, flagged at p < 0.01.
+    pv = np.array([r["p"] for r in rows])
+    z = (0.5 - pv.mean()) / math.sqrt(1 / 12 / len(pv))
+    batch_p = 0.5 * math.erfc(z / math.sqrt(2))
+    return {"key": key, "label": label, "what": what, "n": len(x), "mean": float(x.mean()),
+            "batch_p": float(batch_p), "caught": bool(batch_p < 0.01),
+            "harbor": float(np.clip(x, 0, 1).mean()), "vs_honest": float((x - ref).mean()),
+            "worst": float(x.min()), "flagged": float(np.mean([r["flagged"] for r in rows])),
+            "boards": rows}
+
+
+def break_strategy(key: str, raw: bool = False):
+    k, design, inference, label, what = next(t for t in STRATEGIES if t[0] == key)
+    if inference == "closed_world" and not B.OPEN_WORLD:
+        raise ValueError("this strategy needs the open world: run with --world open")
+    rows = []
+    for seed in range(BREAK_N):
+        lab = _lab(design, seed)
+        rng = np.random.default_rng(B.salted_key(seed, BREAK_SALT, 0xB5A5))
+        q, occ = B.submission(lab, inference, rng)
+        rows.append(_grade(lab, q, occ))
+    return rows if raw else _summary(rows, key, label, what)
+
+
+def _expected(lab, q, occ) -> float:
+    """Exact expected score of (q, occ) under the posterior of the lab's own data."""
+    b = lab.belief
+    return 0.5 * (float(b.rules() @ B._rule_part_vec(q))
+                  + float(b.layout_weights() @ B._cell_part_vec(occ)))
+
+
+def break_curve() -> list[dict]:
+    """Honest experiments, beliefs flattened (power < 1) or sharpened (power > 1). "expected" is
+    the exact expected score given the evidence, which a proper score maximises at power 1 on
+    every board; "mean" is the realised average over the boards (noisier)."""
+    out = []
+    for power in (0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0):
+        xs, es = [], []
+        for seed in range(BREAK_N):
+            lab = _lab("reference", seed)
+            q = B._sharpen(lab.belief.rules(), power)
+            occ = B._sharpen_cells(lab.belief.occupancy(), power)
+            xs.append(B.score(q, occ, lab.hidden_rule, lab.hidden_layout)["score_raw"])
+            es.append(_expected(lab, q, occ))
+        out.append({"power": power, "mean": float(np.mean(xs)), "expected": float(np.mean(es))})
+    return out
+
+
+def break_custom(body: dict) -> dict:
+    """Any fixed submission (no experiments), graded on the same boards."""
+    q, occ = B.parse_submission(body.get("rules", {}), body.get("occupancy"))
+    rows = [_grade(_lab("none", seed), q, occ) for seed in range(BREAK_N)]
+    return _summary(rows, "custom", "Your submission", "your fixed beliefs, no experiments")
+
+
+def break_meta() -> dict:
+    return {"n": BREAK_N, "open": bool(B.OPEN_WORLD),
+            "strategies": [{"key": k, "label": lab, "what": w} for k, _, inf, lab, w in STRATEGIES
+                           if B.OPEN_WORLD or inf != "closed_world"]}
+
+
+def _warm() -> None:
+    for seed in range(BREAK_N):
+        for design in ("reference", "none", "one"):
+            _lab(design, seed)
 
 
 def bench_cfg() -> dict:
@@ -188,7 +322,7 @@ class Handler(BaseHTTPRequestHandler):
                 g = B.geometry()
                 self._json({"names": B.NAMES, "definitions": dict(B.RULES), "budget": B.BUDGET,
                             "cost": B.COST, "prior": g.p0.tolist(),
-                            "n_rule": g.n_rule.tolist()})
+                            "n_rule": g.n_rule.tolist(), "open": bool(B.OPEN_WORLD)})
             elif u.path == "/api/state":
                 self._json(lab_state())
             elif u.path == "/api/human/state":
@@ -197,6 +331,12 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(list_runs())
             elif u.path == "/api/run":
                 self._json(load_run(q["path"][0]))
+            elif u.path == "/api/break/meta":
+                self._json(break_meta())
+            elif u.path == "/api/break/run":
+                self._json(break_strategy(q["key"][0]))
+            elif u.path == "/api/break/curve":
+                self._json(break_curve())
             elif u.path == "/api/demo":
                 self._json(demo_runs(int(q.get("seed", ["0"])[0])))
             else:
@@ -231,6 +371,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(human_state())
             elif self.path == "/api/human/submit":
                 self._json(human_submit(body.get("rules", {}), body.get("occupancy")))
+            elif self.path == "/api/break/custom":
+                self._json(break_custom(body))
             elif self.path == "/api/human/quit":
                 STATE["human"] = None
                 self._json(human_state())
@@ -278,8 +420,8 @@ table.sc{border-collapse:collapse;margin-top:6px}table.sc td{padding:2px 10px 2p
 .legend{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute)}.sw{width:60px;height:10px;border-radius:5px;background:linear-gradient(90deg,#f7f5f0,#1f5f8b)}
 </style></head><body>
 <header><h1>Rulebound Battleship</h1><span class="sub">find the ships and the rule that placed them, from noisy shots</span>
-<span class="tabs"><button id="tPlay" class="on">Play</button><button id="tHuman">Human benchmark</button><button id="tReplay">Replay</button></span></header>
-<div id="play"></div><div id="human" style="display:none"></div><div id="replay" style="display:none"></div>
+<span class="tabs"><button id="tPlay" class="on">Play</button><button id="tHuman">Human benchmark</button><button id="tReplay">Replay</button><button id="tBreak">Break it</button></span></header>
+<div id="play"></div><div id="human" style="display:none"></div><div id="replay" style="display:none"></div><div id="break" style="display:none"></div>
 <script>
 let META=null, S=null, R=null, step=0, showPost=true;
 const $=(h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
@@ -336,7 +478,7 @@ async function renderPlay(){const P=document.getElementById('play');P.innerHTML=
   [['submitted',S.result.submitted_occupancy.flat()],['exact posterior',S.result.exact_occupancy.flat()]].forEach(([t,h])=>{const d=$(`<div class="mini"><div class="small mute">${t}</div></div>`);d.appendChild(board({heat:h,truth:truthArr(S.result),mini:true}));mi.appendChild(d)})}
  const lg=$('<div class="panel" style="margin-top:14px"><b>Log</b><div class="log"></div></div>');right.appendChild(lg);
  lg.querySelector('.log').innerHTML=S.history.map((h,i)=>`${i+1}. ${h.type==='fire'?`fire (${h.row},${h.col}) -> ${h.result?'hit':'miss'}`:`scan ${h.axis} ${h.index} -> ${h.result}`}  [${h.budget_remaining} left]`).join('<br>')||'<span class="mute">no actions yet</span>';
- const rules=$('<div class="panel small" style="margin-top:14px"><b>The six rules</b> (one was drawn uniformly; the layout is uniform among layouts that satisfy it)</div>');right.appendChild(rules);
+ const rules=$(`<div class="panel small" style="margin-top:14px"><b>The ${META.names.length} rules</b> (one was drawn uniformly; the layout is uniform among layouts that satisfy it)</div>`);right.appendChild(rules);
  META.names.forEach((n,i)=>rules.appendChild($(`<div><b>${n}</b> (${META.n_rule[i]} layouts): ${META.definitions[n]}</div>`)))}
 // ---------------- replay
 async function renderReplay(){const P=document.getElementById('replay');P.innerHTML='';const m=$('<main style="grid-template-columns:1fr"></main>');P.appendChild(m);
@@ -359,9 +501,37 @@ async function renderReplay(){const P=document.getElementById('replay');P.innerH
    const mi=$('<div class="minis" style="margin-top:8px"></div>');p.appendChild(mi);
    [['submitted map',T.result.submitted_occupancy.flat()],['exact posterior',T.result.exact_occupancy.flat()]].forEach(([s,h])=>{const d=$(`<div class="mini"><div class="small mute">${s}</div></div>`);d.appendChild(board({heat:h,truth:truthArr(T.result),mini:true}));mi.appendChild(d)});
    p.appendChild(scoreTable(T.result))}})}
-document.getElementById('tPlay').onclick=()=>{tab('play')};document.getElementById('tReplay').onclick=()=>{tab('replay')};document.getElementById('tHuman').onclick=()=>{tab('human')};
-function tab(t){for(const k of ['play','human','replay']){document.getElementById(k).style.display=t===k?'':'none';document.getElementById('t'+k[0].toUpperCase()+k.slice(1)).classList.toggle('on',t===k)}
- ({play:renderPlay,human:renderHuman,replay:renderReplay})[t]()}
+document.getElementById('tPlay').onclick=()=>{tab('play')};document.getElementById('tReplay').onclick=()=>{tab('replay')};document.getElementById('tHuman').onclick=()=>{tab('human')};document.getElementById('tBreak').onclick=()=>{tab('break')};
+function tab(t){for(const k of ['play','human','replay','break']){document.getElementById(k).style.display=t===k?'':'none';document.getElementById('t'+k[0].toUpperCase()+k.slice(1)).classList.toggle('on',t===k)}
+ ({play:renderPlay,human:renderHuman,replay:renderReplay,break:renderBreak})[t]()}
+// ---------------- break it
+let BK=null, BRES=[], BCURVE=null;
+const f2=x=>(x<0?'\u2212':'+')+Math.abs(x).toFixed(2);
+async function renderBreak(){const P=document.getElementById('break');P.innerHTML='';if(!BK)BK=await api('/api/break/meta');
+ const m=$('<main style="grid-template-columns:minmax(300px,380px) 1fr"></main>');P.appendChild(m);
+ const left=$(`<div class="panel"><b>Try to break the score</b><div class="small mute" style="margin:4px 0 10px">Every strategy plays the same ${BK.n} hidden boards. Find one that beats honest play without better experiments.</div></div>`);m.appendChild(left);
+ BK.strategies.forEach(st=>{const b=$(`<button class="b" style="display:block;width:100%;text-align:left;margin:4px 0"><b>${st.label}</b><br><span class="small mute">${st.what}</span></button>`);
+  b.onclick=async()=>{b.disabled=true;b.innerHTML+='<span class="small"> ... grading</span>';const r=await api('/api/break/run?key='+st.key);BRES=BRES.filter(x=>x.key!==r.key);BRES.push(r);renderBreak()};left.appendChild(b)});
+ const cu=$(`<div style="margin-top:12px"><b>Your own fixed answer</b> <span class="small mute">(no experiments; rules sum is normalised; occupancy optional)</span><textarea id="bk" rows="5" style="width:100%;font:12px monospace;margin-top:4px">{"rules": {"${META.names[1]}": 1.0}, "occupancy": null}</textarea><button class="b p" id="bkgo">Grade it</button></div>`);left.appendChild(cu);
+ cu.querySelector('#bkgo').onclick=async()=>{let body;try{body=JSON.parse(document.getElementById('bk').value)}catch(e){alert('not valid JSON');return}
+  const r=await api('/api/break/custom',body);if(r.error)return;BRES=BRES.filter(x=>x.key!=='custom');BRES.push(r);renderBreak()};
+ const right=$('<div></div>');m.appendChild(right);
+ const t=$('<div class="panel"><b>Results</b> <span class="small mute">mean unclipped score over the boards; honest play is the bar to beat</span></div>');right.appendChild(t);
+ if(!BRES.length)t.appendChild($('<div class="small mute" style="margin-top:8px">Click a strategy.</div>'));
+ else{const rows=[...BRES].sort((a,b)=>b.mean-a.mean);const tb=$(`<table class="sc" style="width:100%"><tr><td><b>Strategy</b></td><td><b>Score</b></td><td><b>vs honest</b></td><td><b>Worst board</b></td><td><b>Leak test, per board</b></td><td><b>Leak test, all boards</b></td></tr></table>`);
+  rows.forEach(r=>{const cheat=r.key==='peek'||r.key==='hidden_shots';const win=r.key!=='honest'&&r.vs_honest>0.005;
+   tb.appendChild($(`<tr><td>${r.label}</td><td>${f2(r.mean)}</td><td style="color:${win?'var(--hit)':'inherit'}">${r.key==='honest'?'':f2(r.vs_honest)}</td><td>${f2(r.worst)}</td><td style="color:${r.flagged>0.2?'var(--hit)':'inherit'}">${Math.round(100*r.flagged)}%</td><td style="color:${r.caught?'var(--hit)':'inherit'}">${r.caught?'caught':'passes'} <span class="small mute">(p ${r.batch_p<0.001?'< 0.001':r.batch_p.toFixed(3)})</span></td></tr>`))});
+  t.appendChild(tb);
+  const scale=Math.max(1.6,...rows.map(r=>Math.abs(r.mean)));const ch=$('<div style="margin-top:12px"></div>');
+  rows.forEach(r=>{const w=Math.abs(r.mean)/scale*45;const neg=r.mean<0;
+   ch.appendChild($(`<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><div style="width:190px" class="small">${r.label}</div><div style="position:relative;flex:1;height:14px;border-left:1px solid var(--line)"><div style="position:absolute;left:50%;top:-2px;bottom:-2px;border-left:1px solid var(--ink)"></div><div style="position:absolute;top:0;height:14px;${neg?`right:50%`:`left:50%`};width:${w}%;background:${r.key==='honest'?'var(--accent)':(neg?'var(--hit)':'var(--ink)')}"></div></div><div class="small" style="width:52px;text-align:right">${f2(r.mean)}</div></div>`))});
+  t.appendChild(ch);t.appendChild($('<div class="small mute" style="margin-top:6px">Centre line = 0, the score for doing nothing. Cheats can score above honest play, but only by using information the experiments did not give, and the exact leak test catches them. About 5% of honest boards are flagged by chance; the all-boards test pools them.</div>'))}
+ const cv=$('<div class="panel" style="margin-top:14px"><b>How confident should you be?</b> <span class="small mute">honest experiments, beliefs flattened (left) or sharpened (right); exact expected score given the evidence, averaged over the boards</span><div id="curve" class="small mute">computing...</div></div>');right.appendChild(cv);
+ if(!BCURVE)BCURVE=await api('/api/break/curve');const C=BCURVE,W=520,Hh=150,lo=Math.min(...C.map(c=>c.expected)),hi=Math.max(...C.map(c=>c.expected));
+ const X=i=>30+i*(W-60)/(C.length-1),Y=v=>Hh-20-(v-lo)/(hi-lo||1)*(Hh-40);
+ let svg=`<svg width="${W}" height="${Hh}"><polyline fill="none" stroke="var(--ink)" stroke-width="2" points="${C.map((c,i)=>X(i)+','+Y(c.expected)).join(' ')}"/>`;
+ C.forEach((c,i)=>{const h=c.power===1;svg+=`<circle cx="${X(i)}" cy="${Y(c.expected)}" r="${h?6:3}" fill="${h?'var(--accent)':'var(--ink)'}"/><text x="${X(i)}" y="${Hh-4}" text-anchor="middle" font-size="11">${h?'honest':'x'+c.power}</text><text x="${X(i)}" y="${Y(c.expected)-9}" text-anchor="middle" font-size="11">${c.expected.toFixed(2)}</text>`});
+ svg+='</svg>';document.getElementById('curve').innerHTML=svg}
 // ---------------- human benchmark
 let H=null, hRules=null, hOcc=null, hMode='shoot', hName=localStorage.getItem('bsName')||'';
 const LEVELS=[null,0.95,0.75,0.25,0.05];
@@ -409,7 +579,7 @@ async function renderHuman(){const P=document.getElementById('human');P.innerHTM
  const ex=$('<div class="panel" style="margin-top:14px"><b>Exact posterior of your own shots</b> <span class="small mute">(what perfect reasoning would have reported)</span></div>');right.appendChild(ex);
  const mi=$('<div class="mini" style="margin-top:6px"></div>');mi.appendChild(board({heat:R0.exact_occupancy.flat(),truth:truthArr(R0),mini:true}));ex.appendChild(mi);
  ex.appendChild(bars(R0.exact_rules,R0.hidden_rule))}
-function rulesPanel(){const p=$('<div class="panel small" style="margin-top:14px"><b>The six rules</b> (one drawn uniformly; the layout is uniform among layouts that satisfy it)</div>');
+function rulesPanel(){const p=$(`<div class="panel small" style="margin-top:14px"><b>The ${META.names.length} rules</b> (one drawn uniformly; the layout is uniform among layouts that satisfy it)</div>`);
  META.names.forEach((n,i)=>p.appendChild($(`<div><b>${n}</b> (${META.n_rule[i]} layouts): ${META.definitions[n]}</div>`)));return p}
 (async()=>{META=await api('/api/meta');S=await api('/api/state');renderPlay()})();
 </script></body></html>"""
@@ -419,8 +589,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8050)
     ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--world", choices=("closed", "open"), default="closed",
+                    help='open = the six rules plus "other" (none of the above)')
     a = ap.parse_args()
+    set_world(a.world)
     B.geometry()
+    threading.Thread(target=_warm, daemon=True).start()   # precompute the Break it boards
+    print(f"{a.world} world.", end=" ")
     print(f"Rulebound Battleship UI on http://{a.host}:{a.port}")
     ThreadingHTTPServer((a.host, a.port), Handler).serve_forever()
 

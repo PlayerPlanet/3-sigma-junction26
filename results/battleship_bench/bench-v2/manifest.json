@@ -1,0 +1,58 @@
+{
+ "models": {
+  "gemini-4-hydrogen": {
+   "provider": "gemini",
+   "model": "gemini-4-hydrogen",
+   "seeds": "0:10",
+   "salt": "battleship-llm-v1",
+   "one_tag": true,
+   "concurrency": 4,
+   "max_tokens": 16384,
+   "temperature": 1.0,
+   "rpm": 0.0,
+   "started": "2026-11-15T01:00:37",
+   "finished": "2026-11-15T01:34:27"
+  }
+ },
+ "tag": "bench-v2",
+ "salt": "battleship-llm-v1",
+ "seeds": "0:10",
+ "git": {
+  "commit": "da873ca2e3bc0fd03c1104d122dbbf9c41b7419a",
+  "branch": "battleship-env",
+  "dirty": true
+ },
+ "rules_hash": "a244e8bffe81",
+ "protocol_hash": "b3b03248413b",
+ "engine_hash": "1a9adbf2f842",
+ "runner_hash": "4b374a6d7daa",
+ "config": {
+  "tag": "bench-v2",
+  "salt": "battleship-llm-v1",
+  "seeds": "0:10",
+  "temperature": 1.0,
+  "max_tokens": 16384,
+  "concurrency": 4,
+  "one_tag": true,
+  "models": [
+   {
+    "provider": "gemini",
+    "model": "gemini-4-hydrogen"
+   },
+   {
+    "provider": "verda",
+    "model": "kimi-k3-1-pro",
+    "concurrency": 2
+   },
+   {
+    "provider": "verda-deepseek",
+    "model": "SET-FROM---list-models"
+   },
+   {
+    "provider": "modal",
+    "model": "gemma-4-26b-a4b-it"
+   }
+  ],
+  "_notes": "bench-v2: one action per reply (in bench-v1 models invented results for later tags in the same reply), temperature 1.0 (provider default for Gemini 3+ and Kimi thinking models; temperature 0 gave empty replies), 16k tokens per turn and 32k for the final answer (bench-v1 final answers were empty at the token limit). bench-v1 is kept as a harness-failure record, not a model score."
+ }
+}

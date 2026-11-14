@@ -56,6 +56,17 @@ BASELINES = {  # (design, inference) policies from bayesenv.battleship, same boa
     "random_design": ("random", "exact"),
     "do_nothing": ("none", "prior"),
 }
+OPEN_BASELINES = {"closed_world_bayes": ("reference", "closed_world")}  # open world only
+
+
+def set_world(world: str) -> None:
+    """Config key "world": "closed" (six rules, default) or "open" (six plus "other")."""
+    global B
+    if world == "open":
+        from bayesenv import battleship_open as BO
+        B = BO
+        BASELINES.update(OPEN_BASELINES)
+    R.B = B
 
 
 def sha(text: str) -> str:
@@ -125,6 +136,7 @@ class DryModel:
 
 async def run_model(m: dict, cfg: dict, out: Path, dry: bool) -> dict:
     from experiments import battleship_llm as E
+    E.set_world(cfg.get("world", "closed"))
     lo, hi = map(int, cfg["seeds"].split(":"))
     a = Namespace(provider=m["provider"], model=m["model"], seeds=cfg["seeds"], salt=cfg["salt"],
                   one_tag=m.get("one_tag", cfg.get("one_tag", False)),
@@ -179,6 +191,7 @@ def main() -> None:
         list_models()
         return
     cfg = json.loads((ROOT / a.config).read_text())
+    set_world(cfg.get("world", "closed"))
     tag = a.tag or cfg["tag"]
     out = ROOT / "results" / "battleship_bench" / tag
     out.mkdir(parents=True, exist_ok=True)
@@ -192,7 +205,8 @@ def main() -> None:
     mpath = out / "manifest.json"
     manifest = json.loads(mpath.read_text()) if mpath.exists() else {"models": {}}
     manifest.update({
-        "tag": tag, "salt": cfg["salt"], "seeds": cfg["seeds"], "git": git_info(),
+        "tag": tag, "world": cfg.get("world", "closed"), "salt": cfg["salt"],
+        "seeds": cfg["seeds"], "git": git_info(),
         "rules_hash": sha(json.dumps(B.rules(), sort_keys=True)),
         "protocol_hash": sha(R.system_prompt(one_tag=False) + R.system_prompt(one_tag=True)),
         "engine_hash": sha((ROOT / "bayesenv" / "battleship.py").read_text()),

@@ -1,0 +1,15 @@
+{
+  "name": "3-sigma-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data": "python ../scripts/build_demo_data.py",
+    "verify": "node src/verify.mjs",
+    "models": "node tools/embed-models.mjs",
+    "build": "esbuild src/app.js --bundle --format=iife --minify --outfile=app.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.187.0"
+  }
+}

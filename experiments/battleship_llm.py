@@ -36,10 +36,26 @@ from bayesenv import battleship as B  # noqa: E402
 from bayesenv import battleship_rows as R  # noqa: E402
 from bayesenv.llm_agent import BudgetExceeded, Model  # noqa: E402
 
-FINAL = ("The experiment phase is over. Answer with your beliefs as one JSON object and nothing "
-         'after it: {"rules": {"any": p, "no_touch": p, "parallel": p, "border": p, '
-         '"center_clear": p, "clustered": p}, "occupancy": [[6 numbers], ... 6 rows]}, where '
-         "occupancy[row][col] is the probability that a ship covers that cell.")
+def final_prompt() -> str:
+    names = ", ".join(f'"{n}": p' for n in B.NAMES)
+    return ("The experiment phase is over. Answer with your beliefs as one JSON object and "
+            'nothing after it: {"rules": {' + names + '}, "occupancy": [[6 numbers], ... 6 '
+            "rows]}, where occupancy[row][col] is the probability that a ship covers that cell.")
+
+
+def set_world(world: str) -> None:
+    """closed = the six rules; open = six plus "other" (bayesenv/battleship_open.py). Rebinds
+    the engine used here and by the prompt builder in bayesenv/battleship_rows.py."""
+    global B
+    if world == "open":
+        from bayesenv import battleship_open as BO
+        B = BO
+    elif world == "closed":
+        from bayesenv import battleship as BC
+        B = BC
+    else:
+        raise ValueError(f"unknown world {world}")
+    R.B = B
 # Reasoning models can spend more than 16k tokens thinking before the 6x6 answer (bench-v1:
 # every final answer of kimi-k3-1-pro was empty after hitting the limit).
 FINAL_TOKENS = int(os.environ.get("BATTLESHIP_FINAL_TOKENS", "32768"))
@@ -116,7 +132,7 @@ async def run_episode(model: Model, seed: int, salt: str, one_tag: bool) -> tupl
             if lab.remaining <= 0:
                 break
         msgs.append({"role": "user", "content": "\n".join(lines)})
-    msgs.append({"role": "user", "content": FINAL})
+    msgs.append({"role": "user", "content": final_prompt()})
     beliefs = None
     for _ in range(3):
         text = await ask(max_tokens=max(4 * model.max_tokens, FINAL_TOKENS))

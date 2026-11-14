@@ -200,3 +200,53 @@ the size-curve pipeline, and the pre-registered transfer test on the wet-lab row
 * The reference is greedy, not optimal; the gap to an optimal planner is unknown.
 * The open-world variant (a disclosed "other" rule outside the list) is not built yet; the
   machinery (exact posterior, proper score, leak test) supports it directly.
+
+## Open world: "none of the above" (`bayesenv/battleship_open.py`)
+
+The listed rules do not have to be true. The open game adds a seventh hypothesis, `other`: all
+three ships lie inside one hidden rectangle (whole rows by whole columns) of at most 18 cells,
+the rectangle uniform over the 87 that can hold the ships, then the layout uniform inside it.
+The family is disclosed in the rules, so nothing is withheld, and everything stays exact: the
+same 53,624 layouts are enumerated; only the likelihood row of `other` is a mixture instead of
+uniform. The closed game, its calibration and its training rows are untouched (the open module
+loads `battleship.py` a second time with `OPEN_WORLD = True`).
+
+Why it is hard in the right way: when the ships sit inside a small block, `other` explains the
+data far better than any listed rule (the size principle), but an agent has to entertain it.
+The baseline `closed_world` is exact Bayes over the six listed rules only.
+
+Calibration, 140 boards (salt `open-cal`), unclipped score:
+
+| Policy | Mean | On `other` boards (n = 28) |
+|---|---|---|
+| reference (exact Bayes, greedy EIG) | +0.549 | +0.765 |
+| exact Bayes that never says "other" | +0.147 | −1.338 |
+| ignore the noise | +0.165 | +0.523 |
+| random experiments, exact beliefs | +0.331 | +0.525 |
+| stop after one shot | +0.027 | +0.026 |
+| do nothing | 0.000 | 0.000 |
+| bet everything on one rule | −1.499 | −1.288 |
+
+The reference's median P(other) is 0.62 on `other` boards and 0.002 on the rest. The leak test
+flags 5% of honest boards and 59% of boards for the 10%-peek cheat.
+
+    python scripts/battleship_ui.py --world open
+    python scripts/battleship_benchmark.py --config configs/battleship_benchmark_open.json
+
+The open benchmark uses 14 boards with exactly 2 boards per rule (a stratified sample of the
+uniform rule prior): its salt is the first `battleship-open-v1-<i>` with that property.
+
+## Break it (UI tab)
+
+`python scripts/battleship_ui.py [--world open]`, tab "Break it". Every strategy a judge would
+try plays the same 24 hidden boards (salt `break-it`) next to honest play: do nothing, stop
+early, bet everything, act certain, overconfident, hedge, ignore noise, random experiments,
+never say "none of the above" (open world), and two cheats with a side channel to the hidden
+state (peek at 10% of the answer; five secret shots). Shown per strategy: mean unclipped score,
+difference to honest play, worst board, the per-board leak-test flag rate, and an all-boards
+leak test (one-sided z test on the mean p-value, flagged at p < 0.01). A curve shows the exact
+expected score of honest experiments with beliefs flattened or sharpened: it peaks at the
+honest posterior, which is what "proper" means. A text box grades any fixed submission.
+Open world, 24 boards: honest +0.62; peek +0.70 but caught (p < 0.001); five secret shots +0.66,
+not flagged per board but caught by the all-boards test (p = 0.003); never "other" +0.29; act
+certain −0.41; bet everything −1.30.

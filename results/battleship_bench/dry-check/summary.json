@@ -1,0 +1,152 @@
+{
+ "run": "dry-check",
+ "salt": [
+  "battleship-llm-v1"
+ ],
+ "models": {
+  "baseline:do_nothing": {
+   "n": 10,
+   "score_raw": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "gap_to_reference": [
+    -0.5335371532943871,
+    -0.6387612512211119,
+    -0.4203243945188533
+   ],
+   "score_harbor": 0.0,
+   "rule_accuracy": 0.2,
+   "design": 1.5171834061683896e-18,
+   "inference": -1.5171834061683896e-18,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 0.0,
+   "scans": 0.0,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:naive_human": {
+   "n": 10,
+   "score_raw": [
+    -0.5882116469250539,
+    -1.4410464330873651,
+    0.18779748250048747
+   ],
+   "gap_to_reference": [
+    -1.121748800219441,
+    -2.0522229239660215,
+    -0.28929154211898084
+   ],
+   "score_harbor": 0.22040462979806508,
+   "rule_accuracy": 0.2,
+   "design": 0.36511043413630334,
+   "inference": -0.9533220810613573,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 20.0,
+   "scans": 0.0,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:noise_ignoring_coder": {
+   "n": 10,
+   "score_raw": [
+    0.33247733764611576,
+    0.09912889456381462,
+    0.5280808678636457
+   ],
+   "gap_to_reference": [
+    -0.2010598156482713,
+    -0.3508638491268755,
+    -0.07561986875842541
+   ],
+   "score_harbor": 0.38440120216876494,
+   "rule_accuracy": 0.3,
+   "design": 0.5335371532943871,
+   "inference": -0.20105981564827125,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 12.7,
+   "scans": 7.3,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:random_design": {
+   "n": 10,
+   "score_raw": [
+    0.18260703131613892,
+    0.006334749374746581,
+    0.3328556855695947
+   ],
+   "gap_to_reference": [
+    -0.350930121978248,
+    -0.4989213710050528,
+    -0.22631121363966328
+   ],
+   "score_harbor": 0.24216557478618822,
+   "rule_accuracy": 0.3,
+   "design": 0.18260703131613892,
+   "inference": 1.6653345369377347e-17,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 16.2,
+   "scans": 3.8,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:reference": {
+   "n": 10,
+   "score_raw": [
+    0.5335371532943871,
+    0.4203243945188533,
+    0.6387612512211119
+   ],
+   "gap_to_reference": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "score_harbor": 0.5335371532943871,
+   "rule_accuracy": 0.4,
+   "design": 0.5335371532943871,
+   "inference": 1.1102230246251566e-17,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 12.7,
+   "scans": 7.3,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "dry-reference-player": {
+   "n": 10,
+   "score_raw": [
+    0.5335361316218589,
+    0.4203250120001008,
+    0.6387594802917501
+   ],
+   "gap_to_reference": [
+    -1.0216725281370076e-06,
+    -2.342496647253431e-06,
+    4.082439716033421e-07
+   ],
+   "score_harbor": 0.5335361316218589,
+   "rule_accuracy": 0.4,
+   "design": 0.5335371532943871,
+   "inference": -1.0216725281259053e-06,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 12.7,
+   "scans": 7.3,
+   "leak_p_lt_05": 0.0,
+   "requests": 137,
+   "tokens_out": 0
+  }
+ }
+}

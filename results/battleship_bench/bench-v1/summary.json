@@ -1,0 +1,190 @@
+{
+ "run": "bench-v1",
+ "salt": [
+  "battleship-llm-v1"
+ ],
+ "models": {
+  "baseline:do_nothing": {
+   "n": 10,
+   "score_raw": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "gap_to_reference": [
+    -0.5319990038546936,
+    -0.6380481635709877,
+    -0.4192057492402648
+   ],
+   "score_harbor": 0.0,
+   "rule_accuracy": 0.2,
+   "rule_part": 0.0,
+   "cell_part": 0.0,
+   "design": 0.0,
+   "inference": 0.0,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 0.0,
+   "scans": 0.0,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:naive_human": {
+   "n": 10,
+   "score_raw": [
+    -0.5882116469250498,
+    -1.4410464330873571,
+    0.1877974825004915
+   ],
+   "gap_to_reference": [
+    -1.1202106507797436,
+    -2.0511154834243035,
+    -0.2865448270291913
+   ],
+   "score_harbor": 0.22040462979806605,
+   "rule_accuracy": 0.2,
+   "rule_part": -0.9299847828098807,
+   "cell_part": -0.24643851104021888,
+   "design": 0.36511043413630284,
+   "inference": -0.9533220810613526,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 20.0,
+   "scans": 0.0,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:noise_ignoring_coder": {
+   "n": 10,
+   "score_raw": [
+    0.3511307138372168,
+    0.11601529432827759,
+    0.537936475260707
+   ],
+   "gap_to_reference": [
+    -0.1808682900174768,
+    -0.3343224117590495,
+    -0.05586734337774962
+   ],
+   "score_harbor": 0.4030545783598674,
+   "rule_accuracy": 0.3,
+   "rule_part": 0.27238023683451956,
+   "cell_part": 0.42988119083991394,
+   "design": 0.5319990038546936,
+   "inference": -0.18086829001747678,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 12.8,
+   "scans": 7.2,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:random_design": {
+   "n": 10,
+   "score_raw": [
+    0.18260703131613876,
+    0.006334749374746663,
+    0.33285568556959455
+   ],
+   "gap_to_reference": [
+    -0.34939197253855486,
+    -0.49790885639587407,
+    -0.22467556916145554
+   ],
+   "score_harbor": 0.24216557478618833,
+   "rule_accuracy": 0.3,
+   "rule_part": 0.02028288178479791,
+   "cell_part": 0.3449311808474796,
+   "design": 0.1826070313161387,
+   "inference": 2.2204460492503132e-17,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 16.2,
+   "scans": 3.8,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "baseline:reference": {
+   "n": 10,
+   "score_raw": [
+    0.5319990038546936,
+    0.4192057492402648,
+    0.6380481635709877
+   ],
+   "gap_to_reference": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "score_harbor": 0.5319990038546936,
+   "rule_accuracy": 0.4,
+   "rule_part": 0.35090812634697277,
+   "cell_part": 0.7130898813624145,
+   "design": 0.5319990038546936,
+   "inference": 1.1102230246251566e-17,
+   "parsed": 1.0,
+   "invalid_actions": 0.0,
+   "actions": 12.8,
+   "scans": 7.2,
+   "leak_p_lt_05": 0.0,
+   "requests": 0,
+   "tokens_out": 0
+  },
+  "gemini-4-hydrogen": {
+   "n": 10,
+   "score_raw": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "gap_to_reference": [
+    -0.5319990038546936,
+    -0.6380481635709877,
+    -0.4192057492402648
+   ],
+   "score_harbor": 0.0,
+   "rule_accuracy": 0.2,
+   "rule_part": 0.0,
+   "cell_part": 0.0,
+   "design": 0.4699663113213296,
+   "inference": -0.4699663113213296,
+   "parsed": 0.0,
+   "invalid_actions": 3.6,
+   "actions": 10.6,
+   "scans": 8.0,
+   "leak_p_lt_05": 0.0,
+   "requests": 98,
+   "tokens_out": 11265
+  },
+  "kimi-k3-1-pro": {
+   "n": 4,
+   "score_raw": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "gap_to_reference": [
+    -0.6167822802569032,
+    -0.7527175025181819,
+    -0.4815159607130744
+   ],
+   "score_harbor": 0.0,
+   "rule_accuracy": 0.25,
+   "rule_part": 0.0,
+   "cell_part": 0.0,
+   "design": 0.3797167508430879,
+   "inference": -0.3797167508430879,
+   "parsed": 0.0,
+   "invalid_actions": 0.0,
+   "actions": 11.25,
+   "scans": 8.75,
+   "leak_p_lt_05": 0.0,
+   "requests": 56,
+   "tokens_out": 236206
+  }
+ }
+}

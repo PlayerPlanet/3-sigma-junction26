@@ -11,7 +11,7 @@ services:
     expose: ["8000", "8001"]
     environment:
       TASK_SEED: "1"
-      GRADER_TOKEN: "TsEAQRnVKt8dkvEPsuj7knyVNqS3ABA-"
+      GRADER_TOKEN: "2oyXpD46zNWFWLEfuG0C9M2g86ks1y1v"
       TASK_SALT: ""  # empty = random per trial (see server.py)
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost',8000),timeout=2).close()"]

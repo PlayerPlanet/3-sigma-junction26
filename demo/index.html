@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3-Sigma · An environment that grades how agents do science</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="intro-on">
+
+<!-- ============ Flash-card intro (dark: before) ============ -->
+<div id="intro" aria-label="Introduction">
+  <div class="card" data-ms="2500"><img src="assets/still1.jpg" alt=""><p>For a century, discovery<br>moved at the speed of hands.</p></div>
+  <div class="card" data-ms="2000"><img src="assets/still3.jpg" alt=""><p>One experiment.</p></div>
+  <div class="card" data-ms="2000"><img src="assets/still5.jpg" alt=""><p>One result.</p></div>
+  <div class="card" data-ms="2000"><img src="assets/still2.jpg" alt="" class="paint"><p>One belief, revised.</p></div>
+  <div class="card top" data-ms="3000"><img src="assets/still6.jpg" alt="" class="tall"><p>Some experiments<br>you only run once.</p></div>
+  <div class="card" data-ms="3500"><img src="assets/still4.jpg" alt=""><p>Now AI agents are<br>walking into the lab.</p></div>
+  <div class="card text-only" data-ms="3000"><p>Can they choose the experiment?<br>Can they believe the result?</p></div>
+  <div class="intro-ui"><button id="intro-mute" type="button" aria-pressed="false">Sound on</button><button id="intro-skip" type="button">Skip intro</button></div>
+  <div class="gate" id="intro-gate"><h1>3-Sigma</h1><button id="intro-start" type="button">Begin</button></div>
+  <audio id="intro-audio" src="assets/intro.mp3" preload="auto"></audio>
+  <div class="intro-bar"><i id="intro-progress"></i></div>
+</div>
+
+<header class="nav">
+  <a class="brand" href="#top">3-Sigma</a>
+  <nav>
+    <a href="#idea">Idea</a>
+    <a href="#play">Play</a>
+    <a href="#rl">Training</a>
+    <a href="#wetlab">Wet lab</a>
+  </nav>
+</header>
+
+<!-- ============ Hero (dark) ============ -->
+<section id="top" class="hero dark">
+  <video class="ai-clip" src="assets/tubes.mp4" muted playsinline loop autoplay preload="auto"></video>
+  <div class="hero-shade"></div>
+  <div class="hero-copy">
+    <p class="eyebrow">Junction 2026 · AfterQuery · Break the Agent</p>
+    <h1>An environment that grades how agents do science.</h1>
+    <p class="lede">Agents run a few noisy experiments on a hidden system, then say what they believe. We score that belief against the exact Bayesian answer.</p>
+    <div class="cta">
+      <a class="btn solid" href="#play">Play against the agent</a>
+      <button class="btn ghost" id="replay-intro" type="button">Replay intro</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ The idea (light: now) ============ -->
+<section id="idea" class="light">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="eyebrow">What we built</p>
+      <h2>A lab where the right answer is known exactly.</h2>
+      <p class="body">A lab agent has two jobs: choose the right experiment, and believe the result the right amount. We grade both.</p>
+    </div>
+    <div class="media reveal"><video class="ai-clip" src="assets/dish.mp4" muted playsinline loop autoplay preload="auto"></video></div>
+  </div>
+  <div class="wrap steps">
+    <article class="reveal"><h3>Hide</h3><p>A simulator holds a secret.</p></article>
+    <article class="reveal"><h3>Experiment</h3><p>The agent spends a small budget on noisy experiments.</p></article>
+    <article class="reveal"><h3>Believe</h3><p>It states its belief. We score it against the exact answer.</p></article>
+  </div>
+  <div class="wrap facts" id="facts"></div>
+</section>
+
+<!-- ============ Play (sea) ============ -->
+<section id="play" class="stage light">
+  <div class="wrap stage-head reveal">
+    <div>
+      <p class="eyebrow">Rulebound Battleship</p>
+      <h2>The wet lab, with the domain swapped.</h2>
+    </div>
+    <p class="body">Three ships, one hidden placement rule, a budget of 20, and reports that sometimes lie. The fog is belief: it lifts where the evidence is strong and glows where a ship is likely.</p>
+  </div>
+
+  <div class="wrap toolbar">
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-mode="play" type="button">You vs the agent</button>
+      <button class="tab" data-mode="rl" type="button" id="rl">Agent vs RL-tuned agent</button>
+    </div>
+    <div class="boards" id="boards" aria-label="Board"></div>
+  </div>
+
+  <div class="wrap arena">
+    <div class="panel" id="panelA">
+      <div class="panel-head"><div><span class="who"></span><span class="tag"></span></div><div class="budget"><i></i><b></b></div></div>
+      <div class="sea-host"></div>
+      <div class="panel-foot"></div>
+    </div>
+    <div class="panel" id="panelB">
+      <div class="panel-head"><div><span class="who"></span><span class="tag"></span></div><div class="budget"><i></i><b></b></div></div>
+      <div class="sea-host"></div>
+      <div class="panel-foot"></div>
+    </div>
+  </div>
+
+  <div class="wrap controls" id="controls"></div>
+  <div class="wrap results" id="results" hidden></div>
+</section>
+
+<!-- ============ Wet lab transfer (light) ============ -->
+<section class="band dark">
+  <img src="assets/still1.jpg" alt="">
+  <h2 class="reveal">From a game<br>to the bench.</h2>
+</section>
+
+<section id="wetlab" class="light">
+  <div class="wrap">
+    <div class="reveal narrow">
+      <p class="body">The wet lab is the same problem with real chemistry: six candidate mechanisms, noisy kinetics, limited reagents.</p>
+    </div>
+    <div class="map reveal" id="map"></div>
+    <div class="reveal">
+      <h3 class="sub">What the agent has to tell apart</h3>
+      <p class="body" id="wet-caption"></p>
+      <div class="curves" id="curves"></div>
+    </div>
+    <div class="transfer reveal">
+      <div>
+        <h3 class="sub">Does the skill transfer?</h3>
+        <p class="body">Train on Battleship only. Test on wet-lab choices the model never saw, against a control.</p>
+        <p class="body" id="transfer-note"></p>
+      </div>
+      <div class="bars" id="transfer"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band dark">
+  <img src="assets/still3.jpg" alt="">
+  <h2 class="reveal">The same grader, for any lab<br>whose truth can be simulated.</h2>
+</section>
+
+<footer class="dark">
+  <div class="wrap foot">
+    <div>
+      <p class="brand">3-Sigma</p>
+      <p class="small">Team 3-Sigma · Junction 2026 · AfterQuery</p>
+    </div>
+    <div>
+            <p class="small" id="foot-note"></p>
+      <p class="small">The two video clips on this page are AI-generated (Google Gemini). The photographs are not.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="ships-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

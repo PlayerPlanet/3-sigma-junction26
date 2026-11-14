@@ -102,7 +102,7 @@ def system_prompt(one_tag: bool = True) -> str:
         "noise.")
     card = (
         "Exact generative model: (1) a rule is drawn uniformly at random from the list (each "
-        "1/6); (2) the layout is drawn uniformly from ALL layouts that satisfy that rule (a "
+        f"1/{B.K}); (2) the layout is drawn uniformly from ALL layouts that satisfy that rule (a "
         "layout can satisfy several rules; 'any' is satisfied by every layout); (3) each "
         "action's noise is independent.\n"
         f"Rules:\n{rules}\n"

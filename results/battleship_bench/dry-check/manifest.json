@@ -1,0 +1,57 @@
+{
+ "models": {
+  "dry-reference-player": {
+   "provider": "dry",
+   "model": "dry-reference-player",
+   "seeds": "0:10",
+   "salt": "battleship-llm-v1",
+   "one_tag": false,
+   "concurrency": 4,
+   "max_tokens": 4096,
+   "temperature": 0.0,
+   "rpm": 0.0,
+   "started": "2026-11-14T21:26:33",
+   "finished": "2026-11-14T21:26:37"
+  }
+ },
+ "tag": "dry-check",
+ "salt": "battleship-llm-v1",
+ "seeds": "0:10",
+ "git": {
+  "commit": "f003c03106890c8c7e5d414782755a6244c04191",
+  "branch": "battleship-env",
+  "dirty": true
+ },
+ "rules_hash": "a244e8bffe81",
+ "protocol_hash": "b3b03248413b",
+ "engine_hash": "1a9adbf2f842",
+ "runner_hash": "52a43317ab12",
+ "config": {
+  "tag": "bench-v1",
+  "salt": "battleship-llm-v1",
+  "seeds": "0:10",
+  "temperature": 0.0,
+  "max_tokens": 4096,
+  "concurrency": 4,
+  "one_tag": false,
+  "models": [
+   {
+    "provider": "gemini",
+    "model": "gemini-4-hydrogen"
+   },
+   {
+    "provider": "verda",
+    "model": "kimi-k3-1-pro",
+    "concurrency": 2
+   },
+   {
+    "provider": "verda-deepseek",
+    "model": "SET-FROM---list-models"
+   },
+   {
+    "provider": "modal",
+    "model": "gemma-4-26b-a4b-it"
+   }
+  ]
+ }
+}
