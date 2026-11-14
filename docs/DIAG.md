@@ -353,7 +353,79 @@ unaffordable tests raise `ValueError` and cost nothing; a second submission rais
 
 - The reference (DP) is exact, but only for tables this small. Number of states = sum over
   affordable test subsets of the product of their outcome counts.
-- No Harbor task, MCP server or verifier has been built for this lab.
+- The Harbor task (below) has been checked as a local process only; no Docker build and no
+  `harbor run` has been done yet.
 - The rules given to an agent (`rules(table)`) contain the full table, including the nuisance
   model. An agent that can code can run the same DP; as with the chemistry lab, this lab
   alone does not make a hard task for a coding agent.
+
+## Harbor task (`tasks/diag/diag-0..4`)
+
+The same table with seeds 0 to 4, packaged like the chemistry lab: `templates/diag_task/`,
+rendered by `scripts/make_diag_tasks.py` (also called from `scripts/render_tasks.sh`). The
+hidden cause, the nuisance state and every test reading come from the seed and a salt that is
+random per trial and never leaves the server container, so a trial cannot be recomputed from
+the public code.
+
+```bash
+python scripts/make_diag_tasks.py --seeds 0:5 --out tasks/diag
+harbor run -p tasks/diag -a oracle            # exact DP through the MCP tools
+```
+
+The question the task is built to answer: given the complete model, does an agent choose
+tests by looking ahead (run the control first, leave the expensive confirmatory tests alone),
+or one step at a time?
+
+**What the agent gets.** Three MCP tools on the server `diag-lab`:
+
+- `get_rules`: the complete table (`diag.task_rules`). Every cause and prior, the nuisance
+  variables and `P(nuisance state | cause)`, every test with its cost, its outcomes and
+  `P(outcome | cause, nuisance state)` as a full array, the budget, the protocol (one reading
+  per test, each test once, rejected actions are free, stopping early is allowed) and the
+  scoring rule. It does not contain the `role` tags of the table file, and neither the rules
+  nor the instruction say anything about strategy.
+- `run_test(name)`: the reading and the budget left. Unknown, repeated and unaffordable tests
+  are rejected without cost.
+- `submit_posterior({cause: probability})`: once.
+
+**Score** (`/logs/verifier/reward.txt`): `clip(reward / max_reward, 0, 1)`, with
+`reward = log q(c*) - log p0(c*)` (q mixed with 0.1% of the prior) and `max_reward` the reward
+of probability 1 on the true cause. No submission, or the prior, scores 0. The score is per
+episode and noisy: exact DP itself averages 1.62 nats, and on a single draw it can be beaten
+by greedy (7 of 40 draws in a quick check). Compare `gap_to_dp` over several seeds and trials, and read the
+behaviour fields, which do not depend on luck.
+
+**Reading `/logs/verifier/details.json`** (`diag.grade`, computed in the server):
+
+| Field | Meaning |
+|---|---|
+| `score`, `reward`, `max_reward`, `accuracy`, `submitted` | the 0-1 score, the raw reward in nats, its maximum for this cause, whether the argmax is right, whether anything was submitted |
+| `tests_run` | ordered list of `{step, test, cost, reading, role}` |
+| `n_tests`, `budget`, `budget_used`, `budget_remaining` | spending |
+| `control_run`, `control_step`, `control_tests` | whether the control (`role: control` in the YAML) was run, and at which step (1 = first; `null` = never) |
+| `misleading_run`, `misleading_run_names`, `misleading_tests` | how many of the three `role: misleading` tests were run |
+| `exact_posterior`, `submitted_posterior` | the exact posterior given the agent's own tests, and what it submitted |
+| `design` | `log p(c* | own tests) - log p0(c*)`: what the chosen tests were worth |
+| `inference` | `log q(c*) - log p(c* | own tests)`: loss from turning readings into probabilities; `design + inference = reward` |
+| `dp_reward`, `dp_tests`, `dp_score` | exact DP on the same hidden draw (same cause, nuisance state and readings) |
+| `greedy_reward`, `greedy_tests`, `greedy_score` | greedy information gain on the same draw; `greedy_per_cost_*` likewise |
+| `gap_to_dp`, `gap_to_greedy` | agent's reward minus the reference's (negative = worse) |
+| `design_gap_to_dp`, `design_gap_to_greedy` | the same with `design` in place of `reward`: test choice only |
+| `dp_expected_reward`, `greedy_expected_reward` | exact expectations over all draws (1.620 and 0.832) |
+| `hidden_cause`, `hidden_nuisance` | the truth |
+
+How to read a run. A planner runs the control and the four HPLC assays, no misleading test,
+and has `design_gap_to_dp` near 0 on average. DP runs the control first, but only the set of
+tests matters for the final belief, not their order, so a late control is not a mistake by
+itself. A one-step chooser never runs the control (it has zero immediate information about
+the cause), starts with two misleading tests, and tracks `greedy_tests`. `inference` near 0 (about -0.001 from the mixing) means the
+submitted probabilities are the exact posterior; a clearly negative value is an inference
+error, separate from test choice.
+
+**Checked locally** (`tests/test_diag_task.py`): the posterior recomputed from the rules JSON
+alone equals the engine's; a table rebuilt from the rules gives the same DP; the rules and the
+instruction contain no role tags and no strategy words; the grader's fields; and, with the
+rendered `server.py` running as a local process and a real MCP client, a do-nothing episode
+(score 0), rejected actions, the budget, the single submission, and the oracle program from
+`solution/solve.sh` (score equal to `dp_score`, same tests as `dp_tests`). Not checked: the
+Docker build, `tests/test.sh` inside Harbor, and any LLM agent.

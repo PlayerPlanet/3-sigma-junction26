@@ -55,6 +55,7 @@ class Table:
     budget: float
     roles: list[str] = field(default_factory=list)
     description: str = ""
+    factors: list[dict] = field(default_factory=list)   # [{"name", "states"}]; rules text only
 
     def __post_init__(self):
         self.prior = np.asarray(self.prior, float)
@@ -188,7 +189,8 @@ def table_from_spec(spec: dict) -> Table:
     return Table(name=str(spec.get("name", "table")), causes=causes, prior=prior,
                  nuisances=nuis_names, p_nuis=p_nuis, tests=tests, costs=np.array(costs),
                  outcomes=outcomes, lik=lik, budget=float(spec["budget"]), roles=roles,
-                 description=str(spec.get("description", "")))
+                 description=str(spec.get("description", "")),
+                 factors=[{"name": n, "states": list(st)} for n, st in zip(fnames, fstates)])
 
 
 def load_spec(name_or_path) -> dict:
@@ -642,6 +644,124 @@ def run_policy(table: Table, policy, seed: int, salt: str | None = None,
         lab.step(t)
     lab.submit(lab.exact_posterior())
     return lab
+
+
+# ---- Harbor task: full disclosure and the grader's breakdown ------------------------------
+
+def task_rules(table: Table, budget: float | None = None) -> dict:
+    """Everything an agent needs to recompute the exact posterior and to plan: the complete
+    table as arrays plus prose on how to read them. Test roles are NOT included."""
+    budget = float(table.budget if budget is None else budget)
+    r = rules(table)
+    r["budget"] = budget
+    r["epsilon"] = EPS
+    r["nuisance_variables"] = [dict(f) for f in table.factors]
+    r["how_to_read"] = (
+        "Hidden state = one cause (what you report on) and one nuisance state (hidden, not "
+        "asked for, but test readings can depend on it). 'causes' lists every cause with its "
+        "prior probability. 'nuisance_states' lists every joint nuisance state"
+        + (" (one state of each of 'nuisance_variables', in that order, joined by '/')"
+           if table.factors else "") +
+        ". p_nuisance_given_cause[cause][j] = P(nuisance state j | cause), j indexing "
+        "'nuisance_states'. For each test, p_outcome_given_cause_nuisance[i][j][k] = "
+        "P(reading = outcomes[k] | cause i, nuisance state j), i indexing 'causes' and j "
+        "indexing 'nuisance_states'. Given the cause and the nuisance state, the readings of "
+        "different tests are independent. All numbers are exact: the lab draws the cause, the "
+        "nuisance state and every reading from exactly these probabilities.")
+    r["protocol"] = (
+        f"Budget: {budget:g} cost units in total. run_test(name) runs one test, costs its "
+        "'cost' and returns one reading (one of its 'outcomes'). Each test can be run at most "
+        "once. Unknown, repeated or unaffordable tests are rejected and cost nothing. You may "
+        "stop at any time; unused budget is neither rewarded nor penalised. "
+        "submit_posterior({cause: probability}) is accepted once and ends the episode; values "
+        "are normalised and causes you leave out get 0.")
+    r["scoring"] = (
+        f"reward = log q(true cause) - log prior(true cause), natural log, where q = "
+        f"{1 - EPS} * your submitted distribution + {EPS} * prior. The reported score is "
+        "clip(reward / max_reward, 0, 1), where max_reward is the reward of putting "
+        "probability 1 on the true cause. Submitting the prior, or not submitting, scores 0.")
+    return r
+
+
+def table_from_rules(r: dict) -> Table:
+    """Rebuild a Table from the output of task_rules alone (no roles, no YAML)."""
+    causes = [c["name"] for c in r["causes"]]
+    return Table(name="from_rules", causes=causes, prior=np.array([c["prior"] for c in r["causes"]]),
+                 nuisances=list(r["nuisance_states"]),
+                 p_nuis=np.array([r["p_nuisance_given_cause"][c] for c in causes]),
+                 tests=[t["name"] for t in r["tests"]],
+                 costs=np.array([t["cost"] for t in r["tests"]]),
+                 outcomes=[list(t["outcomes"]) for t in r["tests"]],
+                 lik=[np.array(t["p_outcome_given_cause_nuisance"]) for t in r["tests"]],
+                 budget=float(r["budget"]))
+
+
+def max_reward(table: Table, c: int) -> float:
+    """Reward of a certain, correct answer (one-hot on cause c) under the mixing convention."""
+    return math.log((1 - EPS) + EPS * float(table.prior[c])) - float(table.log_prior[c])
+
+
+def unit_score(reward: float, top: float) -> float:
+    s = reward / top if top > 0 else 0.0
+    return min(1.0, max(0.0, s)) if math.isfinite(s) else 0.0
+
+
+def reference_runs(table: Table, seed: int, salt: str | None, budget: float | None = None,
+                   dp: DPResult | None = None) -> dict:
+    """Exact-DP and greedy policies played on the SAME hidden draw (same seed and salt, so the
+    same cause, nuisance state and per-test readings), each reporting the exact posterior."""
+    budget = float(table.budget if budget is None else budget)
+    dp = dp or exact_dp(table, budget)
+    out = {"dp_expected_reward": dp.value,
+           "greedy_expected_reward": evaluate_policy(table, greedy_policy, budget)["reward"]}
+    for name, pol in (("dp", dp.policy), ("greedy", greedy_policy),
+                      ("greedy_per_cost", greedy_per_cost_policy)):
+        lab = run_policy(table, pol, seed, salt, budget)
+        out[f"{name}_reward"] = float(lab.result["reward"])
+        out[f"{name}_tests"] = [h["test"] for h in lab.history]
+    return out
+
+
+def grade(lab: DiagLab, refs: dict | None = None) -> dict:
+    """The verifier's breakdown for one episode. No submission is graded as the prior (0)."""
+    tb, c = lab.table, lab._c
+    p_exact = lab.exact_posterior()
+    submitted = lab.result is not None
+    res = lab.result if submitted else score(tb, tb.prior.copy(), c, p_exact)
+    top = max_reward(tb, c)
+    order = [h["test"] for h in lab.history]
+    control, misleading = tb.by_role("control"), tb.by_role("misleading")
+    c_steps = [order.index(n) + 1 for n in control if n in order]
+    m_run = [n for n in order if n in misleading]
+    out = {
+        "score": unit_score(res["reward"], top),
+        "reward": float(res["reward"]), "max_reward": top, "submitted": submitted,
+        "accuracy": float(res["accuracy"]),
+        "design": float(res["design"]), "inference": float(res["inference"]),
+        "tests_run": [{"step": i + 1, "test": h["test"], "cost": h["cost"],
+                       "reading": h["outcome"], "role": tb.roles[tb.index(h["test"])]}
+                      for i, h in enumerate(lab.history)],
+        "n_tests": len(order), "budget": lab.budget, "budget_used": lab.spent,
+        "budget_remaining": lab.remaining,
+        "control_tests": control, "control_run": bool(c_steps),
+        "control_step": min(c_steps) if c_steps else None,
+        "misleading_tests": misleading, "misleading_run": len(m_run),
+        "misleading_run_names": m_run,
+        "exact_posterior": dict(res["exact_posterior"]),
+        "submitted_posterior": dict(res["submitted"]) if submitted else None,
+        "hidden_cause": lab.hidden, "hidden_nuisance": lab.hidden_nuisance,
+    }
+    if refs:
+        out.update(refs)
+        out["dp_score"] = unit_score(refs["dp_reward"], top)
+        out["greedy_score"] = unit_score(refs["greedy_reward"], top)
+        # agent minus reference: negative = the agent did worse on this draw
+        out["gap_to_dp"] = out["reward"] - refs["dp_reward"]
+        out["gap_to_greedy"] = out["reward"] - refs["greedy_reward"]
+        # the same with the agent's inference error removed (test choice only)
+        out["design_gap_to_dp"] = out["design"] - refs["dp_reward"]
+        out["design_gap_to_greedy"] = out["design"] - refs["greedy_reward"]
+    return out
 
 
 # ---- random tables (robustness check) ------------------------------------------------------

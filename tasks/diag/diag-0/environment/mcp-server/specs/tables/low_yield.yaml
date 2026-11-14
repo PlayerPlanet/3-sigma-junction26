@@ -1,0 +1,201 @@
+# Diagnostic table for bayesenv/diag.py. Format: docs/DIAG.md.
+#
+# HAND-DESIGNED to contain two traps for one-step planning (see docs/DIAG.md, "Honesty"):
+#   * the four HPLC assays are only readable once the elution order is known, and the test
+#     that reveals the elution order says nothing about the cause on its own;
+#   * the three confirmatory tests look best one step ahead but eat the budget.
+# The numbers are illustrative, not measured in any laboratory.
+
+name: low_yield
+description: >
+  A batch gave a third of the expected yield. Exactly one of the listed causes is true. Pick
+  tests one at a time within the budget (each test at most once), then report a probability
+  for each cause.
+budget: 10
+
+causes:
+  catalyst_poisoned:           {prior: 0.24}
+  wet_solvent:                 {prior: 0.18}
+  temperature_excursion:       {prior: 0.14}
+  degraded_starting_material:  {prior: 0.10}
+  wrong_stoichiometry:         {prior: 0.09}
+  air_leak:                    {prior: 0.08}
+  poor_mixing:                 {prior: 0.07}
+  workup_loss:                 {prior: 0.06}
+  premature_quench:            {prior: 0.04}
+
+nuisances:
+  # The HPLC column was replaced last week with a different stationary phase, on which the
+  # two marker peaks of every method elute in the opposite order. Nobody recorded whether
+  # the method tables were updated. Unrelated to why the batch failed.
+  elution_order:
+    states: [documented, reversed]
+    prob: [0.75, 0.25]
+  # The starting-material lot may be past its retest date. Not a cause by itself, but more
+  # likely when the material has degraded or the catalyst was poisoned by its impurities, and
+  # an old lot is darker whatever happened in the reactor.
+  reagent_lot:
+    states: [in_date, past_retest]
+    prob: [0.88, 0.12]
+    given_cause:
+      degraded_starting_material: [0.25, 0.75]
+      catalyst_poisoned:          [0.65, 0.35]
+
+tests:
+  # --- control: reveals the elution order, nothing else ---------------------------------
+  hplc_reference_standard:
+    cost: 1
+    role: control
+    outcomes: [documented_order, reversed_order]
+    default: [0.97, 0.03]
+    rows:
+      - when: {elution_order: reversed}
+        p: [0.03, 0.97]
+
+  # --- four HPLC assays on retained samples. Each reports which of two marker peaks is the
+  # larger; peaks are identified by elution order, so the reading flips on the new column.
+  hplc_crude:
+    cost: 2
+    role: assay
+    outcomes: [first_peak_larger, second_peak_larger]
+    default: [0.95, 0.05]
+    rows:
+      - when: {cause: [wet_solvent, degraded_starting_material, air_leak, workup_loss]}
+        p: [0.05, 0.95]
+      - when: {elution_order: reversed}
+        p: [0.05, 0.95]
+      - when: {cause: [wet_solvent, degraded_starting_material, air_leak, workup_loss], elution_order: reversed}
+        p: [0.95, 0.05]
+  hplc_mother_liquor:
+    cost: 2
+    role: assay
+    outcomes: [first_peak_larger, second_peak_larger]
+    default: [0.95, 0.05]
+    rows:
+      - when: {cause: [wet_solvent, degraded_starting_material, wrong_stoichiometry, poor_mixing]}
+        p: [0.05, 0.95]
+      - when: {elution_order: reversed}
+        p: [0.05, 0.95]
+      - when: {cause: [wet_solvent, degraded_starting_material, wrong_stoichiometry, poor_mixing], elution_order: reversed}
+        p: [0.95, 0.05]
+  hplc_in_process:
+    cost: 2
+    role: assay
+    outcomes: [first_peak_larger, second_peak_larger]
+    default: [0.95, 0.05]
+    rows:
+      - when: {cause: [wet_solvent, temperature_excursion, air_leak, poor_mixing]}
+        p: [0.05, 0.95]
+      - when: {elution_order: reversed}
+        p: [0.05, 0.95]
+      - when: {cause: [wet_solvent, temperature_excursion, air_leak, poor_mixing], elution_order: reversed}
+        p: [0.95, 0.05]
+  hplc_aqueous_layer:
+    cost: 2
+    role: assay
+    outcomes: [first_peak_larger, second_peak_larger]
+    default: [0.95, 0.05]
+    rows:
+      - when: {cause: [wet_solvent, temperature_excursion, wrong_stoichiometry, workup_loss, premature_quench]}
+        p: [0.05, 0.95]
+      - when: {elution_order: reversed}
+        p: [0.05, 0.95]
+      - when: {cause: [wet_solvent, temperature_excursion, wrong_stoichiometry, workup_loss, premature_quench], elution_order: reversed}
+        p: [0.95, 0.05]
+
+  # --- confirmatory tests for the three usual suspects: accurate, expensive, and each one
+  # only separates a single cause from all the others.
+  catalyst_metals_assay:
+    cost: 4
+    role: misleading
+    outcomes: [negative, positive]
+    default: [0.96, 0.04]
+    rows:
+      - when: {cause: catalyst_poisoned}
+        p: [0.08, 0.92]
+  solvent_water_external_lab:
+    cost: 4
+    role: misleading
+    outcomes: [negative, positive]
+    default: [0.96, 0.04]
+    rows:
+      - when: {cause: wet_solvent}
+        p: [0.08, 0.92]
+  thermocouple_audit:
+    cost: 3
+    role: misleading
+    outcomes: [negative, positive]
+    default: [0.95, 0.05]
+    rows:
+      - when: {cause: temperature_excursion}
+        p: [0.10, 0.90]
+
+  # --- cheap checks ---------------------------------------------------------------------
+  lot_certificate_review:
+    cost: 1
+    role: cheap
+    outcomes: [in_date, past_retest]
+    default: [0.95, 0.05]
+    rows:
+      - when: {reagent_lot: past_retest}
+        p: [0.05, 0.95]
+  colour_check:
+    cost: 1
+    role: cheap
+    outcomes: [normal, dark]
+    default: [0.92, 0.08]
+    rows:
+      - when: {cause: air_leak}
+        p: [0.20, 0.80]
+      - when: {cause: degraded_starting_material}
+        p: [0.50, 0.50]
+      - when: {reagent_lot: past_retest}
+        p: [0.45, 0.55]
+      - when: {cause: air_leak, reagent_lot: past_retest}
+        p: [0.10, 0.90]
+  batch_record_review:
+    cost: 1
+    role: cheap
+    outcomes: [clean, deviation_noted]
+    default: [0.90, 0.10]
+    rows:
+      - when: {cause: wrong_stoichiometry}
+        p: [0.40, 0.60]
+      - when: {cause: premature_quench}
+        p: [0.30, 0.70]
+      - when: {cause: temperature_excursion}
+        p: [0.65, 0.35]
+  stirrer_torque_log:
+    cost: 1
+    role: cheap
+    outcomes: [normal, low]
+    default: [0.93, 0.07]
+    rows:
+      - when: {cause: poor_mixing}
+        p: [0.20, 0.80]
+
+  # --- low-value tests: on every real menu, and what random testing wastes budget on -------
+  repeat_yield_assay:
+    cost: 2
+    role: low_value
+    outcomes: [confirmed_low, borderline]
+    default: [0.90, 0.10]
+    rows:
+      - when: {cause: workup_loss}
+        p: [0.75, 0.25]
+  operator_interview:
+    cost: 2
+    role: low_value
+    outcomes: [nothing_unusual, something_recalled]
+    default: [0.85, 0.15]
+    rows:
+      - when: {cause: [premature_quench, wrong_stoichiometry]}
+        p: [0.60, 0.40]
+  equipment_inspection:
+    cost: 3
+    role: low_value
+    outcomes: [no_findings, findings]
+    default: [0.90, 0.10]
+    rows:
+      - when: {cause: [air_leak, poor_mixing]}
+        p: [0.50, 0.50]
