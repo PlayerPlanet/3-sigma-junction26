@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-TASK="${TASK:-tasks/example-env}"
+TASK="${TASK:-tasks/bayes}"
 AGENT="${AGENT:-opencode}"
 AGENT_RUNS="${AGENT_RUNS:-3}"
 RUN_DIR="jobs/$(date +%Y%m%d-%H%M%S)"
@@ -24,7 +24,8 @@ run() {  # run <job-name> <harbor args...>
 
 run reference  -a oracle
 run do-nothing -a nop
-run stop-early -a baselines.stop_early:StopEarlyAgent
+STOP_EARLY="${STOP_EARLY:-baselines.bayes_stop_early:BayesStopEarlyAgent}"
+run stop-early -a "$STOP_EARLY"
 if [[ -z "${SKIP_AGENT:-}" ]]; then
     : "${MODEL:?set MODEL=<provider/model>, or SKIP_AGENT=1 to skip the agent runs}"
     run agent -a "$AGENT" -m "$MODEL" -k "$AGENT_RUNS"
