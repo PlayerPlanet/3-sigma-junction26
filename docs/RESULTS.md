@@ -100,9 +100,54 @@ well below any agent's, fixed with 80k particles (5.8%).
 The check needs no knowledge of *how* the agent cheats: it only asks whether the agent's
 predictions are better than its own evidence allows.
 
-## E3: LLM agents: where do they fail? (in progress)
+## E3: LLM agents: where do they fail?
 
-_Filled in from `results/e3_summary.json` when the runs finish._
+Same protocol for every model (`bayesenv/llm_agent.py`): 10 experiments as
+`<observe>[...]</observe>`, then a JSON list of predictive distributions. Evaluation seeds
+0–49 per environment (fewer for the expensive models). Because the grader has the exact
+posterior, every agent's loss splits exactly:
+
+* **design loss** = reference score − score of the exact posterior given *the agent's own*
+  experiments (did it run informative experiments?)
+* **inference loss** = that posterior's score − the agent's own predictions (did it update its
+  beliefs correctly on the data it had?)
+
+| Model (host) | n (hyp/loc) | Naive hyp | **Bayes hyp** | **Bayes loc** | Design loss hyp/loc | **Inference loss** hyp/loc |
+|---|---|---|---|---|---|---|
+| Bayesian reference | 50/50 | 0.979 | **0.940** | **0.988** | 0 / 0 | 0 / 0 |
+| Claude Opus 5.5 (Anthropic) | 15/15 | 0.956 | 0.110 | 0.403 | 0.18 / 0.30 | **1.07 / 0.61** |
+| Gemini 4 Hydrogen (AI Studio) | 12/12 | 0.964 | 0.229 | 0.087 | 0.26 / 0.27 | **0.67 / 1.23** |
+| MiniMax-M3 | 46/46 | 0.962 | 0.081 | 0.174 | 0.10 / 0.09 | **1.37 / 1.16** |
+| Claude Haiku 5.5 | 30/30 | 0.916 | 0.081 | 0.172 | 0.17 / 0.13 | **1.32 / 1.10** |
+| Gemma 4 26B-A4B (Modal vLLM) | 150/150 | 0.772 | 0.001 | 0.007 | 0.12 / 0.22 | **1.77 / 1.69** |
+| Kimi K3.1 Pro (Verda Inference API) | 0/2 | n/a | n/a | 0.000 | – / 0.31 | – / 1.36 |
+
+(Inference loss uses the agent's raw score clipped at −1 per episode.)
+
+Findings:
+1. **The naive grader hides the gap.** Frontier models score 0.92–0.96 naive accuracy on
+   hyperbolic, within a few points of the reference (0.98). Under Bayesian grading they score
+   0.08–0.23 vs 0.94: a large gap.
+2. **The gap comes from a nameable decision.** For every model, design loss is small
+   (0.09–0.30: they run sensibly informative experiments) and inference loss dominates
+   (0.6–1.8): they fail to turn their own data into calibrated predictions. This is *not* blanket
+   overconfidence (checked on 12–15 episodes per model): on hyperbolic the agents are on average
+   *less* sharp than the exact posterior (mean |p − 0.5| 0.30–0.38 vs 0.46–0.48), and on location
+   their predicted sds roughly match the posterior's (0.48–0.54 vs 0.51–0.58), except Gemma, which
+   is overconfident (0.31 vs 0.52). The loss comes from *where* they put probability mass, i.e.
+   from mis-estimating the discount curve or the source position given their own data.
+3. **It is not withheld information (E3b).** Giving Gemma the exact generative model and priors in
+   the prompt barely changes anything: hyperbolic 0.001 → 0.010, location 0.010 → 0.030; inference
+   loss 1.75 → 1.80 and 1.77 → 1.55. The information is there; the belief updating is not.
+4. **The gap is reproducible across runs.** Three independent Gemma runs on the same seeds:
+   Bayesian gap to the reference **0.939 ± 0.002** (hyperbolic) and **0.982 ± 0.003** (location), vs
+   naive **0.208 ± 0.024** and **1.03 ± 0.07**. Signal-to-noise ≈ 470 vs ≈ 9 on hyperbolic.
+5. The ceiling check flags honest LLM agents at roughly its nominal rate (0–8%); none look leaky.
+
+Kimi K3.1 Pro was stopped after 2 episodes: its reasoning (~30–45k output tokens per episode)
+made it the most expensive model per episode by an order of magnitude.
+
+Figures: `results/fig_e3_decomp_{hyperbolic,location}.png`.
 
 ## E4: training a small model on the environment's experience (in progress)
 
