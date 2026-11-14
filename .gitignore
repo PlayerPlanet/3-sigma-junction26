@@ -53,3 +53,6 @@ data/
 # Local editor state
 .obsidian/
 results/dagnet_sweep*.json
+
+# LFI lab v2: the exact FSP table vendored into rendered tasks (360 MB). See scripts/make_lfi2_tasks.py
+tasks/lfi2/*/environment/mcp-server/data/*.npz

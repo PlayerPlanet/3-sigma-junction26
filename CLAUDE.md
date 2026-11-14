@@ -12,7 +12,7 @@ posterior. Read `README.md` for the overview and `docs/RESULTS.md` for results.
 | Hidden state is one of a few named hypotheses and the likelihood is a formula | copy `bayesenv/chem_lab.py` | about an hour |
 | Stock that runs out, several readings per run, stochastic kinetics, anything without a formula for the likelihood | copy `bayesenv/wetlab.py` | a few hours |
 | The unknown is a structure to average over (a graph), answers are forecasts of held-out interventions | copy `bayesenv/dagnet.py` (`docs/DAGNET.md`) | a few hours |
-| A stochastic simulator whose likelihood the agent cannot write down but the grader can compute exactly (CME / finite state projection) | copy `bayesenv/lfilab.py` (`docs/LFILAB.md`) | a day |
+| A stochastic simulator whose likelihood the agent cannot write down but the grader can compute exactly (CME / finite state projection) | copy `bayesenv/lfilab.py` (`docs/LFILAB.md`; two-species version `lfilab2.py`, `docs/LFILAB2.md`) | a day |
 
 The YAML syntax does **not** support: named hypotheses to identify, state that carries over
 between experiments (stock, vessels), time-series outputs, count/Poisson outcomes, or
