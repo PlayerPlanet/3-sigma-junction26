@@ -144,4 +144,16 @@ class LocationFinding:
 
 ENVS = {"hyperbolic": Hyperbolic(), "location": LocationFinding()}
 
-__all__ = ["ENVS", "Hyperbolic", "LocationFinding", "log_ndtr"]
+
+
+def get_env(name: str):
+    """Hand-written environments by name; 'spec:NAME[@HASH][#K]' for declarative specs."""
+    if name in ENVS:
+        return ENVS[name]
+    if name.startswith("spec:"):
+        from .spec import resolve
+        return resolve(name)
+    raise KeyError(name)
+
+
+__all__ = ["ENVS", "Hyperbolic", "LocationFinding", "get_env", "log_ndtr"]

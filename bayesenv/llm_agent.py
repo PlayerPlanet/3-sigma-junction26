@@ -105,14 +105,25 @@ class Model:
                                                        "stop": r.choices[0].finish_reason}
 
 
-def system_prompt(task: Task) -> str:
+def _example_design(env) -> list:
+    x = env.sample_designs(np.random.default_rng(0), 1)[0]
+    # Spec environments already round designs to 4 significant digits; 2 decimals would
+    # destroy small log-scale designs.
+    if not hasattr(env, "spec_name"):
+        return x.round(2).tolist()
+    return [int(v) if float(v).is_integer() else float(f"{v:.6g}") for v in x]
+
+
+def system_prompt(task: Task, full_info: bool | None = None) -> str:
     env = task.env
     fmt = ("a JSON list of probabilities that the outcome is 1, one per design"
            if env.family == "bernoulli" else
            "a JSON list of [mean, sd] pairs for the measured value, one per design")
     # FULL_INFO=1 (experiment E3b) also states the exact generative model, to test whether
     # agents fail for lack of information or for lack of correct belief updating.
-    card = f"{env.model_card()}\n\n" if os.environ.get("FULL_INFO") == "1" else ""
+    if full_info is None:
+        full_info = os.environ.get("FULL_INFO") == "1"
+    card = f"{env.model_card()}\n\n" if full_info else ""
     return (
         f"You are a scientist running experiments on an unknown system.\n\n{env.describe()}\n\n"
         f"{card}"
@@ -122,7 +133,7 @@ def system_prompt(task: Task) -> str:
         "actually does, so be calibrated: confident where the evidence supports it, uncertain "
         "where it does not.\n\n"
         "To run an experiment, reply with your reasoning followed by exactly one tag, e.g. "
-        f"<observe>{json.dumps(task.env.sample_designs(np.random.default_rng(0), 1)[0].round(2).tolist())}</observe>. "
+        f"<observe>{json.dumps(_example_design(task.env))}</observe>. "
         "To stop experimenting early, reply <done/>.\n"
         f"In the prediction phase you must answer with {fmt}, and nothing after it."
     )
