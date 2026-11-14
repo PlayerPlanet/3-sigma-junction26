@@ -1,0 +1,54 @@
+{
+  "seeds": 300,
+  "salt": "calibration",
+  "wall_seconds": 304.7,
+  "cpu_seconds_in_containers": 4440.465246965,
+  "reference": {
+    "reward": 1.3521449585938963,
+    "reward_ci": [
+      1.2690155322701813,
+      1.4296882785179261
+    ],
+    "accuracy": 0.8166666666666667,
+    "seconds_per_episode": 4.670227065750001
+  },
+  "coder_adaptive": {
+    "reward": 1.0597431422282502,
+    "reward_ci": [
+      0.8820810191933561,
+      1.2231202128904726
+    ],
+    "accuracy": 0.7433333333333333,
+    "accuracy_ci": [
+      0.6933333333333334,
+      0.7933333333333333
+    ],
+    "frac_reward_below_minus_2": 0.04,
+    "n_runs": 4.0,
+    "sbi_on_its_data_reward": 1.2591632127804548,
+    "sbi_on_its_data_reward_ci": [
+      1.1665326534369158,
+      1.347679272140969
+    ]
+  },
+  "reference_minus_coder_adaptive": {
+    "mean": 0.29240181636564605,
+    "ci": [
+      0.12297779924794655,
+      0.47552130631314066
+    ],
+    "accuracy_diff": 0.07333333333333333,
+    "accuracy_diff_ci": [
+      0.013333333333333334,
+      0.13333333333333333
+    ],
+    "reference_wins_frac": 0.44333333333333336
+  },
+  "coder_adaptive_minus_sbi_on_same_data": {
+    "mean": -0.19942007055220481,
+    "ci": [
+      -0.35004242493825166,
+      -0.0726247446755432
+    ]
+  }
+}
