@@ -52,3 +52,4 @@ data/
 
 # Local editor state
 .obsidian/
+results/dagnet_sweep*.json
