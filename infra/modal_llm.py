@@ -26,6 +26,7 @@ image = (
 )
 hf_cache = modal.Volume.from_name("bayesenv-hf-cache", create_if_missing=True)
 vllm_cache = modal.Volume.from_name("bayesenv-vllm-cache", create_if_missing=True)
+fi_cache = modal.Volume.from_name("bayesenv-flashinfer-cache", create_if_missing=True)
 
 app = modal.App("bayesenv-llm", image=image)
 
@@ -37,7 +38,8 @@ app = modal.App("bayesenv-llm", image=image)
     timeout=24 * 60 * 60,
     scaledown_window=15 * 60,
     secrets=[modal.Secret.from_name("bayesenv-vllm")],
-    volumes={"/root/.cache/huggingface": hf_cache, "/root/.cache/vllm": vllm_cache},
+    volumes={"/root/.cache/huggingface": hf_cache, "/root/.cache/vllm": vllm_cache,
+             "/root/.cache/flashinfer": fi_cache},  # JIT kernels survive restarts
 )
 @modal.concurrent(max_inputs=128)
 @modal.web_server(port=PORT, startup_timeout=30 * 60)
@@ -51,5 +53,7 @@ def serve() -> None:
         "--gpu-memory-utilization", "0.92",
         "--max-num-seqs", "128",
         "--enable-prefix-caching",
+        # Tool calling for agent harnesses (OpenCode via Harbor) that use native function calls.
+        "--enable-auto-tool-choice", "--tool-call-parser", "gemma4",
     ]
     subprocess.Popen(" ".join(cmd), shell=True)
