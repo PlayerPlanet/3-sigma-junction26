@@ -71,6 +71,15 @@ random is as good as the reference, the lab has no room for experiment choice to
 - `scripts/make_*_tasks.py` render a template per seed; `scripts/render_tasks.sh` renders all.
 - `scripts/eval.sh`: reference, do-nothing, stop-early and agent runs in one command.
 
+**Hierarchical lab** (`docs/HIER.md`)
+- `hier.HierLab` with `reset(seed, salt)`, `step({"unit", "design"})`, `finish()`, `submit(probs)`;
+  `hier.Belief`: exact partial-pooling posterior by quadrature (`update`, `predict`, `utility`),
+  plus the shortcut inferences (`predict_no_pooling`, `predict_complete_pooling`,
+  `predict_plugin`) to calibrate against. `hier_reward.score`: log score relative to the prior
+  predictive, divided by a per-task constant, split into known-unit and new-unit queries.
+- `templates/hier_task/`, `scripts/make_hier_tasks.py`, `scripts/hier_calibrate.py`,
+  `experiments/hier_modal.py`.
+
 **Demo use** (no Docker needed): `docs/CHEM_LAB.md` and `docs/WETLAB.md` each have a short
 snippet. `step()` returns the reading(s) and the current posterior, ready for a bar chart.
 
@@ -90,7 +99,7 @@ snippet. `step()` returns the reading(s) and the current posterior, ready for a 
 
 ## Repo conventions
 
-- Rendered tasks in `tasks/bayes`, `tasks/chem` and `tasks/wetlab` are tracked so that
+- Rendered tasks in `tasks/bayes`, `tasks/chem`, `tasks/wetlab` and `tasks/hier` are tracked so that
   `harbor run -p tasks/...` works on a fresh clone. Never edit them by hand: change
   `templates/` and run `scripts/render_tasks.sh`.
 - Every verifier writes one score in [0, 1] to `/logs/verifier/reward.txt` (the organisers'
@@ -103,7 +112,7 @@ snippet. `step()` returns the reading(s) and the current posterior, ready for a 
 - Run Python with `uv run --no-project --with numpy --with scipy --with pyyaml --with pytest`.
   On Windows, prefix Modal commands with `PYTHONIOENCODING=utf-8 PYTHONUTF8=1`.
 - Tests: `pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py
-  tests/test_spec.py`. `tests/test_model.py` and `tests/test_predict.py` are leftovers from the
+  tests/test_spec.py tests/test_hier.py`. `tests/test_model.py` and `tests/test_predict.py` are leftovers from the
   project template and are expected to fail.
 - Every new lab gets a `tests/test_<lab>.py` (determinism under seed and salt, prior scores 0,
   invalid actions rejected, budget enforced, reference beats random) and a `docs/<LAB>.md`.

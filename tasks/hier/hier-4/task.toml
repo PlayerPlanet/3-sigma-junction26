@@ -1,0 +1,34 @@
+schema_version = "1.1"
+
+[task]
+name = "3-sigma/hier-lab-4"
+description = "Hierarchical lab: 12 experiments, each on a chosen unit and design, on a population of 12 units; then predictive probabilities for held-out designs on those units and on new units, scored by the expected log score against the fully disclosed hierarchical Bayesian model."
+authors = [{ name = "3-Sigma" }]
+keywords = ["experimental-design", "bayesian", "hierarchical-model", "mcp"]
+
+[metadata]
+
+[verifier]
+timeout_sec = 300.0
+
+[agent]
+timeout_sec = 1800.0
+
+[environment]
+build_timeout_sec = 900.0
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+gpus = 0
+
+[[environment.mcp_servers]]
+name = "hier-lab"
+transport = "streamable-http"
+url = "http://mcp-server:8000/mcp"
+args = []
+
+[verifier.env]
+
+[environment.env]
+
+[solution.env]
