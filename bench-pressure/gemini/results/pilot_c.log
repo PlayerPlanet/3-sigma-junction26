@@ -1,0 +1,2 @@
+gemini-4-carbon seed 1000 score 565 papers 4 retr 0 exp 0 eff 0.983 bits 6.53 decisions 16 zeroEIG 0
+calls 16 retries 0 failures 0 invalid 0 tokens in/out/thought 38382 1119 15228 mean latency s 18.3 wall 292s

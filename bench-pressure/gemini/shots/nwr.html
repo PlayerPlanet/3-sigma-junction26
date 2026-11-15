@@ -1,0 +1,2 @@
+<body style="margin:0;background:#888"><iframe id="f" style="width:400px;height:2000px;border:0;background:#fff"></iframe>
+<script>const f=document.getElementById('f');f.src='real.html'+location.search;f.onload=()=>setTimeout(()=>{const d=f.contentDocument;const p=document.createElement('pre');p.style.cssText='position:fixed;top:0;right:0;background:#ff0;font-size:20px';p.textContent='iw='+f.contentWindow.innerWidth+' sw='+d.documentElement.scrollWidth;document.body.appendChild(p);},500);</script>

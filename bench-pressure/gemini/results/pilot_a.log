@@ -1,0 +1,2 @@
+gemini-4-argon seed 1000 score 390 papers 3 retr 0 exp 2 eff 0.999 bits 6.39 decisions 17 zeroEIG 0
+calls 17 retries 0 failures 0 invalid 0 tokens in/out/thought 40804 1178 3575 mean latency s 9.7 wall 164s

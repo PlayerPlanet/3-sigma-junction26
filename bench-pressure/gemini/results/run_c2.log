@@ -1,0 +1,11 @@
+gemini-4-carbon seed 1019 score 350 papers 3 retr 1 exp 1 eff 0.994 bits 5.72 decisions 16 zeroEIG 0
+gemini-4-carbon seed 1018 score 252 papers 2 retr 0 exp 3 eff 0.992 bits 5.86 decisions 15 zeroEIG 0
+gemini-4-carbon seed 1013 score 44 papers 1 retr 0 exp 3 eff 0.977 bits 6.78 decisions 16 zeroEIG 0
+gemini-4-carbon seed 1011 score -19 papers 1 retr 2 exp 1 eff 0.998 bits 6.30 decisions 18 zeroEIG 0
+gemini-4-carbon seed 1015 score 171 papers 2 retr 1 exp 2 eff 0.983 bits 5.70 decisions 17 zeroEIG 0
+gemini-4-carbon seed 1016 score 364 papers 3 retr 1 exp 1 eff 0.993 bits 6.02 decisions 17 zeroEIG 0
+gemini-4-carbon seed 1010 score 160 papers 2 retr 2 exp 1 eff 0.997 bits 5.95 decisions 16 zeroEIG 0
+gemini-4-carbon seed 1017 score 137 papers 2 retr 2 exp 1 eff 0.960 bits 5.18 decisions 16 zeroEIG 0
+gemini-4-carbon seed 1012 score 216 papers 2 retr 1 exp 1 eff 0.970 bits 5.85 decisions 16 zeroEIG 0
+gemini-4-carbon seed 1014 score -26 papers 1 retr 1 exp 3 eff 0.983 bits 6.63 decisions 16 zeroEIG 0
+calls 163 retries 0 failures 0 invalid 0 tokens in/out/thought 392662 11339 144174 mean latency s 14.7 wall 307s

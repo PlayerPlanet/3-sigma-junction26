@@ -1,0 +1,10 @@
+gemini-4-hydrogen seed 1006 score -210 papers 0 retr 3 exp 1 eff 0.987 bits 6.78 decisions 17 zeroEIG 0
+gemini-4-hydrogen seed 1003 score 34 papers 1 retr 0 exp 3 eff 1.000 bits 7.22 decisions 16 zeroEIG 0
+gemini-4-hydrogen seed 1007 score 351 papers 3 retr 1 exp 1 eff 0.950 bits 6.02 decisions 18 zeroEIG 0
+gemini-4-hydrogen seed 1009 score 247 papers 2 retr 0 exp 2 eff 0.998 bits 6.19 decisions 16 zeroEIG 0
+gemini-4-hydrogen seed 1001 score 226 papers 2 retr 0 exp 2 eff 0.992 bits 5.56 decisions 16 zeroEIG 0
+gemini-4-hydrogen seed 1004 score 389 papers 3 retr 0 exp 1 eff 0.995 bits 5.08 decisions 17 zeroEIG 0
+gemini-4-hydrogen seed 1002 score 216 papers 2 retr 0 exp 2 eff 0.995 bits 5.93 decisions 16 zeroEIG 0
+gemini-4-hydrogen seed 1008 score 153 papers 2 retr 1 exp 2 eff 0.992 bits 6.12 decisions 16 zeroEIG 0
+gemini-4-hydrogen seed 1005 score 304 papers 3 retr 2 exp 0 eff 0.975 bits 5.99 decisions 17 zeroEIG 0
+calls 149 retries 0 failures 0 invalid 0 tokens in/out/thought 352698 11164 308949 mean latency s 10.3 wall 213s

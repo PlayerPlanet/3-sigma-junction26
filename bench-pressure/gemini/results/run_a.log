@@ -1,0 +1,10 @@
+gemini-4-argon seed 1007 score 177 papers 2 retr 2 exp 0 eff 0.988 bits 5.47 decisions 16 zeroEIG 0
+gemini-4-argon seed 1005 score 528 papers 4 retr 1 exp 0 eff 0.991 bits 6.24 decisions 17 zeroEIG 0
+gemini-4-argon seed 1004 score 341 papers 3 retr 2 exp 0 eff 0.997 bits 6.09 decisions 17 zeroEIG 0
+gemini-4-argon seed 1001 score 373 papers 3 retr 1 exp 0 eff 1.000 bits 5.67 decisions 16 zeroEIG 0
+gemini-4-argon seed 1002 score 414 papers 3 retr 0 exp 1 eff 0.998 bits 6.14 decisions 16 zeroEIG 0
+gemini-4-argon seed 1003 score 25 papers 1 retr 2 exp 1 eff 0.982 bits 7.05 decisions 16 zeroEIG 0
+gemini-4-argon seed 1008 score 402 papers 3 retr 0 exp 1 eff 0.991 bits 7.20 decisions 18 zeroEIG 0
+gemini-4-argon seed 1009 score 365 papers 3 retr 1 exp 0 eff 0.996 bits 5.72 decisions 16 zeroEIG 0
+gemini-4-argon seed 1006 score 185 papers 2 retr 2 exp 1 eff 0.978 bits 6.43 decisions 17 zeroEIG 0
+calls 149 retries 0 failures 0 invalid 0 tokens in/out/thought 353102 10210 29575 mean latency s 9.8 wall 190s

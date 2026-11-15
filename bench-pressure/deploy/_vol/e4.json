@@ -1,0 +1,59 @@
+{
+ "model": "E4B",
+ "arm": "grpo",
+ "prefill": "<observe>[",
+ "steps": 300,
+ "seed": 0,
+ "lr": 5e-06,
+ "per_step": 2,
+ "num_generations": 8,
+ "train_rows": 7200,
+ "trainable_params": 100999168,
+ "grad_chunk": 8,
+ "max_new_tokens": 128,
+ "tail_logits_max_diff": 0.0,
+ "tag": "full",
+ "adapter": "adapter",
+ "loaded_from": "in-process",
+ "torch": "2.15.0+cu132",
+ "transformers": "5.23.0",
+ "peft": "0.21.3",
+ "gpu_name": "NVIDIA L40S",
+ "gpu_total_gb": 44.4,
+ "train_seconds": 2102.6,
+ "seconds_per_step": 6.65,
+ "tokens_per_step": 196.45,
+ "train_peak_gpu_gb": 21.18,
+ "train_reward_mean": 0.5356,
+ "train_valid_mean": 0.9548,
+ "distinct_completions_of_8": 2.2067,
+ "distinct_choices_of_8": 2.06,
+ "prompts_with_signal_per_step": 1.3233,
+ "hf_id": "google/gemma-4-E4B-it",
+ "gpu": "L40S",
+ "eval_seconds": 125.5,
+ "eval_rows_per_second": 7.97,
+ "eval_new_tokens_mean": 13.0,
+ "eval_peak_gpu_gb": 26.56,
+ "eval_truncated": 0.0,
+ "template_kwargs": {
+  "enable_thinking": false
+ },
+ "splits": {
+  "heldout_family": {
+   "n": 500,
+   "reward": 0.5714,
+   "valid": 1.0,
+   "chance": 0.4856,
+   "best_pick": 0.202
+  },
+  "heldout_instance": {
+   "n": 500,
+   "reward": 0.6225,
+   "valid": 1.0,
+   "chance": 0.3896,
+   "best_pick": 0.312
+  }
+ },
+ "gpu_seconds": 2229.7
+}

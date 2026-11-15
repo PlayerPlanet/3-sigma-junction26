@@ -1,0 +1,59 @@
+{
+ "model": "26B-A4B",
+ "arm": "grpo",
+ "prefill": "<observe>[",
+ "steps": 300,
+ "seed": 0,
+ "lr": 5e-06,
+ "per_step": 2,
+ "num_generations": 8,
+ "train_rows": 7200,
+ "trainable_params": 62290432,
+ "grad_chunk": 4,
+ "max_new_tokens": 128,
+ "tail_logits_max_diff": 0.0,
+ "tag": "full",
+ "adapter": "adapter",
+ "loaded_from": "in-process",
+ "torch": "2.15.0+cu132",
+ "transformers": "5.23.0",
+ "peft": "0.21.3",
+ "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+ "gpu_total_gb": 95.0,
+ "train_seconds": 1124.1,
+ "seconds_per_step": 3.62,
+ "tokens_per_step": 196.09,
+ "train_peak_gpu_gb": 53.18,
+ "train_reward_mean": 0.6231,
+ "train_valid_mean": 0.9819,
+ "distinct_completions_of_8": 1.7617,
+ "distinct_choices_of_8": 1.6717,
+ "prompts_with_signal_per_step": 0.98,
+ "hf_id": "google/gemma-4-26B-A4B-it",
+ "gpu": "RTX-PRO-6000",
+ "eval_seconds": 165.3,
+ "eval_rows_per_second": 6.05,
+ "eval_new_tokens_mean": 12.6,
+ "eval_peak_gpu_gb": 59.4,
+ "eval_truncated": 0.0,
+ "template_kwargs": {
+  "enable_thinking": false
+ },
+ "splits": {
+  "heldout_family": {
+   "n": 500,
+   "reward": 0.7421,
+   "valid": 1.0,
+   "chance": 0.4856,
+   "best_pick": 0.432
+  },
+  "heldout_instance": {
+   "n": 500,
+   "reward": 0.6874,
+   "valid": 0.994,
+   "chance": 0.3896,
+   "best_pick": 0.38
+  }
+ },
+ "gpu_seconds": 1290.5
+}

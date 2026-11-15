@@ -1,0 +1,2 @@
+gemini-4-hydrogen seed 1000 score 156 papers 2 retr 1 exp 2 eff 0.996 bits 6.77 decisions 17 zeroEIG 0
+calls 17 retries 0 failures 0 invalid 0 tokens in/out/thought 40803 1298 29537 mean latency s 8.5 wall 145s

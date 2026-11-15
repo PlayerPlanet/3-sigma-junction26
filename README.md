@@ -134,8 +134,8 @@ specs/               task families in the YAML syntax
 scripts/             render_tasks.sh, eval.sh, calibration and data-generation scripts
 experiments/         E1–E6 experiment and analysis scripts (Modal CPU fan-out)
 train/               LoRA fine-tuning and GRPO on the exact reward
-infra/, ops/         Modal and Verda launch and teardown scripts
 results/             LLM run data and small summaries (see below)
+bench-pressure/      Bench Pressure live demo page, server and Gemini runs
 paper/               LaTeX source of the preprint (`latexmk main.tex`)
 tests/               reward-integrity and environment tests
 ```
