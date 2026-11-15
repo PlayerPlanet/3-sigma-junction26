@@ -3,15 +3,21 @@
   <a href="https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run/"><img src="demo/assets/tubes.gif" width="49%" alt="Test tubes on a lab bench, from the intro of the demo (AI-generated clip)"></a>
 </p>
 
-# Bitshift Happens
+<h1 align="center">3-Sigma</h1>
 
-**Frontier agents decide almost perfectly, then lose by overpaying for information.**
+<p align="center"><b>Frontier agents decide almost perfectly, then lose by overpaying for information.</b></p>
 
-**[Read the whitepaper](paper/3sigma-whitepaper.pdf)** · [Open the live demo](https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run/) ([source](demo/)) · [See the 54 graded trials](results/blackbox_v2/) · [Run the tasks](tasks/credit-blackbox-v2/)
+<p align="center">
+  <a href="paper/3sigma-whitepaper.pdf"><b>Read the whitepaper</b></a> ·
+  <a href="https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run/">Open the live demo</a> (<a href="demo/">source</a>) ·
+  <a href="results/blackbox_v2/">See the 54 graded trials</a> ·
+  <a href="tasks/credit-blackbox-v2/">Run the tasks</a>
+</p>
 
-Team 3-Sigma · Junction 2026 · AfterQuery "Break the Agent": *build a reinforcement learning
-environment that challenges today's best AI agents, demonstrate real failure modes, and show that
-its rewards reflect real progress.*
+<p align="center">Team 3-Sigma · Junction 2026 · AfterQuery "Break the Agent"</p>
+
+<p align="center"><i>Build a reinforcement learning environment that challenges today's best AI agents,<br>
+demonstrate real failure modes, and show that its rewards reflect real progress.</i></p>
 
 > **For judges.** The submission is the **black-box credit desk** (`tasks/credit-blackbox-v2`, six
 > Harbor tasks). [Run the evaluation](#run-the-evaluation-one-command) with one command,
