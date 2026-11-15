@@ -22,6 +22,7 @@ AGENT = [  # (job-name regex, label, harness)
     (r"opus", "Claude Opus 5.5", "Claude Code"),
     (r"sonnet", "Claude Sonnet 5.5", "Claude Code"),
     (r"argon", "Gemini 4 Argon", "OpenCode"),
+    (r"carbon", "Gemini 4 Carbon", "OpenCode"),
     (r"kimi", "Kimi K3.1 Pro", "OpenCode"),
     (r"minimax", "MiniMax-M3", "OpenCode"),
     (r"deepseek", "DeepSeek V4.1 Flash", "OpenCode"),
@@ -87,7 +88,7 @@ def main():
     # fixed categorical order (Okabe-Ito), one marker shape per agent so identity is not colour-alone
     style = {
         "Claude Opus 5.5": ("#0072B2", "o"), "Claude Sonnet 5.5": ("#56B4E9", "s"),
-        "Gemini 4 Argon": ("#009E73", "D"), "Kimi K3.1 Pro": ("#E69F00", "^"),
+        "Gemini 4 Argon": ("#009E73", "D"), "Gemini 4 Carbon": ("#882255", "h"), "Kimi K3.1 Pro": ("#E69F00", "^"),
         "MiniMax-M3": ("#CC79A7", "v"), "DeepSeek V4.1 Flash": ("#D55E00", "P"),
         "GPT-5.6 Terra": ("#000000", "X"), "Nemotron 3 Ultra": ("#999999", "*"),
     }

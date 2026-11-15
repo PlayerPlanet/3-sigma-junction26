@@ -205,7 +205,7 @@ buy, a value-of-information decision one level above the per-applicant one.
 
 Agents ran in Harbor with a Python shell; the environment is an MCP server in a separate
 container, and a verifier calls a token-protected grading endpoint. We ran Claude Code (Opus~5.5,
-Sonnet~5.5), Codex (GPT-6 Luna, GPT-5.6 Terra) and OpenCode (GPT-5.6 Terra, Gemini~4 Argon,
+Sonnet~5.5), Codex (GPT-6 Luna, GPT-5.6 Terra) and OpenCode (GPT-5.6 Terra, Gemini~4 Argon and Carbon,
 Kimi K3.1 Pro, MiniMax-M3, DeepSeek V4.1 Flash, Nemotron~3 Ultra, Gemma~4). Comparisons across
 agents confound model and harness.
 
@@ -286,14 +286,16 @@ penalty/reward ratio of 0.25 to 0.13 at 16, and 93 of 102 early stops match one-
 
 \emph{It locates the real gap.} On the black-box desk every agent averages below the reference
 (Table~\ref{tab:v2}), and Eq.~\eqref{eq:vhat} splits each shortfall into sandbox spend and play
-loss (Figure~\ref{fig:v2}). Opus~5.5 lost only \$9--\$32 to the true-model DP in play, where the
-reference loses \$86--\$200, but bought 520--720 draws against 216: an extra \$300--\$500 that buys
+loss (Figure~\ref{fig:v2}). Opus~5.5 lost only \$1--\$35 to the true-model DP in play, where the
+reference loses \$86--\$200, but bought 415--720 draws against 216: an extra \$200--\$500 that buys
 back at most about \$170. It identified the noise families correctly and ran an exact DP, but set
 its budget by convention (20 draws per cell) instead of pricing a further draw. Kimi and DeepSeek
 bought close to the 1{,}000 cap; Sonnet~5.5 spent moderately but ran fewer live checks than the
-reference; GPT-5.6 Terra and Nemotron spent heavily and decided poorly. One Argon trial scored 1.0
-after simulating how regret falls with draws per cell before buying 159, the only agent we saw
-price its own calibration. Realised profit would mix spending, decisions and the luck of 20
+reference; GPT-5.6 Terra and Nemotron spent heavily and decided poorly. Its two best trials (0.97) bought the fewest draws. One Gemini~4 Argon
+trial and one Gemini~4 Carbon trial scored 1.0 with 159 and 312 draws; the Argon agent had
+simulated how regret falls with draws per cell before buying, the only transcript in which we
+saw an agent price its own calibration. Argon, Carbon and MiniMax-M3 otherwise mostly ran out of
+time. Realised profit would mix spending, decisions and the luck of 20
 applicants; the Bayesian reward separates the first two and removes the third.
 
 \begin{table}[t]
@@ -375,7 +377,7 @@ decision with a computable answer; the reference's 12 draws per cell was found b
 tools every agent has. The priced-learning task turns that into a gradable, trainable problem.
 
 \paragraph{Limitations.} The black-box results are at most six trials per agent on one task
-family, with different harnesses; for two agents most trials hit a time limit that the
+family, with different harnesses; for three agents most trials hit a time limit that the
 instruction did not state. The reference is good, not optimal. The verifier shares a container
 with the agent. Stated-model results rest on 2--15 trials per environment. Training results are
 on design decisions and one prediction task; we have not yet trained on the priced task, and
