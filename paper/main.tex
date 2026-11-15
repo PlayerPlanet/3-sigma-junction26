@@ -6,8 +6,6 @@
 \usepackage{microtype}
 \usepackage{amsmath,amssymb,amsthm}
 \newtheorem{proposition}{Proposition}
-\theoremstyle{remark}
-\newtheorem{remark}{Remark}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\KL}{\mathrm{KL}}
 \usepackage{booktabs}
@@ -15,14 +13,10 @@
 \usepackage{xcolor}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,allcolors=blue!50!black]{hyperref}
-
-% Visible marker for anything a human author still has to fill in or confirm.
-\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 \newcommand{\thetastar}{\theta^{*}}
 
 \title{What Is Another Sample Worth?\\
-Exact Bayesian Grading for Agent Environments,\\
-from Experimental Design to a Black-Box Credit Desk}
+Exact Bayesian Grading for Agent Environments}
 
 \author{Konsta Kiirikki \and Nikolas Juhava \and Qilun Li \and Atte Laakso\\[2pt]
 Team 3-Sigma, Junction 2026}
@@ -32,322 +26,150 @@ Team 3-Sigma, Junction 2026}
 \maketitle
 
 \begin{abstract}
-We build reinforcement-learning environments for agents whose reward is computed from an exact
-Bayesian model instead of sampled outcomes, and use them to locate where frontier agents still
-fall short of a reference. Three findings. First, an exact grader gives a reward that is zero
-for doing nothing, strictly proper, splits an agent's loss into bad experiments and bad
-inference, and supports a statistical test for leaked information; we state seven short
-propositions. Second, on every task whose generative model is fully stated, frontier agents
-with code execution reach the reference: across ten environments they write exact inference and
-dynamic programs. Our first reported gap (0.24 against a reference at 0.99) came from an
-undisclosed model and closed to 0.98 when we disclosed it. Third, the gap reappears when the
-model must be \emph{learned at a price}. In our submission task, a credit desk whose score
-generator is hidden but can be sampled at \$1 per draw, the fair reference scores 0.94--0.98
-in expectation, and every agent--harness pair we ran averages below it
-(Table~\ref{tab:v2}). The best agents play within a few dollars of the true-model optimum and
-still lose a fifth or more of the reward, because they buy two to five times more calibration
-data than it is worth. Two trials came within 0.03 of the reference, both with a calibration
-budget close to the reference's; in one of them the agent had simulated the value of additional
-draws before buying them.
+We build agent environments whose reward is computed from an exact Bayesian model rather than
+from sampled outcomes. The exact grader gives zero for doing nothing, is strictly proper,
+splits an agent's loss into bad experiments and bad inference, and supports a test for leaked
+information. Using it, we find that frontier agents with code execution reach the reference on
+all ten environments whose generative model is stated; our one early gap came from an
+undisclosed model and closed (0.24 to 0.98) once we disclosed it. The gap reappears when the
+model must be \emph{learned at a price}. On a credit desk whose score generator is hidden but
+can be sampled at \$1 per draw, a simple reference scores 0.94--0.98 in expectation and every
+agent we ran averages below it. The best agents decide within a few dollars of the true-model
+optimum but buy two to five times more calibration data than it is worth.
 \end{abstract}
 
 \section{Introduction}
 
-An agent that does science has to choose experiments, update its beliefs on what it sees, and
-decide when it knows enough to act. Bayesian experimental design (BED) says how to do this
-optimally when the data-generating model is
-known~\citep{lindley1956measure,chaloner1995bayesian,rainforth2024modern}. That makes such
-tasks attractive as agent environments: there is a reference that cannot be beaten on average,
-so any shortfall is the agent's.
-
-This paper reports what we learned from building such environments over a 48-hour hackathon,
-aimed at one question: \emph{where does a frontier agent with a shell persistently score below
-a fair reference, for a reason that is about the problem and not about the task's wording?}
-
-The answer went through three stages, and we report all three because the first two are the
-evidence for the third.
+An agent that does science must choose experiments, update its beliefs, and decide when it
+knows enough to act. Bayesian experimental design says how to do this optimally when the
+data-generating model is known~\citep{lindley1956measure,chaloner1995bayesian,rainforth2024modern},
+which makes such tasks attractive as agent environments: there is a reference that cannot be
+beaten on average, so any shortfall is the agent's. We asked where a frontier agent with a
+shell persistently scores below a fair reference for a reason that lies in the problem, not in
+the task's wording. Our contributions are:
 \begin{enumerate}
-\item \textbf{An exact grader} (Sections~\ref{sec:methods} and~\ref{sec:theory}). Scoring
-against the exact posterior instead of sampled outcomes removes the credit that naive graders
-give to doing nothing and to overconfidence, and yields a loss decomposition and a leak test.
-\item \textbf{Stated models are solved} (Sections~\ref{sec:results1}
-and~\ref{sec:stated}). Our first gap, on a task ported from
-BoxingGym~\citep{gandhi2025boxinggym}, was real but for the wrong reason: the task did not tell
-the agent the generative model. Once we disclosed it, agents with code execution matched the
-reference there and on nine further environments, including planning, causal discovery,
-likelihood-free inference and optimal stopping under heavy-tailed noise. Without tools, the
-same models do show systematic errors, the clearest of which is stopping too early when stakes
-are high.
-\item \textbf{Priced learning is not} (Section~\ref{sec:blackbox}). When the model is hidden
-but can be sampled at a cost, the agent faces a value-of-information problem one level up:
-how much to learn before acting. Here strong agents fall short of a simple reference that uses
-only the agent's own tools, and the exact grader shows why: their decisions are near-optimal
-and their spending on calibration is not.
+\item An exact grader for prediction and decision tasks, with guarantees (Section~\ref{sec:methods}).
+\item Evidence that stated Bayesian problems are solved: across ten environments, agents with
+code write exact inference and dynamic programs (Section~\ref{sec:stated}).
+\item A task where the model is hidden but can be bought, on which every agent falls short,
+and a decomposition showing the shortfall is in how much they learn, not how they decide
+(Section~\ref{sec:blackbox}).
 \end{enumerate}
-Code, tasks and per-trial data are in the project repository.
 
 \section{Related work}
 
-\paragraph{Experimental-design benchmarks for language models.}
-BoxingGym~\citep{gandhi2025boxinggym} introduced ten simulators with an experiment-then-predict
-protocol and reported that language models struggle to use experiments. Two of our tasks are
-ports of its hyperbolic-discounting and location-finding environments; we change the grader,
-not the science. DiscoveryWorld~\citep{jansen2024discoveryworld} poses longer open-ended
-discovery tasks in a simulated world, graded on task completion and explanatory knowledge.
-ChemGymRL~\citep{beeler2023chemgymrl} offers chemistry benches for classical RL with rewards on
-procedure outcomes and no latent hypothesis to infer.
-
-\paragraph{Scaffolding language models with Bayesian machinery.}
-Model Discovery Agent~\citep{murphy2026mda} and BMD~\citep{yuh2026bmd} pair a language model
-that proposes model structures with a numerical engine that does inference and selects
-experiments by expected information gain. In a different domain, \citet{smith2026little}
-reports that a scientific-method loop around a language model did not beat sampling from the
-same model. Our stated-model results are consistent with the first two: given a shell, current
-agents build that numerical engine themselves.
-
-\paragraph{Training with information-gain rewards.}
-Deep Adaptive Design~\citep{foster2021dad} amortises sequential BED in a policy network.
-\citet{kriz2026amortizing} fine-tune reasoning language models with
-GRPO~\citep{shao2024deepseekmath} on expected-information-gain rewards in Twenty Questions and
-show transfer to unseen categories and a clinical dialogue benchmark. Related work rewards
-information gain in medical interviews~\citep{verma2026igft} and clarifying
-questions~\citep{li2026cigask}. In the two of these we read in full, the likelihood or the
-quality signal comes from another language model. Our setting is complementary: numeric
-experiments where the likelihood is the simulator, so the reward is exact and checkable.
-
-\paragraph{The value of information.}
-Pricing information before buying it goes back to \citet{howard1966information}. Optimal
-stopping with costly inspection has an index solution in Weitzman's Pandora
-problem~\citep{weitzman1979optimal}. The knowledge gradient~\citep{frazier2008knowledge} is the
-one-step version, and \citet{frazier2010paradoxes} show why one-step reasoning fails: the value
-of information is not concave in the number of measurements, so a single measurement can be
-worth nothing while several together are worth a great deal. Acting while learning the system
-is dual control~\citep{feldbaum1960dual}, formalised as a Bayes-adaptive Markov decision
-process~\citep{duff2002optimal}. Our submission task is a small instance in which the learning
-phase is explicitly priced.
-
-\paragraph{Scoring rules and model checking.}
-The prediction reward is a strictly proper scoring rule~\citep{gneiting2007strictly} evaluated
-in expectation, and the leak test is a posterior predictive check~\citep{gelman1996posterior}
-applied to the agent instead of the model. The decision reward uses the advantage
+BoxingGym~\citep{gandhi2025boxinggym} introduced simulators with an experiment-then-predict
+protocol; two of our tasks are ports of its environments with a different grader.
+DiscoveryWorld~\citep{jansen2024discoveryworld} and ChemGymRL~\citep{beeler2023chemgymrl} grade
+open-ended discovery and procedure outcomes. Model Discovery Agent~\citep{murphy2026mda} and
+BMD~\citep{yuh2026bmd} pair a language model with a numerical inference engine; our agents
+build that engine themselves. Information-gain rewards have been used to train language models
+with GRPO~\citep{shao2024deepseekmath,kriz2026amortizing,verma2026igft,li2026cigask}, usually with
+a language-model likelihood; ours is the simulator, so the reward is exact. Pricing information
+goes back to \citet{howard1966information}; \citet{frazier2010paradoxes} show that its value is
+not concave in the number of measurements, which is why one-step reasoning fails. Acting while
+learning is dual control~\citep{feldbaum1960dual,duff2002optimal}. Our prediction reward is a
+proper scoring rule~\citep{gneiting2007strictly} in expectation, the leak test is a posterior
+predictive check~\citep{gelman1996posterior}, and the decision reward uses the advantage
 decomposition of \citet{kakade2002approximately}.
 
 \section{Methods}
 \label{sec:methods}
 
-\subsection{Environments}
-
-Table~\ref{tab:envs} lists the environments. Each has hidden state drawn from a public prior, a
-menu of costly observations, and a grader that holds an exact (or, for two environments,
-numerically exact) model of what the observations imply.
+\paragraph{Environments.} Each environment has hidden state drawn from a public prior, a menu of
+costly observations, and a grader with an exact model of what they imply
+(Table~\ref{tab:envs}).
 
 \begin{table}[t]
 \centering\small
-\begin{tabular}{p{3.1cm}p{4.3cm}p{3.1cm}p{3.6cm}}
+\begin{tabular}{p{3.4cm}p{6.2cm}p{4.2cm}}
 \toprule
-Scientific problem & Environment & Hidden & Exact computation \\
+Problem & Environment & Exact computation \\
 \midrule
-Parameter estimation & Hyperbolic discounting, location finding, dose response (YAML task
-families) & Continuous parameters & Particle posterior \\
-Fault diagnosis & Chemistry lab (Arrhenius kinetics, 7 faults) & Discrete fault & Enumeration \\
-Mechanism discrimination & Wet lab; likelihood-free gene-expression lab & Mechanism and rates &
-Simulation; finite state projection \\
-Population-level learning & Hierarchical lab & Group and unit effects & Conjugate updates \\
-Causal discovery & Random-DAG lab (5 variables, 29{,}281 graphs); optogenetics lab (543
-graphs) & Graph & Enumeration \\
-Cost-aware planning & Diagnostic planning lab & Root cause & Dynamic program \\
-Sequential decisions & Blackjack with a hidden shoe composition & Shoe hypothesis & Exact
-expectation \\
-Optimal stopping & Credit desk, model stated & Applicant segment & Dynamic program \\
-\textbf{Priced model learning} & \textbf{Credit desk, model hidden (the submission)} &
-Segment \emph{and} score generator & Dynamic program under the true generator \\
+Parameter estimation & Hyperbolic discounting, location finding, dose response & Particle posterior \\
+Fault diagnosis & Chemistry lab (7 faults) & Enumeration \\
+Mechanism discrimination & Wet lab; likelihood-free gene lab & Finite state projection \\
+Population learning & Hierarchical lab & Conjugate updates \\
+Causal discovery & Random-DAG lab (29{,}281 graphs); optogenetics lab & Enumeration \\
+Planning, decisions & Diagnostic planning; blackjack with hidden shoe & Dynamic program \\
+Optimal stopping & Credit desk, model stated & Dynamic program \\
+\textbf{Priced model learning} & \textbf{Credit desk, model hidden} & DP under true generator \\
 \bottomrule
 \end{tabular}
-\caption{Problem types and the environments built for them. Rulebound Battleship, a further
-family with an exact posterior over 53{,}624 layouts and six placement rules, was built by
-team members on the same grader.}
+\caption{Environments. The last row is the submission task.}
 \label{tab:envs}
 \end{table}
 
-\subsection{Prediction tasks and their reward}
-
-Each episode draws hidden parameters $\thetastar$ from a public prior. The agent runs up to 10
-experiments, choosing a design $x$ and observing $y \sim p(y \mid x, \thetastar)$. It then
-receives 30 evaluation designs, revealed only after the experiment phase, and submits a
-predictive distribution for each. Let $S(q;\theta)$ be the expected log score of a submitted
-predictive $q$ over the evaluation designs when the true parameters are $\theta$; the
-expectation over outcomes is computed, not sampled. The reward is
+\paragraph{Prediction reward.} The agent runs up to 10 experiments, then submits a predictive
+distribution $q$ for 30 evaluation designs. With $S(q;\theta)$ the expected log score under
+true parameters $\theta$ (computed, not sampled),
 \begin{equation}
-R(q) \;=\; \mathrm{clip}_{[0,1]}\!\left(
-\frac{S(q;\thetastar) - S(p_{0};\thetastar)}{S(p_{\thetastar};\thetastar) - S(p_{0};\thetastar)}
-\right),
+R(q) = \mathrm{clip}_{[0,1]}\!\left(
+\frac{S(q;\thetastar) - S(p_{0};\thetastar)}{S(p_{\thetastar};\thetastar) - S(p_{0};\thetastar)}\right),
 \label{eq:reward}
 \end{equation}
-where $p_0$ is the prior predictive and $p_{\thetastar}$ the predictive given the true
-parameters. Submitting the prior scores exactly 0 and knowing $\thetastar$ scores 1. For
-environments with discrete hypotheses the submission is a distribution $q$ over hypotheses and
-the reward is $r(q) = \log q(h^{*}) - \log p_0(h^{*})$.
+so the prior predictive $p_0$ scores 0 and knowing $\thetastar$ scores 1. The gap to a
+reference that designs greedily by expected information gain splits exactly into \emph{design
+loss} $S_\mathrm{ref} - S(p_D)$ and \emph{inference loss} $S(p_D) - S(q)$, where $p_D$ is the
+posterior predictive given the agent's data $D$. The \emph{leak test} compares
+$T(\theta) = S(q;\theta) - S(p_D;\theta)$ at $\thetastar$ with its value at 400 posterior draws;
+p-values are combined over a batch with Fisher's method and a two-sided Kolmogorov--Smirnov
+statistic.
 
-As a comparison we implement a \emph{naive} grader in the style of BoxingGym: point
-predictions against one sampled outcome per design (accuracy, or relative squared error).
-
-\subsection{Loss decomposition}
-
-The \emph{Bayesian reference} chooses each design greedily by expected information gain and
-submits its posterior predictive. For an agent with data $D$ and submission $q$, the gap to the
-reference splits exactly:
+\paragraph{Decision reward.} The grader solves the dynamic program (DP) for the true model and
+credits a trajectory with
 \begin{equation}
-\underbrace{S_{\mathrm{ref}} - S\big(p(\cdot\mid D)\big)}_{\text{design loss}}
-\;+\;
-\underbrace{S\big(p(\cdot\mid D)\big) - S(q)}_{\text{inference loss}} .
-\end{equation}
-Design loss asks whether the agent's experiments were informative; inference loss asks
-whether it used the data it had.
-
-\subsection{Leak test}
-
-Define $T(\theta) = S(q;\theta) - S(p(\cdot\mid D);\theta)$. If the agent used only its own
-experiments, $\thetastar$ is distributed as a posterior draw given $D$, so $T(\thetastar)$ is
-exchangeable with $T(\tilde\theta)$ for $\tilde\theta \sim p(\theta\mid D)$. The p-value is
-$\Pr\big(T(\tilde\theta) \ge T(\thetastar)\big)$, estimated from 400 posterior draws. Over a
-batch of episodes we combine p-values with Fisher's method and a two-sided
-Kolmogorov--Smirnov distance to the honest p-value distribution, both calibrated on reference
-runs. The test does not need to know how an agent cheats.
-
-\subsection{Decision tasks and their reward}
-\label{sec:decision}
-
-In the decision environments the agent does not submit beliefs; it acts, and is graded on the
-expected value of its actions. The grader solves the dynamic program (DP) for the true model,
-giving the optimal value $V^{*}(s)$ and action values $Q^{*}(s,a)$ at every state $s$ (a prior
-plus the counts of observations so far). For a trajectory $s_0, a_0, \dots, s_T, a_T$ it
-credits
-\begin{equation}
-\hat V \;=\; V^{*}(s_0) \;-\; \sum_{t=0}^{T} \big[\, V^{*}(s_t) - Q^{*}(s_t, a_t) \,\big],
+\hat V = V^{*}(s_0) - \textstyle\sum_{t} \big[ V^{*}(s_t) - Q^{*}(s_t, a_t) \big],
 \label{eq:vhat}
 \end{equation}
-the optimal value minus the advantage given up at each step. Proposition~\ref{prop:adv} shows
-this is an unbiased estimate of the expected profit of the agent's policy, and it is exact,
-with no luck in it, for an agent that plays optimally.
+the optimal value minus the advantage given up at each step.
 
-\subsection{Agents and harness}
+\paragraph{Guarantees.} For agents whose submission depends on $\theta$ only through their own
+data (``no leak''), we prove in Appendix~\ref{app:proofs}: the score is strictly proper; no
+submission beats $p_D$ in expectation, and inference loss is exactly $\E[\KL(p_D\|q)]$; the
+expected reward of $p_D$ is the mutual information between data and outcome; exact grading has
+lower variance than grading against a sampled outcome; the leak test is valid at every level;
+and $\hat V$ is an unbiased estimate of the policy's expected profit, at most $V^{*}(s_0)$, and
+exactly $V^{*}(s_0)$ for an optimal policy whatever the luck. The guarantees hold for the score;
+the clipped and normalised rewards inherit them only up to clipping.
 
-Tool-free agents interact through a fixed text protocol. Tool-using agents run in
-Harbor: the environment is an MCP server in a separate container, the agent has a shell with
-Python, and a verifier calls a token-protected grading endpoint and writes one number in
-$[0,1]$. All randomness is keyed by the seed and a per-trial secret salt held by the
-environment container. We ran Claude Code (Claude Opus~5.5, Claude Sonnet~5.5), Codex
-(GPT-6 Luna, GPT-5.6 Terra) and OpenCode (GPT-5.6 Terra, Gemini~4 Argon, Kimi K3.1 Pro,
-MiniMax-M3, DeepSeek V4.1 Flash, Nemotron~3 Ultra, Gemma~4 26B). These harnesses differ, so
-cross-agent comparisons confound model and harness.
+\paragraph{The black-box credit desk.} The agent underwrites 20 applicants. Each belongs to one
+of six risk segments with stated default probabilities and prior; approving pays the expected
+payoff for the true segment (margin \$1{,}000, loss given default \$16{,}000). Before deciding,
+the agent may buy up to eight live checks of three kinds at \$20 each, each returning a band of a
+score. The task states that score $=$ location(segment) $+$ symmetric noise specific to the
+check, but hides the locations and the noise families (Gaussian, Student-$t_3$ or Cauchy, at
+least one Cauchy per desk). A sandbox returns raw scores for synthetic applicants of a known
+segment at \$1 per draw, up to 1{,}000. With $V = \sum_i \hat V_i - \text{sandbox spend}$,
+\begin{equation}
+\text{reward} = \mathrm{clip}_{[0,1]}\big((V - V_0)/(\bar V_{\mathrm{ref}} - V_0)\big),
+\end{equation}
+where $V_0$ is the value of deciding from the prior and $\bar V_\mathrm{ref}$ the reference's
+expected total over 200 sandbox datasets. The \emph{reference} uses only the agent's tools: 12
+draws per (segment, check) cell (\$216), per-cell medians, pooled symmetrised residuals,
+bootstrap-averaged band tables, and the exact DP. We kept six of 20 screened desks on which the
+reference has mean 0.94--0.98 and SD $\le 0.12$, and shortcuts score at most 0.8 in
+expectation: no calibration 0.00--0.37, Gaussian fit 0.53--0.73, one-step lookahead
+0.07--0.30, buying all 1{,}000 draws 0.39--0.52. Doing nothing scores 0.
 
-\section{Guarantees}
-\label{sec:theory}
+\paragraph{Agents.} Agents run in Harbor with a Python shell; the environment is an MCP server
+in a separate container, and a verifier calls a token-protected grading endpoint. We ran Claude
+Code (Opus~5.5, Sonnet~5.5), Codex (GPT-6 Luna, GPT-5.6 Terra) and OpenCode (GPT-5.6 Terra,
+Gemini~4 Argon, Kimi K3.1 Pro, MiniMax-M3, DeepSeek V4.1 Flash, Nemotron~3 Ultra, Gemma~4 26B).
+Comparisons across agents confound model and harness.
 
-Let $\theta \sim \pi$. The agent chooses each design from its history and private randomness
-that is independent of $\theta$; $D$ denotes its designs and outcomes. Evaluation designs are
-drawn independently of $\theta$. Write $p_\theta = p(\cdot \mid x, \theta)$ for the outcome
-distribution at an evaluation design $x$, $p_D = \int p_\theta\, p(\theta \mid D)\, d\theta$
-for the posterior predictive, and $p_0$ for the prior predictive. We say a submission $q$ has
-\emph{no leak} if it is conditionally independent of $\theta$ given $D$ and the evaluation
-designs. Statements are for one evaluation design; they extend to the average over designs by
-linearity. Proofs are in Appendix~\ref{app:proofs}.
+\section{Results}
 
-\begin{proposition}[Truthfulness]\label{prop:proper}
-For every $\theta$ and $q$, $S(p_\theta;\theta) - S(q;\theta) = \KL(p_\theta \,\|\, q) \ge 0$,
-with equality only if $q = p_\theta$ almost everywhere.
-\end{proposition}
-
-\begin{proposition}[Nobody beats the posterior]\label{prop:bayes}
-For any experiment policy and any no-leak submission $q$,
-\[
-\E\big[S(p_D;\theta)\big] - \E\big[S(q;\theta)\big] \;=\; \E\big[\KL(p_D \,\|\, q)\big] \;\ge\; 0 .
-\]
-Expected inference loss is therefore exactly a Kullback--Leibler divergence. If submissions
-are restricted to a family (here, Gaussians), the optimum is the member closest to $p_D$ in
-this divergence, which for Gaussians is the moment-matched one.
-\end{proposition}
-
-\begin{proposition}[The reward is information gain]\label{prop:info}
-$\E[S(p_D;\theta) - S(p_0;\theta)] = I(Y; D)$, the mutual information between the agent's data
-and the evaluation outcome $Y$. For hypothesis submissions, any no-leak $q$ satisfies
-$\E[r(q)] = I(h; D) - \E[\KL(p(\cdot\mid D)\,\|\,q)]$, and $r(p_0) = 0$ in every episode.
-\end{proposition}
-
-\begin{proposition}[Per-step rewards]\label{prop:step}
-Let $r_t = \log p(h^{*}\mid D_t) - \log p(h^{*}\mid D_{t-1})$. Then $\sum_{t} r_t = r(p(\cdot\mid D_T))$,
-and $\E[r_t \mid D_{t-1}, x_t]$ equals the expected information gain
-$I(h; y_t \mid D_{t-1}, x_t)$ of the chosen design. Replacing each $r_t$ by this conditional
-expectation leaves the expected return of every policy unchanged and does not increase the
-variance of any step reward.
-\end{proposition}
-
-\begin{proposition}[Lower variance than sampled grading]\label{prop:var}
-Let $\hat S = \log q(Y)$ with $Y \sim p_{\thetastar}$ be the score against one sampled outcome.
-Then $\E[\hat S] = \E[S]$ and $\mathrm{Var}(S) \le \mathrm{Var}(\hat S)$ over episodes.
-\end{proposition}
-
-\begin{proposition}[Validity of the leak test]\label{prop:ppc}
-Let $\tilde\theta_1,\dots,\tilde\theta_m$ be independent draws from $p(\theta\mid D)$ and $T$
-any statistic that may depend on $D$, $q$ and the evaluation designs. If $q$ has no leak, the
-p-value $\big(1 + \#\{i : T(\tilde\theta_i) \ge T(\thetastar)\}\big)/(m+1)$ satisfies
-$\Pr(p \le \alpha) \le \alpha$ for every $\alpha$.
-\end{proposition}
-
-\begin{proposition}[Advantage grading]\label{prop:adv}
-Consider a finite-horizon decision problem with hidden state $h \sim \pi_0$, observations whose
-distribution depends only on $h$ and the chosen action, and rewards that depend on $h$ and the
-action. Let $s_t$ be the belief state, $V^{*}$ and $Q^{*}$ the optimal values of the belief
-process, and $\hat V$ as in Eq.~\eqref{eq:vhat}. For every policy whose actions depend only on
-the history and on randomness independent of $h$:
-(i) $\E[\hat V]$ equals the expected total reward of the policy;
-(ii) $\hat V \le V^{*}(s_0)$ in every episode, with equality if and only if every action taken
-was optimal;
-(iii) in particular an optimal policy receives exactly $V^{*}(s_0)$ in every episode, whatever
-the observations turn out to be.
-\end{proposition}
-
-\begin{remark}[What is not covered]
-Propositions~\ref{prop:bayes} and~\ref{prop:info} concern the score $S$. The prediction reward
-in Eq.~\eqref{eq:reward} divides by a quantity that depends on $\thetastar$ and clips at zero.
-Without clipping, the optimal no-leak submission under Eq.~\eqref{eq:reward} is the predictive
-of the posterior reweighted by the inverse of that quantity, not $p_D$ itself, and clipping is
-a convex transform that could in principle reward gambling. We rely on the attack experiments
-in Section~\ref{sec:results1} for that reward as implemented. The decision reward of the
-submission task avoids the first problem: it divides $\hat V$, less the cost of calibration,
-by per-task constants (Section~\ref{sec:blackbox}), so before clipping its expectation is an
-increasing affine function of expected profit and the profit-maximising policy maximises it.
-Clipping at zero remains. We do not prove that the greedy reference of the prediction tasks is
-the optimal design policy, or anything about the power of the leak test.
-Proposition~\ref{prop:ppc} assumes exact posterior draws; the prediction grader uses a
-particle approximation.
-\end{remark}
-
-\begin{remark}[Grading is cheap where playing is hard]
-The hypothesis reward $\log q(h^{*}) - \log p_0(h^{*})$ needs only the truth and the
-submission. Exact posterior inference in general graphical models is
-NP-hard~\citep{cooper1990computational}, as is approximating
-it~\citep{dagum1993approximating}, and optimal sequential design is a partially observed
-decision problem, which is PSPACE-hard in
-general~\citep{papadimitriou1987complexity}. By Proposition~\ref{prop:bayes} any shortfall in
-computing $p_D$ appears one-for-one as inference loss. So environments of this kind can in
-principle be made hard for every efficient agent while staying checkable. We do not use this
-route: these are worst-case results, a reference that reports a gap must itself be computable,
-and none of our environments is large enough for computation to bind. The gap we report in
-Section~\ref{sec:blackbox} is statistical, not computational.
-\end{remark}
-
-\section{Results I: exact grading on prediction tasks}
+\subsection{The exact grader}
 \label{sec:results1}
 
-\subsection{The naive grader hides what the Bayesian grader shows}
-
-Table~\ref{tab:e1} gives mean rewards for scripted policies over 400 seeds per cell. Under the
-naive grader, doing nothing earns 0.919 on hyperbolic discounting and an overconfident policy
-ties the reference in both environments. Under Eq.~\eqref{eq:reward} doing nothing earns 0 and
-nothing ties the reference. To show reference $>$ random design with power 0.8 the Bayesian
-grader needs 4--5 paired seeds; the naive grader, after subtracting the do-nothing baseline,
-needs 14--18.
+Under a naive grader that scores point predictions against one sampled outcome, doing nothing
+earns 0.919 on hyperbolic discounting and an overconfident policy ties the reference
+(Table~\ref{tab:e1}). Under Eq.~\eqref{eq:reward} both fail, and showing that the reference
+beats random design takes 4--5 paired seeds instead of 14--18. Seven attacks using only
+legitimate information (point estimates, sharpening, blunting, one design) never beat the
+reference. Blending 10\% of the truth into predictions is flagged in every batch of 30
+episodes; the best evasion we found gains $+0.04$ to $+0.05$.
 
 \begin{table}[t]
 \centering\small
@@ -362,257 +184,49 @@ Random design         & 0.954 & 0.539 & 0.549 & 0.753 \\
 Stop early (1 exp.)   & 0.947 & 0.467 & 0.125 & 0.216 \\
 Do nothing            & 0.919 & 0.000 & 0.000 & 0.000 \\
 Overconfident         & 0.981 & 0.520 & 0.695 & 0.000 \\
-Nearest neighbour     & 0.767 & 0.009 & $-0.465$ & 0.015 \\
 \bottomrule
 \end{tabular}
-\caption{Scripted policies, 400 seeds each. Naive is accuracy (hyperbolic) or one minus
-relative squared error (location).}
+\caption{Scripted policies, 400 seeds each, under a naive and the exact grader.}
 \label{tab:e1}
 \end{table}
 
-\subsection{A gap that came from withheld information}
-
-Our first agent results looked like the gap we were after. Without tools, frontier models
-scored 0.08--0.40 against a reference at 0.94--0.99 (Table~\ref{tab:e3}), with inference loss
-(0.6--1.8) larger than design loss (0.09--0.30) for every model. With a shell, Claude Code with
-Opus~5.5 reached 0.772 on location finding but only 0.237 on hyperbolic discounting, with 7 of
-15 trials at zero; Codex with GPT-6 Luna scored 0.062 and 0.117; OpenCode with MiniMax-M3
-about 0.01 and 0.20; OpenCode with Gemma~4 26B exactly zero in all 30 trials.
-
-\begin{table}[t]
-\centering\small
-\begin{tabular}{lccccc}
-\toprule
- & & \multicolumn{2}{c}{Bayesian reward} & \multicolumn{2}{c}{Loss (hyp / loc)} \\
-\cmidrule(lr){3-4}\cmidrule(lr){5-6}
-Model & $n$ & Hyp. & Loc. & Design & Inference \\
-\midrule
-Bayesian reference    & 50  & 0.940 & 0.988 & 0 / 0 & 0 / 0 \\
-Claude Opus 5.5       & 15  & 0.110 & 0.403 & 0.18 / 0.30 & 1.07 / 0.61 \\
-Gemini 4 Hydrogen     & 12  & 0.229 & 0.087 & 0.26 / 0.27 & 0.67 / 1.23 \\
-MiniMax-M3            & 46  & 0.081 & 0.174 & 0.10 / 0.09 & 1.37 / 1.16 \\
-Claude Haiku 5.5      & 30  & 0.081 & 0.172 & 0.17 / 0.13 & 1.32 / 1.10 \\
-Gemma 4 26B           & 150 & 0.001 & 0.007 & 0.12 / 0.22 & 1.77 / 1.69 \\
-Nemotron 3.5 Super VL & 25  & 0.188 & 0.012 & \multicolumn{2}{c}{not computed} \\
-\bottomrule
-\end{tabular}
-\caption{Tool-free agents on the tasks as first written, with the generative model
-undisclosed; $n$ episodes per environment. Losses use raw scores clipped at $-1$ per episode.}
-\label{tab:e3}
-\end{table}
-
-The cause was the task, not the agents. As ported, the instructions said only that choices
-were ``noisy''; they did not give the choice model or the priors, which the reference knew.
-Disclosing them removed the gap (Table~\ref{tab:disclosed}): Opus went from 0.24 to 0.98 on
-hyperbolic discounting, GPT-6 Luna from 0.06 to 0.87, and Gemini without tools scored 0.99 and
-0.94 in its first disclosed episodes. A reward that falls when information is unfairly
-withheld measures the withholding. We kept the grader and stopped counting this as a result.
-
-\begin{table}[t]
-\centering\small
-\begin{tabular}{lcccc}
-\toprule
- & \multicolumn{2}{c}{Hyperbolic} & \multicolumn{2}{c}{Location} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Agent & Undisclosed & Disclosed & Undisclosed & Disclosed \\
-\midrule
-Claude Code, Opus 5.5 & 0.237 (15) & 0.98 (11) & 0.772 (15) & 0.95 (6) \\
-Codex, GPT-6 Luna     & 0.062 (15) & 0.866 (10) & 0.117 (15) & 0.949 (10) \\
-\bottomrule
-\end{tabular}
-\caption{Mean reward in Harbor before and after the generative model and priors were stated in
-the task (number of trials in parentheses). The Bayesian reference scores 0.96--0.995 as the
-oracle solution.}
-\label{tab:disclosed}
-\end{table}
-
-\subsection{Reward hacking}
-
-\emph{No extra information.} Over 400 fresh seeds per environment we ran seven attacks that
-use only legitimate information: plugging in a point estimate or a single posterior draw,
-sharpening or blunting the predictive, and spending the budget on one design. None beat the
-reference on average; every 95\% paired-bootstrap interval of reward minus reference lies
-below zero or contains it (the closest is sharpening on location,
-$-0.000\ [-0.001, +0.001]$).
-
-\emph{Side channels.} We then gave a weak honest agent (two experiments) access to
-$\thetastar$ or to hidden extra experiments, and made it white-box: it reproduces the
-grader's posterior draws and knows the p-value each submission will receive. Blending 10\% of
-the truth into its predictions, or submitting the truth, is flagged in every batch of 30
-episodes in both environments. A cheater that keeps each p-value above 0.2 evades Fisher's
-method, which is why the batch test also uses the two-sided statistic; that catches it in
-89--95\% of batches (on hyperbolic discounting only at a batch size of 100). The best evasion
-we found, targeting a random p-value per episode, gains $+0.04$ to $+0.05$.
-
-\emph{Deployed task.} A scripted red-team agent inside the agent container found no secrets
-in files or environment variables, no reachable grader without the token, and no way past the
-experiment budget or single submission. It did find that $\thetastar$ could be recomputed from
-public code and the seed in the task name. The per-trial salt closes this.
-
-\emph{Limits.} Binary outcomes carry little information, so a few hidden extra experiments on
-hyperbolic discounting ($+0.07$) are caught in only about half of 100-episode batches. For
-weak honest agents the false-positive rate of the batch test rises from 0.06--0.10 at 30
-episodes to 0.14--0.23 at 100.
-
-\section{Results II: stated models are solved with code, and where text-only reasoning slips}
+\subsection{Stated models are solved}
 \label{sec:stated}
 
-\subsection{Ten environments, one outcome}
-
-After the disclosure result we tried to rebuild the gap honestly, by making the stated problem
-harder: more hypotheses, planning instead of greedy design, causal structure, a likelihood
-with no closed form, heavy-tailed noise. Table~\ref{tab:stated} summarises what happened. In
-every environment the agent with a shell wrote exact inference, and where needed an exact
-dynamic program, and scored at the reference. Sample sizes are small, but the outcome did not
-vary.
+Our first agent gap was an artefact. As ported, the hyperbolic-discounting task did not state
+the choice model or priors, which the reference knew. Disclosing them took Claude Code with Opus
+from 0.24 to 0.98 and Codex with GPT-6 Luna from 0.06 to 0.87. We then tried to rebuild the gap
+honestly with harder stated problems, each calibrated so that a named shortcut loses clearly
+(Table~\ref{tab:stated}). In every environment the agent wrote exact inference, and where
+needed an exact DP, and reached the reference.
 
 \begin{table}[t]
 \centering\small
-\begin{tabular}{p{3.6cm}p{5.2cm}p{5.4cm}}
+\begin{tabular}{p{3.6cm}p{4.6cm}p{5.6cm}}
 \toprule
-Environment & Lure it was built around & Claude Code with Opus 5.5 \\
+Environment & Shortcut it was built against & Claude Code with Opus 5.5 \\
 \midrule
-Chemistry lab & Uninformative experiments & Gap to reference $+0.006$ nats, 15 trials \\
-Hierarchical lab & No pooling / complete pooling & Inference exact; mean gap $\approx -0.06$, 4 trials \\
-Random-DAG lab & Reading correlation as causation & Mean gap $\approx -0.06$, 4 trials \\
-Optogenetics lab & Correlation lure, maximal light & Inference gap 0 in 7 of 8 trials; median gap $-0.031$ \\
-Diagnostic planning lab & Greedy test choice (1.06 vs.\ DP 1.71) & 1.69 over 8 trials \\
-Likelihood-free gene lab & Moment matching ($-0.72$), ABC ($-0.13$) & 0.931 and 1.000 (reference 0.881 raw), 2 trials; wrote an exact finite-state solver \\
-Blackjack, hidden shoe & Card-counting heuristics & 4 of 4 trials at zero regret; wrote exact solvers in C \\
-Credit desk, model stated & One-step lookahead (0.19--0.20) & 1.0, 1.0, 1.0; exact memoised DP in seconds \\
+Chemistry lab & Uninformative experiments & Gap $+0.006$ nats, 15 trials \\
+Hierarchical lab & No / complete pooling & Exact inference, 4 trials \\
+Random-DAG, optogenetics & Correlation as causation & Inference gap 0 in 7 of 8 trials \\
+Diagnostic planning & Greedy tests (1.06 vs.\ DP 1.71) & 1.69 over 8 trials \\
+Likelihood-free gene lab & Moment matching, ABC & 0.93, 1.00 (reference 0.88) \\
+Blackjack, hidden shoe & Card-counting heuristics & Zero regret, 4 of 4 trials \\
+Credit desk, model stated & One-step lookahead (0.19) & 1.0 in 3 of 3 trials \\
 \bottomrule
 \end{tabular}
-\caption{Stated-model environments. Each was calibrated so that a named shortcut loses clearly
-against the reference; none separated a frontier agent with a shell from the reference.
-Together with the two disclosed prediction tasks of Table~\ref{tab:disclosed} these are the ten
-environments referred to in the text. On the stated credit desk, OpenCode with Gemini~4 Argon
-and Codex with GPT-5.6 Terra also scored 1.0 in 3 of 3 trials; Codex with GPT-6 Luna scored
-0.11, 0.57 and 0.14 after coding only a one-step value of information.}
+\caption{Stated-model environments. With the two disclosed prediction tasks, these make ten.}
 \label{tab:stated}
 \end{table}
 
-The conclusion we draw is narrow and, we think, robust: \emph{if the task states the model and
-the agent can run code, the exact grader mostly confirms that the agent is right.} A discrete
-or low-dimensional problem with a computable likelihood is an afternoon's programming for a
-current coding agent, and it treats it as one.
+Without code execution the same models are less reliable. Gemini~4 Argon's stated posteriors
+are close to exact (mean KL 0.010 under Cauchy noise), but it stops too early when stakes are
+high: on a diagnosis task its share of the achievable value falls from 0.92 at penalty/reward
+ratio 0.25 to 0.13 at 16, and 93 of 102 early stops match one-step lookahead. These errors
+vanish once the agent can write the DP. They motivated the next task.
 
-\subsection{Without tools: accurate beliefs, short horizons}
-
-The same environments, run through a bare API with no code execution, show where the models'
-unaided reasoning departs from the optimum. We ran Gemini~4 Argon on several thousand episodes
-with the posterior-level grader. Three patterns recur.
-
-\emph{Beliefs are close to exact.} On the credit task with Cauchy noise, Argon's stated
-posteriors have mean KL 0.010 (median about $10^{-4}$) to the exact posterior. Its posterior
-shift regressed on the exact shift has slope 1.01 after extreme readings and 0.97 after
-middling ones, and it is closer to the exact Cauchy posterior than to a Gaussian-belief
-posterior 99.3\% of the time. On parity-style tasks its inference gap was zero throughout.
-Heavy tails did not break inference.
-
-\emph{Stopping is myopic.} In a fault-diagnosis task with a penalty $P$ for a wrong answer and
-a reward $R$ for a right one, Argon's share of the achievable value falls as stakes rise
-(Table~\ref{tab:stop}). At $P/R = 16$ it runs 0.5 tests where the optimal policy runs 6.5; it
-stops early in 77--93\% of episodes, and 93 of 102 early stops coincide with what one-step
-lookahead recommends. Its choice between answering and declining, once it has stopped, was
-correct in 53 of 53 cases. A hint naming the failure made it worse ($-0.052\ [-0.090,
--0.013]$). In the credit task, 42 of 53 early stops under heavy tails match one-step lookahead
-and 37 cite heavy tails as the reason: ``even a very high reading on another check would not
-shift the posterior enough to justify the \$20 check cost.'' That sentence is true of one
-check and false of three, which is the non-concavity of \citet{frazier2010paradoxes} in the
-agent's own words.
-
-\begin{table}[t]
-\centering\small
-\begin{tabular}{lcccc}
-\toprule
-$P/R$ & 0.25 & 1 & 4 & 16 \\
-\midrule
-Share of DP-achievable value & 0.92 & 0.86 & 0.71 & 0.13 $[-0.07, 0.36]$ \\
-\bottomrule
-\end{tabular}
-\caption{Gemini~4 Argon without tools on the stopping task (5 faults, 3 tests, test cost 2,
-$R=100$).}
-\label{tab:stop}
-\end{table}
-
-\emph{Structure has to be visible.} Replacing meaningful labels by nonsense labels changed
-nothing ($\pm 1$ point), so the models are not leaning on the story. Flattening the
-presentation so that the problem's structure is not laid out cost 9--25 points on parity
-tasks. In blackjack with a hidden shoe composition Argon captured about 48\% of the available
-Bayes advantage and tied a policy that bets on the posterior but plays basic strategy; its
-errors follow the belief that drawn cards make their rank less likely to come again, where the
-evidence says the opposite.
-
-These text-only effects are real but do not survive a shell: an agent that writes the DP does
-not stop early. They guided the design of the task that follows.
-
-\section{Results III: the black-box credit desk}
+\subsection{The black-box credit desk}
 \label{sec:blackbox}
-
-\subsection{Task}
-
-The agent underwrites 20 loan applicants, one at a time. Each belongs to one of six risk
-segments with stated default probabilities (0.02 to 0.90), drawn from a stated per-applicant
-prior. Approving pays the expected payoff for the true segment with a margin of \$1{,}000 and
-a loss given default of \$16{,}000; declining pays 0. Before deciding, the agent may buy up to
-eight live checks of three kinds at \$20 each. A check returns only the band (one of six) of a
-score.
-
-The task states the structure of the score generator: for each kind of check, score $=$
-location(segment) $+$ noise, with noise symmetric, specific to the check and the same for every
-segment. It does not state the locations or the noise distributions. Instead it offers a
-sandbox, \texttt{simulate(segment, check, n)}, which returns raw scores for synthetic
-applicants of a known segment from the same generator at \$1 per draw, up to 1{,}000 draws.
-Hidden per desk: location offsets and jitter, and per check a noise family (Gaussian,
-Student-$t_3$ or Cauchy, at least one Cauchy per desk) and scale.
-
-Nothing the agent needs is withheld without a way to obtain it; the question is how much of it
-to buy. Calibration is a value-of-information decision one level above the per-applicant one.
-
-\subsection{Reward and reference}
-
-Each applicant is graded by Eq.~\eqref{eq:vhat} under the true generator. The agent's total is
-$V = \sum_i \hat V_i - (\text{sandbox spend})$; $V_0$ is the value of deciding every applicant
-from its prior (zero on these desks, where declining is best without information); and
-\begin{equation}
-\text{reward} \;=\; \mathrm{clip}_{[0,1]}\!\left(\frac{V - V_0}{\bar V_{\mathrm{ref}} - V_0}\right),
-\end{equation}
-where $\bar V_{\mathrm{ref}}$ is a per-task constant: the expected total of the reference
-procedure, averaged over 200 independent sandbox datasets.
-
-The \emph{fair reference} uses only the agent's tools and no knowledge of the noise family. It
-draws 12 scores for each of the 18 (segment, check) cells (\$216), takes the per-cell median as
-the location, pools the residuals across segments (valid because the noise is stated to be the
-same for every segment) and symmetrises them, builds band probabilities from this empirical
-distribution averaged over 40 bootstrap resamples, and plays the exact DP under those tables.
-It reaches 0.72--0.82 of the value of the true-model DP, which knows the generator and pays
-nothing for it. A variant that fits the noise family by maximum likelihood scores 0.86--0.97 of
-the fair reference in expectation; the reference is a good procedure, not a ceiling.
-
-\subsection{Calibration of the task}
-
-We screened 20 desks and kept the first six, in numeric order, that pass a fixed rule at 200
-sandbox datasets: reference reward SD at most 0.15, probability of a reference reward below
-0.5 at most 0.05, and three shortcut policies each at most 0.8 in expectation. The full
-screening table, including the three desks that passed a first 40-dataset screen and failed
-confirmation, is in the task README. On the six desks the reference's reward has mean
-0.94--0.98 and SD 0.05--0.12. The shortcut policies score, in expectation:
-no calibration with a guessed Gaussian model, 0.00--0.37; the reference's draws with a Gaussian
-fit (the ``naive'' policy), 0.53--0.73; the reference's tables with one-step lookahead instead
-of the DP, 0.07--0.30; buying all 1{,}000 draws and then playing as the reference,
-0.39--0.52. Through Harbor, the reference scored 1.0 on five desks and 0.82 on the sixth,
-do-nothing scored 0 on the four desks on which it was run, and one-step lookahead scored 0.02
-and 0.14 on the two on which it was run.
-
-A first version of the task did not meet this standard and is kept as evidence: sandbox draws
-cost \$2, a guessed model needing no sandbox was nearly as good as the reference on three of
-seven desks, the reference was normalised to a single noisy run, and one oracle run scored 0.
-On it Opus scored 0.057 and GPT-5.6 Terra 0, 0 and 0, almost entirely from sandbox
-overspending. The second version lowered the price of learning, removed the guessable
-generator and normalised to an expectation, so that a gap could not be attributed to those
-flaws.
-
-\subsection{Agents}
 
 \begin{table}[t]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
@@ -624,171 +238,73 @@ Agent & Harness & $n$ & out & Mean & Range & spend (\$) & loss (\$) & applicant 
 \midrule
 \input{v2_rows}% generated by v2_table.py; ends with the bottom rule
 \end{tabular}
-\caption{Black-box credit desk, scored Harbor trials (at most one per desk per agent). Trials
-in which the harness failed before the agent acted are excluded. \emph{Timed out}: trials that
-hit the 45-minute agent limit before deciding all 20 applicants; undecided applicants count as
-declined, and these trials are included in the reward columns. The last three columns are
-medians over trials that finished. \emph{Play loss} is the value of the true-model DP minus the
-agent's value before sandbox costs: what its live decisions gave up against an agent that knew
-the generator.}
+\caption{Black-box credit desk, one Harbor trial per desk per agent. Timed-out trials (45-minute
+limit) count undecided applicants as declined. The last three columns are medians over finished
+trials. \emph{Play loss}: true-model DP value minus the agent's value before sandbox costs.}
 \label{tab:v2}
 \end{table}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{fig_v2}
-\caption{Each marker is one trial that finished. Horizontal position is what the agent paid to
-learn the generator; vertical position is what its decisions then lost against the true-model
-DP. Grey lines join points of equal total loss. The reference (bars; expectation per desk)
-buys 216 draws and accepts a moderate play loss. Play losses above \$2{,}700 are drawn at the
-top edge.}
+\caption{Finished trials: what each agent paid to learn the generator (horizontal) against what
+its decisions then lost to the true-model DP (vertical). Grey lines join equal total loss.
+Bars mark the reference's expectation per desk.}
 \label{fig:v2}
 \end{figure}
 
-Table~\ref{tab:v2} and Figure~\ref{fig:v2} give the results. Every agent averages below the
-reference. Because the grader prices each step, it also says where the money went, and four
-patterns account for nearly all of the shortfall.
+Every agent averages below the reference (Table~\ref{tab:v2}, Figure~\ref{fig:v2}), and the
+grader shows where the money went. \emph{Opus~5.5 plays near-optimally but overbuys}: it lost only
+\$9--\$32 to the true-model DP, where the reference loses \$86--\$200, but bought 520--720 draws
+against 216, an extra \$300--\$500 that buys back at most about \$170. It identified the noise
+families correctly and ran an exact DP, but fixed its budget by convention (20 draws per cell)
+rather than pricing a further draw. Kimi and DeepSeek bought close to the 1{,}000 cap.
+\emph{Sonnet~5.5 spends moderately but decides worse}, running fewer live checks than the
+reference. \emph{GPT-5.6 Terra and Nemotron spend heavily and decide poorly}, several trials
+ending below the value of declining everyone. \emph{Argon and MiniMax mostly ran out of time};
+the instruction did not state the limit, so these scores say little about their decisions. One
+Argon trial scored 1.0 after simulating how regret falls with draws per cell before buying 159;
+it was the only agent that priced its calibration.
 
-\emph{Near-optimal play, bought too dearly.} Opus~5.5 gave up \$9, \$25 and \$32 over 20
-applicants against a policy that knows the generator, where the reference gives up
-\$86--\$200 in expectation. It did so by buying 520 to 720 draws against the reference's 216:
-an extra \$300--\$500 that buys back at most about \$170 of play value. Opus fitted each check
-as a Student-$t$ with free degrees of freedom, identified the noise families correctly
-(``bureau and bank noise look roughly Cauchy, and income fits a Student-$t$ near 3 degrees of
-freedom''), and ran an exact DP with a value-of-perfect-information pruning bound. It set its
-calibration budget up front at 20 draws per cell and did not price a further draw against its
-\$1 cost; one trial ended its sandbox phase with ``I've already spent \$720 in the sandbox, so
-I'm stopping there.'' Kimi K3.1 Pro and DeepSeek V4.1 Flash show the same pattern at its
-limit: in their finished trials they bought 900--1{,}000 draws, the cap or close to it, and in
-five of those eight trials then lost under \$40 in play, for rewards of 0.43--0.62.
+\subsection{Training small models}
 
-\emph{Moderate spending, weaker play.} Sonnet~5.5 spent between \$180 and \$480, on three
-desks about what the reference spends, and lost \$194--\$673 in play. On the desk where it ran
-2.5 live checks per applicant it scored 0.98; on the others it ran 0.85--1.75 where the
-reference runs 1.55--3.1, and scored 0.47--0.76. Its shortfall is in the decisions.
+On rows asking for the most informative experiment, labelled by exact expected information
+gain, supervised fine-tuning and GRPO lift every Gemma~4 size (E2B to 26B) above its base and a
+shuffled-reward control on unseen task families; for E4B, from 0.29 to 0.57 (GRPO) and 0.59
+(supervised). On hyperbolic discounting E4B goes from 0.000 to 0.362 with supervised
+fine-tuning and to 0.499 with GRPO. None of this is yet on the submission task.
 
-\emph{Heavy spending and poor play.} GPT-5.6 Terra spent \$900 in every trial and then lost
-\$350--\$2{,}100 in play; four of its six trials finished below the value of declining
-everyone. Nemotron~3 Ultra shows the same pattern more strongly. DeepSeek, in the two trials
-outside the pattern above, approved its way to losses of several thousand dollars after
-spending \$760--\$1{,}000 on calibration; the reward clips these at zero.
+\section{Discussion}
 
-\emph{Running out of time.} The agent limit is 45 minutes. Opus finished in 10--30. Gemini~4
-Argon timed out in three of four trials, twice before deciding a single applicant, and
-MiniMax-M3 in two of three. A time-out during calibration scores zero or below, because the
-sandbox has been paid for and nothing has been earned with it. We count these trials, because a rerun of the task would, and the
-reference needs a few minutes. But the instruction given to the agent does not state the limit,
-which is a flaw in the task as submitted, and a reader should not take Argon's mean of 0.28 as
-a statement about its decisions.
+The agents' statistics and planning are strong; what they lack is treating ``how much should I
+learn?'' as a decision with a computable answer. The reference's 12 draws per cell was found by
+simulation with tools every agent has. This is the myopia about the value of information that
+the text-only experiments showed for a single check, moved to a level where writing a DP for the
+stated problem does not remove it, because the stated problem does not include it.
 
-One trial matched the reference outright. Argon on one desk bought 159 draws, lost \$122 in
-play and scored 1.0, with a total above the reference's expectation. Its transcript is the
-only one we found in which the agent simulated how the regret of its decisions falls with the
-number of draws per cell before choosing how many to buy. Sonnet's 0.98 came from buying 225
-draws, nine more than the reference.
-
-\subsection{What kind of difficulty this is}
-
-The common factor in the first pattern is not statistical competence, which is high, or
-planning, which is exact. It is that the agents treat ``how much should I learn?'' as a
-setting to be chosen by convention (20 or 50 per cell, or the cap), where the task makes it a
-decision with a computable answer. The reference's 12 draws per cell is not a secret: it was
-chosen by simulation, using tools every agent has. This is the same myopia about the value of
-information that the text-only experiments showed at the level of a single check
-(Section~\ref{sec:stated}), moved to the level where writing a DP for the stated problem does
-not remove it, because the stated problem does not include it.
-
-\subsection{Integrity of the reward}
-
-Doing nothing scores 0 and one-step stopping scores 0.02--0.30. The generator, seeds and salt
-exist only in the server container; sandbox and live readings come from independent streams;
-budgets are enforced by the server. Three weaknesses remain and are documented with the task.
-First, Harbor runs the verifier in the agent's container, where the agent has root; we harden
-the verifier script (fixed paths, isolated interpreter, package integrity check, killing stray
-processes) but an agent that set out to forge the score could in principle do so. Second, the
-sandbox stream is fixed per desk so that the reference run is reproducible; a policy that
-copies the reference's exact calls sees the reference's exact dataset, and on one desk that
-dataset happens to favour the naive Gaussian policy (about 0.9 there against 0.66 in
-expectation), which is why baselines are compared in expectation. Third, the reward is clipped
-at zero, which hides how far below zero several trials fell (the worst lost \$38{,}000); the
-per-trial values are in the repository.
-
-\section{Training small models}
-\label{sec:training}
-
-The environments also produce training signal. We report three experiments, none of which is
-yet on the submission task.
-
-\emph{Prediction tasks, undisclosed model.} Gemma~4 E4B scores 0.000 on hyperbolic discounting
-untrained, 0.362 after supervised fine-tuning on reference demonstrations, and 0.499 after
-further GRPO~\citep{shao2024deepseekmath} on the reward of Eq.~\eqref{eq:reward} ($+0.137\
-[0.049, 0.225]$ over supervised alone). On location finding the same recipe gives 0.007, 0.111
-and 0.025. In the light of Section~\ref{sec:results1}, part of the gain on the first task is
-the model learning the noise model that the task did not state.
-
-\emph{Design decisions across model sizes.} On rows that ask for the most informative
-experiment in a described state, labelled by exact expected information gain, both supervised
-fine-tuning and GRPO lift every Gemma~4 size we trained above its base and above a
-shuffled-reward control on unseen task families (Table~\ref{tab:curve}). The whole sweep cost
-about \$15 of GPU time.
-
-\begin{table}[t]
-\centering\small
-\begin{tabular}{lcccc}
-\toprule
-Size & Base & Control & GRPO & Supervised \\
-\midrule
-E2B      & .37 / .40 & .42 / .43 & .46 / .54 & .55 / .74 \\
-E4B      & .29 / .32 & .50 / .43 & .57 / .62 & .59 / .79 \\
-12B      & .45 / .47 & .46 / .48 & .74 / .71 & -- \\
-26B      & .58 / .55 & .58 / .55 & .74 / .69 & .61 / .81 \\
-31B      & .70 / .73 & -- & -- & -- \\
-\bottomrule
-\end{tabular}
-\caption{Share of design decisions matching the greedy-optimal experiment, on held-out task
-families / held-out instances of training families (500 rows each; chance 0.49 / 0.39).}
-\label{tab:curve}
-\end{table}
-
-\emph{A longer GRPO run} on the smallest model raised its score on unseen families from 0.38 to
-0.57--0.60 ($+0.189\ [0.147, 0.231]$ at step 1{,}000) and then stopped improving as sampling
-collapsed: late in training 96--98\% of prompts produced identical completions and no reward
-signal. An entropy-regularised arm was started but ran for under 100 steps.
-
+\paragraph{Limitations.} The black-box results are at most six trials per agent on one task
+family, with different harnesses; for two agents most trials hit the time limit, which the
+instruction did not state. Two trials came within 0.03 of the reference, so the gap is one of
+frequency. A prompt telling agents to price calibration would probably narrow it. The reference
+is good, not optimal. The verifier shares a container with the agent, and the sandbox stream is
+fixed per desk, so baselines are compared in expectation. Stated-model results rest on 2--15
+trials per environment.
 
 \section{Conclusion}
 
-When a simulator is known to the grader, the exact posterior and the exact value function are
-available, and using them turns a noisy benchmark into an environment with a provable ceiling,
-a zero for doing nothing, and a per-step account of where an agent lost. That account changed
-our own conclusions twice. It showed that our first gap was created by information the task
-withheld, and that restating the problem with more structure does not bring the gap back:
-frontier agents with code solve stated Bayesian problems. And it showed, on a task where the
-model must be bought, that agents which infer and plan almost perfectly still misjudge how
-much learning is worth paying for.
-
-\paragraph{Limitations.}
-The black-box results are one trial per desk and at most six trials per agent, on one task
-family, with different harnesses per agent; some agents have three or four scored trials
-because of infrastructure failures, and for two agents most trials ended at the time limit.
-Two trials came within 0.03 of the reference, so the gap is a matter of frequency, not
-impossibility, and a prompt that told
-agents to price their calibration would probably narrow it; we have not measured by how much.
-The reference is a good procedure and not the optimum. Reward integrity depends on a verifier
-that shares a container with the agent. The stated-model results rest on 2--15 trials per
-environment. The guarantees of Section~\ref{sec:theory} hold for the scores, and for the
-clipped rewards only up to the clipping. We have not shown that training on these rewards
-transfers to the submission task.
+When the grader knows the simulator, the exact posterior and value function turn a noisy
+benchmark into an environment with a provable ceiling, a zero for doing nothing, and a
+per-step account of where an agent lost. That account showed that our first gap was created by
+withheld information, that frontier agents with code solve stated Bayesian problems, and that
+agents which infer and plan almost perfectly still misjudge how much learning is worth.
 
 \section*{Use of AI}
 
 This work was produced at a 48-hour hackathon with heavy use of AI coding agents. Claude Code
-(Anthropic; Claude Fable 5.2 and Claude Opus 5.5) wrote most of the environment, grader,
-experiment and infrastructure code, launched and monitored the experiments, analysed the
-results, searched the literature and drafted this manuscript, under the direction of the human
-authors. Sub-agents built several environments from written specifications. The language
-models named in the results were experimental subjects. The human authors chose the research
-question and the experiments, reviewed the results, and take responsibility for the content.
+(Anthropic; Claude Fable 5.2 and Claude Opus 5.5) wrote most of the code, ran and analysed the
+experiments, searched the literature and drafted this manuscript under the direction of the
+human authors, who chose the question and experiments, reviewed the results, and take
+responsibility for the content. The models named in the results were experimental subjects.
 
 \bibliographystyle{unsrtnat}
 \bibliography{refs}
@@ -797,80 +313,57 @@ question and the experiments, reviewed the results, and take responsibility for 
 \section{Proofs}
 \label{app:proofs}
 
-\paragraph{Proposition~\ref{prop:proper}.}
-$S(p_\theta;\theta) - S(q;\theta) = \E_{Y\sim p_\theta}[\log p_\theta(Y) - \log q(Y)] =
-\KL(p_\theta\,\|\,q)$, which is non-negative and zero only if $q = p_\theta$ almost everywhere
-(Gibbs' inequality).
+Let $\theta \sim \pi$, let the agent choose designs from its history and private randomness $U$
+independent of $\theta$, and let $q$ have \emph{no leak}: conditionally independent of $\theta$
+given $D$ and the evaluation design $x$. Write $p_\theta = p(\cdot\mid x,\theta)$ and
+$p_D = \int p_\theta\, p(\theta\mid D)\,d\theta$.
 
-\paragraph{Proposition~\ref{prop:bayes}.}
-Let $U$ be the agent's private randomness and $x$ the evaluation design. Each design
-$x_t$ is a function of $(D_{t-1}, U)$, so the joint density of $(\theta, D)$ given $U$ is
-$\pi(\theta)\prod_t p(y_t\mid x_t,\theta)$ times factors that do not involve $\theta$. Hence
-$\theta \mid (D, U, x) \sim p(\theta\mid D)$, the ordinary posterior. For a no-leak $q$,
-conditioning on $(D,U,x)$ fixes $q$, and
-\[
-\E\big[S(q;\theta)\mid D,U,x\big]
-= \int p(\theta\mid D)\int p(y\mid x,\theta)\log q(y)\,dy\,d\theta
-= \int p_D(y)\log q(y)\,dy .
-\]
-The same identity with $q = p_D$ gives $\int p_D \log p_D$. Subtracting,
-$\E[S(p_D;\theta) - S(q;\theta)\mid D,U,x] = \KL(p_D\,\|\,q) \ge 0$; take expectations. For a
-restricted family $\mathcal{Q}$ the conditional expectation is maximised by
-$\arg\min_{q\in\mathcal{Q}}\KL(p_D\,\|\,q)$; for Gaussian $q$ this is the Gaussian with the
-mean and variance of $p_D$.
+\begin{proposition}[Proper]\label{prop:proper}
+$S(p_\theta;\theta) - S(q;\theta) = \KL(p_\theta\|q) \ge 0$, with equality only if $q = p_\theta$.
+\end{proposition}
+\emph{Proof.} The difference is $\E_{Y\sim p_\theta}[\log p_\theta(Y) - \log q(Y)]$; apply Gibbs'
+inequality. \qed
 
-\paragraph{Proposition~\ref{prop:info}.}
-By the identity above, $\E[S(p_D;\theta) - S(p_0;\theta)\mid D] = \int p_D \log (p_D/p_0) =
-\KL(p_D\,\|\,p_0)$. Since $Y \mid D \sim p_D$ and $Y \sim p_0$ marginally,
-$\E_D[\KL(p_D\,\|\,p_0)] = I(Y;D)$. For hypotheses, $h^{*}\mid (D,U) \sim p(\cdot\mid D)$ by
-the same argument, so for a no-leak $q$,
-$\E[\log q(h^{*})\mid D,U] = \sum_h p(h\mid D)\log q(h)$ and
-\[
-\E[r(q)\mid D,U] = \KL\big(p(\cdot\mid D)\,\|\,p_0\big) - \KL\big(p(\cdot\mid D)\,\|\,q\big).
-\]
-The expectation of the first term is $I(h;D)$. $r(p_0) = 0$ by definition.
+\begin{proposition}[Nobody beats the posterior]\label{prop:bayes}
+$\E[S(p_D;\theta)] - \E[S(q;\theta)] = \E[\KL(p_D\|q)] \ge 0$.
+\end{proposition}
+\emph{Proof.} Each design is a function of the past data and $U$, so the joint density of
+$(\theta, D)$ given $U$ is $\pi(\theta)\prod_t p(y_t\mid x_t,\theta)$ times factors free of
+$\theta$; hence $\theta\mid(D,U,x)\sim p(\theta\mid D)$. Conditioning fixes $q$, and
+$\E[S(q;\theta)\mid D,U,x] = \int p_D(y)\log q(y)\,dy$. Subtract the same identity with
+$q=p_D$ and take expectations. \qed
 
-\paragraph{Proposition~\ref{prop:step}.}
-The sum telescopes because $D_0$ is empty and $p(\cdot\mid D_0) = p_0$. Given
-$(D_{t-1}, x_t)$, $h^{*} \sim p(\cdot\mid D_{t-1})$ and $y_t \sim p(\cdot\mid x_t, h^{*})$, and
-by Bayes' rule
-$p(h\mid D_t)/p(h\mid D_{t-1}) = p(y_t\mid x_t,h)/p(y_t\mid x_t, D_{t-1})$. Therefore
-$\E[r_t\mid D_{t-1},x_t] = \E[\log p(y_t\mid x_t,h^{*}) - \log p(y_t\mid x_t,D_{t-1})]$, which is
-the mutual information $I(h;y_t\mid D_{t-1},x_t)$. The tower property gives
-$\E[\sum_t r_t] = \E[\sum_t \E[r_t\mid D_{t-1},x_t]]$ for every policy, and the law of total
-variance gives $\mathrm{Var}(\E[r_t\mid D_{t-1},x_t]) \le \mathrm{Var}(r_t)$.
+\begin{proposition}[Information]\label{prop:info}
+$\E[S(p_D;\theta) - S(p_0;\theta)] = I(Y;D)$.
+\end{proposition}
+\emph{Proof.} By the identity above the conditional expectation is $\KL(p_D\|p_0)$, whose mean
+over $D$ is $I(Y;D)$ since $Y\mid D\sim p_D$ and $Y\sim p_0$. \qed
 
-\paragraph{Proposition~\ref{prop:var}.}
-By definition $S(q;\thetastar) = \E[\hat S\mid \thetastar, q]$. The means agree by the tower
-property, and $\mathrm{Var}(\hat S) = \mathrm{Var}(S) + \E[\mathrm{Var}(\hat S\mid\thetastar,q)]
-\ge \mathrm{Var}(S)$.
+\begin{proposition}[Variance]\label{prop:var}
+If $\hat S = \log q(Y)$ with $Y\sim p_{\thetastar}$, then $\E\hat S = \E S$ and
+$\mathrm{Var}(S)\le\mathrm{Var}(\hat S)$.
+\end{proposition}
+\emph{Proof.} $S = \E[\hat S\mid\thetastar,q]$; apply the law of total variance. \qed
 
-\paragraph{Proposition~\ref{prop:ppc}.}
-Condition on $(D, q)$ and the evaluation designs. As in the proof of
-Proposition~\ref{prop:bayes}, a no-leak submission leaves $\thetastar \sim p(\theta\mid D)$,
-and the draws $\tilde\theta_i$ are independent of $\thetastar$ with the same distribution. So
-$T(\thetastar), T(\tilde\theta_1), \dots, T(\tilde\theta_m)$ are independent and identically
-distributed, hence exchangeable. Let $k = \lfloor \alpha(m+1) \rfloor$. The event $p \le \alpha$
-requires $T(\thetastar)$ to be among the $k$ largest of the $m+1$ values counting ties against
-it, which by exchangeability has probability at most $k/(m+1) \le \alpha$. The bound holds
-conditionally, hence unconditionally.
+\begin{proposition}[Leak test]\label{prop:ppc}
+For $\tilde\theta_1,\dots,\tilde\theta_m$ i.i.d.\ from $p(\theta\mid D)$ and any statistic $T$
+of $(D,q,x)$, the p-value $(1+\#\{i: T(\tilde\theta_i)\ge T(\thetastar)\})/(m+1)$ satisfies
+$\Pr(p\le\alpha)\le\alpha$ under no leak.
+\end{proposition}
+\emph{Proof.} Given $(D,q,x)$, $\thetastar$ and the $\tilde\theta_i$ are i.i.d., so the $m+1$
+values of $T$ are exchangeable and $T(\thetastar)$ is among the $\lfloor\alpha(m+1)\rfloor$
+largest with probability at most $\alpha$. \qed
 
-\paragraph{Proposition~\ref{prop:adv}.}
-Let $H_t$ be the history before action $a_t$ and $U$ the policy's private randomness. As in
-the proof of Proposition~\ref{prop:bayes}, $h \mid (H_t, U) \sim p(h \mid H_t)$, which is the
-belief state $s_t$; so conditional on $(H_t, U)$ the expected immediate reward of $a_t$ is
-$\bar r(s_t, a_t) = \E_{h\sim s_t}[r(h, a_t)]$ and the next belief state has the transition law
-of the belief process. The optimal action values satisfy
-$Q^{*}(s_t,a_t) = \bar r(s_t,a_t) + \E[V^{*}(s_{t+1}) \mid s_t, a_t]$, with $V^{*} = 0$ after
-the terminal action. Substituting in Eq.~\eqref{eq:vhat} and regrouping,
-\[
-\hat V \;=\; \sum_{t=0}^{T} \bar r(s_t,a_t) \;-\; \sum_{t=0}^{T-1} \Big( V^{*}(s_{t+1}) -
-\E\big[V^{*}(s_{t+1}) \mid s_t, a_t\big] \Big).
-\]
-Each term of the second sum has conditional mean zero given $(H_t, U, a_t)$, and the horizon
-is bounded, so its expectation vanishes. The expectation of the first sum is the expected
-total reward of the policy by the tower property. This gives (i). For (ii), every bracket in
-Eq.~\eqref{eq:vhat} is non-negative because $V^{*}(s) = \max_a Q^{*}(s,a)$, and all vanish
-exactly when every $a_t$ attains the maximum. (iii) is the equality case of (ii).
+\begin{proposition}[Advantage grading]\label{prop:adv}
+In a finite-horizon problem with hidden state $h$, belief states $s_t$ and optimal values
+$V^{*}, Q^{*}$ of the belief process, for any policy using only its history and independent
+randomness: (i) $\E[\hat V]$ is the policy's expected total reward; (ii) $\hat V\le V^{*}(s_0)$,
+with equality iff every action was optimal.
+\end{proposition}
+\emph{Proof.} As above, $h\mid(H_t,U)\sim s_t$, so with $\bar r(s,a)=\E_{h\sim s}r(h,a)$ we have
+$Q^{*}(s_t,a_t)=\bar r(s_t,a_t)+\E[V^{*}(s_{t+1})\mid s_t,a_t]$. Substituting into
+Eq.~\eqref{eq:vhat} gives $\hat V=\sum_t\bar r(s_t,a_t)-\sum_t(V^{*}(s_{t+1})-\E[V^{*}(s_{t+1})\mid
+s_t,a_t])$; the second sum is a martingale difference with mean zero, which gives (i). Each
+bracket in Eq.~\eqref{eq:vhat} is non-negative since $V^{*}=\max_a Q^{*}$, which gives (ii). \qed
 
 \end{document}
