@@ -51,3 +51,5 @@ data/
 # Local editor state
 .obsidian/
 !results/blackbox_v2/*.csv
+# baseline copies written by scripts/make_baseline_tasks.sh
+tasks/credit-blackbox-v2-*/

@@ -10,6 +10,12 @@ Team 3-Sigma · Junction 2026 · AfterQuery "Break the Agent": *build a reinforc
 environment that challenges today's best AI agents, demonstrate real failure modes, and show that
 its rewards reflect real progress.*
 
+> **For judges.** The submission is the **black-box credit desk** (`tasks/credit-blackbox-v2`, six
+> Harbor tasks). [Run the evaluation](#run-the-evaluation-one-command) with one command,
+> [check our numbers](#check-our-numbers-in-under-a-second) without Docker,
+> [run the tests](#tests), and see [reward integrity](#reward-integrity). Battleship, the wet lab
+> and the 3D lab in the demo illustrate the idea; they are not the graded task.
+
 ---
 
 ## The problem
@@ -192,6 +198,28 @@ The black-box desk is the end of a longer search; the paper reports the whole of
 
 ## How to use it
 
+### Run the evaluation: one command
+
+Requirements: Docker running, Python 3.12, [Harbor](https://github.com/laude-institute/harbor)
+0.25.0 (`uv tool install harbor`), and the model provider's API key in the environment or in a
+git-ignored `.env`: `GOOGLE_GENERATIVE_AI_API_KEY` for `gemini/...` models with OpenCode,
+`ANTHROPIC_API_KEY` for Claude Code. The reference and both baselines need no key.
+
+```bash
+MODEL=gemini/gemini-4-carbon ./scripts/eval.sh
+```
+
+This runs, on all six desks, the **reference**, a **do-nothing** baseline, a **stop-early**
+baseline (one-step lookahead through the same tools) and **three agent runs** with OpenCode, then
+prints one table of per-trial rewards. Results go to `jobs/<timestamp>/`.
+
+```bash
+SKIP_AGENT=1 ./scripts/eval.sh                                   # no API key: reference and baselines only
+AGENT=claude-code MODEL=claude-opus-5-5 ./scripts/eval.sh        # another harness or model
+```
+
+Expected: reference 1.0 on five desks and 0.82 on desk 3005, do nothing 0.0, stop early 0.02–0.14.
+
 ### Check our numbers in under a second
 
 No Docker, no API keys, no GPU. Python 3 only for the first command; add numpy and scipy for the second.
@@ -249,14 +277,22 @@ harbor run -p $T -a claude-code -m claude-opus-5-5 -i credit-blackbox-3017 $D   
 
 ### Tests
 
+No Docker and no keys. From the repository root:
+
+```bash
+uv run --no-project --with numpy --with scipy --with pytest \
+  pytest -q credit_blackbox/test_blackbox.py      # the credit desk: 5 tests, about 2-3 minutes
+```
+
+They run on the first submitted desk and cover determinism under seed and salt, independent
+sandbox and live streams, invalid actions and limits, declining everyone (or deciding nothing)
+scoring exactly 0, and the reference above 0.8 and at least 0.2 above guessing, overbuying and
+declining. Tests for the earlier labs:
+
 ```bash
 uv run --no-project --with numpy --with scipy --with pyyaml --with pytest \
   pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py tests/test_spec.py
 ```
-
-The black-box engine's own tests are in `credit_blackbox/test_blackbox.py`. They cover determinism,
-salt and stream independence, invalid actions, limits, decline = 0, and the reference above the
-baselines.
 
 ### Repository layout
 
@@ -289,3 +325,28 @@ This was built during a 48-hour hackathon with heavy use of AI coding agents (Cl
 Claude Fable 5.2 and Claude Opus 5.5), under the team's direction. See the paper's "Use of AI"
 section. The language models in the results table were experimental subjects. No API keys are
 stored in this repository.
+
+## Notes for challenge partners
+
+**AfterQuery · Break the Agent.** Thank you. The black-box credit desk is our submission. Frontier
+agents score below a fair reference because they misprice information, and the exact grader shows
+where each dollar went. Six desks, 54 graded trials, regrade in under a second.
+
+The notes below are for the technology challenges.
+
+- **Verda.** Thank you. Our Harbor evaluation VM ran on Verda CPU, and Gemma GRPO trained on a
+  Verda V100 spot instance. Kimi K3.1 Pro and DeepSeek V4.1 Flash ran through Verda inference: on
+  the desk Kimi scored 0.43 and DeepSeek 0.27, and both bought calibration data up to or near the
+  1,000-draw cap.
+- **NVIDIA.** Thank you. Nemotron 3 Ultra through NVIDIA NIM scored 0.01 on the black-box desk,
+  overbuying calibration and then deciding poorly.
+- **Modal.** Thank you. Modal ran the CPU fan-out for our grader experiments (scripted policies
+  over 400 seeds per cell), and hosts this demo with a live Gemma GPU endpoint.
+- **Google DeepMind.** Thank you. Gemini 4 Argon was the only agent we saw price its own
+  calibration by simulation; that trial scored 1.0, though most Argon trials hit the time limit.
+  Gemini 4 Carbon scored 1.0 on one desk. Gemini plays Bench Pressure live. Gemma 4 E2B trained
+  with GRPO on our reward went from 0.00 to 0.28, and its transfer to other tasks is a bias towards
+  gathering information.
+
+Desk scores are mean rewards on the black-box credit desk (1 = the reference's expected value,
+0 = declining everyone), from `results/blackbox_v2/trials.csv`.

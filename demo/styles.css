@@ -3,7 +3,7 @@
 @font-face { font-family: "Inter"; src: url("assets/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 :root {
   --ink: #0b0c0e; --paper: #f4f2ed; --paper-2: #ebe8e1; --line: rgba(11, 12, 14, 0.12);
-  --mute: rgba(11, 12, 14, 0.58); --accent: #f0591c; --sea: #0d3a4d;
+  --mute: rgba(11, 12, 14, 0.58); --accent: #2a8db5; --sea: #0d3a4d;
   --font: "Inter", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -128,7 +128,7 @@ section.light { padding: clamp(80px, 11vw, 160px) 0; }
 .who { font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
 .tag { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-left: 10px; padding: 4px 9px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); backdrop-filter: blur(6px); }
 .tag:empty { display: none; }
-.tag.pending { background: rgba(240, 89, 28, 0.9); }
+.tag.pending { background: rgba(42, 141, 181, 0.9); }
 .budget { display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
 .budget i { display: block; width: 110px; height: 3px; background: rgba(255, 255, 255, 0.3); border-radius: 2px; position: relative; overflow: hidden; }
 .budget i::after { content: ""; position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(var(--left, 1)); transition: transform 0.4s ease; }
@@ -294,3 +294,13 @@ a.sq:hover img { transform: scale(1.03); }
   .hbar u { grid-column: 1 / -1; grid-row: 2; }
   .page-head { padding: 110px 0 56px; }
 }
+
+/* proof: the whitepaper behind the header */
+.paper-bg { position: relative; overflow: hidden; }
+.paper-bg .wrap { position: relative; z-index: 1; pointer-events: none; }
+.paper-bg .wrap a { pointer-events: auto; }
+.paper-pages { position: absolute; inset: 0; display: block; }
+.paper-pages img { position: absolute; top: 50%; left: 34%; height: 132%; width: auto; transform: translateY(-50%) rotate(-4deg); opacity: 0.2; filter: grayscale(1) contrast(1.05); transition: opacity 0.4s ease; }
+.paper-bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--ink) 30%, rgba(11, 12, 14, 0.55) 62%, rgba(11, 12, 14, 0.15)); }
+.paper-pages:hover img { opacity: 0.32; }
+@media (max-width: 900px) { .paper-pages img { left: 10%; opacity: 0.12; } }

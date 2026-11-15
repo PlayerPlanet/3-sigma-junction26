@@ -81,7 +81,7 @@ const M = {
   dark: new THREE.MeshStandardMaterial({ color: 0x1d2024, roughness: 0.45, metalness: 0.3 }),
   glass: new THREE.MeshStandardMaterial({ color: 0xeaf4f6, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.28, envMapIntensity: 2.2, depthWrite: false }),
   screen: new THREE.MeshStandardMaterial({ color: 0x0b0c0e, roughness: 0.2, emissive: 0x1d4a66, emissiveIntensity: 0.9 }),
-  orange: new THREE.MeshStandardMaterial({ color: 0xf0591c, roughness: 0.45 }),
+  blue: new THREE.MeshStandardMaterial({ color: 0x2a8db5, roughness: 0.45 }),
   rubber: new THREE.MeshStandardMaterial({ color: 0x15171a, roughness: 0.85 }),
   paper: new THREE.MeshStandardMaterial({ color: 0xfbfaf6, roughness: 0.8 }),
   yellow: new THREE.MeshStandardMaterial({ color: 0xe9b30c, roughness: 0.5 }),
@@ -215,7 +215,7 @@ const EQUIP = {
     const stand = new THREE.Group();
     stand.add(cyl(0.09, 0.1, 0.02, M.dark, 0, 0.01, 0), cyl(0.012, 0.012, 0.36, M.steel, 0, 0.19, 0, 10));
     for (let i = 0; i < 3; i++) {
-      const p = cyl(0.016, 0.006, 0.2, i === 1 ? M.orange : M.white, Math.cos(i * 2.1) * 0.06, 0.24, Math.sin(i * 2.1) * 0.06, 10);
+      const p = cyl(0.016, 0.006, 0.2, i === 1 ? M.blue : M.white, Math.cos(i * 2.1) * 0.06, 0.24, Math.sin(i * 2.1) * 0.06, 10);
       p.rotation.z = 0.25;
       stand.add(p);
     }
@@ -290,7 +290,7 @@ const EQUIP = {
   hatch(s) {
     const g = new THREE.Group();
     g.add(rbox(0.8, 0.5, 0.5, 0.04, M.dark));
-    const slot = box(0.5, 0.05, 0.02, new THREE.MeshBasicMaterial({ color: 0xf0591c, toneMapped: false }), 0, 0.3, 0.255);
+    const slot = box(0.5, 0.05, 0.02, new THREE.MeshBasicMaterial({ color: 0x2a8db5, toneMapped: false }), 0, 0.3, 0.255);
     s.dyn.slot = slot.material;
     g.add(slot, box(0.56, 0.01, 0.22, M.steel, 0, 0.2, 0.33));
     return g;
@@ -437,7 +437,7 @@ for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
   s.holder.scale.setScalar(s.dyn.itemScale || 1);
   tile.add(s.holder);
   // progress ring above the station
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.09, 0.12, 40, 1, 0, 0.001), new THREE.MeshBasicMaterial({ color: 0xf0591c, side: THREE.DoubleSide, toneMapped: false, depthTest: false, transparent: true }));
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.09, 0.12, 40, 1, 0, 0.001), new THREE.MeshBasicMaterial({ color: 0x2a8db5, side: THREE.DoubleSide, toneMapped: false, depthTest: false, transparent: true }));
   ring.position.y = tall ? 2.25 : 1.75;
   ring.renderOrder = 10;
   ring.visible = false;
@@ -448,7 +448,7 @@ for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
   scene.add(tile);
   stations.set(c + ',' + r, s);
 }
-const targetRing = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.5, 48), new THREE.MeshBasicMaterial({ color: 0xf0591c, transparent: true, opacity: 0.85, toneMapped: false, side: THREE.DoubleSide }));
+const targetRing = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.5, 48), new THREE.MeshBasicMaterial({ color: 0x2a8db5, transparent: true, opacity: 0.85, toneMapped: false, side: THREE.DoubleSide }));
 targetRing.rotation.x = -Math.PI / 2;
 targetRing.visible = false;
 scene.add(targetRing);
@@ -456,19 +456,19 @@ scene.add(targetRing);
 // goggles guide: a bobbing marker over the device the guide would go to next, and a line to it
 const guide = new THREE.Group();
 {
-  const m = new THREE.MeshBasicMaterial({ color: 0xf0591c, toneMapped: false });
+  const m = new THREE.MeshBasicMaterial({ color: 0x2a8db5, toneMapped: false });
   const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.34, 4), m);
   cone.rotation.x = Math.PI;
   guide.add(cone);
   guide.visible = false;
   scene.add(guide);
 }
-const guideLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineDashedMaterial({ color: 0xf0591c, dashSize: 0.18, gapSize: 0.12, toneMapped: false }));
+const guideLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineDashedMaterial({ color: 0x2a8db5, dashSize: 0.18, gapSize: 0.12, toneMapped: false }));
 guideLine.visible = false;
 guideLine.frustumCulled = false;
 scene.add(guideLine);
 
-const robots = [robot(new THREE.Color(css('--p2') || '#f0591c')), robot(new THREE.Color(0x2f6fb3))];
+const robots = [robot(new THREE.Color(css('--p2') || '#2a8db5')), robot(new THREE.Color(0x2f6fb3))];
 robots.forEach((b) => {
   b.g.visible = false;
   scene.add(b.g);
@@ -522,7 +522,7 @@ if (window.DUCK_GLB) {
     loader.parse(bytes.buffer, '', (gltf) => {
       try {
         const clip = gltf.animations[0];
-        const cols = [new THREE.Color(css('--p2') || '#f0591c'), new THREE.Color(0x2f6fb3)];
+        const cols = [new THREE.Color(css('--p2') || '#2a8db5'), new THREE.Color(0xf4f2ed)];
         robots.forEach((b, i) => adoptDuck(b, i === 0 ? gltf.scene : cloneSkinned(gltf.scene), clip, cols[i]));
         window.__duck = true;
       } catch (e) { console.warn('duck setup failed, keeping the drawn robot', e); }
@@ -789,7 +789,7 @@ function actions(G, st) {
   act.list.innerHTML = html;
   act.guide.hidden = !on;
   act.guide.innerHTML = on ? `<b>Goggles</b><span>${esc(g)}</span>` : '';
-  act.guide.style.setProperty('--c', adv && adv.t ? STRAIN_CSS[adv.t.slot] : 'var(--accent, #f0591c)');
+  act.guide.style.setProperty('--c', adv && adv.t ? STRAIN_CSS[adv.t.slot] : 'var(--accent, #2a8db5)');
   act.btn.setAttribute('aria-pressed', String(on));
   act.btn.textContent = on ? 'Goggles on (G)' : 'Bayes goggles (G)';
 }
@@ -959,7 +959,7 @@ function frame() {
       }
       if (d.wheel) d.wheel.rotation.z += dt * (gs.work > 0 ? 5 : 0);
       if (d.screen) d.screen.emissiveIntensity = gs.work > 0 ? 2.2 : gs.item ? 1.3 : 0.7;
-      if (d.slot) d.slot.color.setHex(0xf0591c).multiplyScalar(0.75 + 0.25 * Math.sin(now * 3));
+      if (d.slot) d.slot.color.setHex(0x2a8db5).multiplyScalar(0.75 + 0.25 * Math.sin(now * 3));
       const show = prog > 0.01 && prog < 0.999;
       s3.ring.visible = show;
       if (show) {

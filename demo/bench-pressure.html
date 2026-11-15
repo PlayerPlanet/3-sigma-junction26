@@ -184,10 +184,10 @@ table.cmp tr.gem th, table.cmp tr.gem td { color: var(--p2); font-weight: 700; }
   --bench: #1b1d21; --bench-top: #2a2d32; --bench-edge: #0b0c0e;
   --steel: #a9a69d; --steel-hi: #dedbd3; --steel-ink: #1b1d21;
   --coat: #ffffff; --hair: #2b2622;
-  --hazard: #f0591c; --hazard-ink: #ffffff;
+  --hazard: #2a8db5; --hazard-ink: #ffffff;
   --good: #2f6b4f; --bad: #b3261e;
-  --s1: #0d5c75; --s2: #b8860b; --s3: #9c4a55; --s4: #46618c;
-  --p1: #0b0c0e; --p2: #f0591c;
+  --s1: #0d5c75; --s2: #6b5b95; --s3: #9c4a55; --s4: #46618c;
+  --p1: #0b0c0e; --p2: #2a8db5;
   --agar: #efe3b4; --contam: #5d6630; --dirty: #b3aa98;
   color-scheme: light;
 }
@@ -240,7 +240,7 @@ body.charts-open #legacy .charts { visibility: visible; transform: none; transit
 .drawer-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; margin: 0 -16px; padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .drawer-head h3 { margin: 0; font: 600 18px var(--f-body); letter-spacing: -0.01em; color: var(--ink); }
 .drawer-head button { height: 40px; padding: 0 20px; border-radius: 99px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font: 500 14px var(--f-body); cursor: pointer; }
-.drawer-head button:hover { background: var(--accent, #f0591c); border-color: var(--accent, #f0591c); }
+.drawer-head button:hover { background: #2b2d32; border-color: #2b2d32; }
 #scrim { position: fixed; inset: 0; z-index: 7; background: rgba(11, 12, 14, 0.22); display: none; cursor: pointer; }
 body.charts-open #scrim { display: block; }
 body.charts-open .cam { visibility: hidden; }
@@ -249,7 +249,7 @@ body.charts-open .cam { visibility: hidden; }
 .topbar { position: fixed; z-index: 7; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 22px; padding: 16px 26px; pointer-events: none; }
 .topbar > * { pointer-events: auto; }
 .topbar .back { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: 99px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font: 500 14px var(--f-body); text-decoration: none; }
-.topbar .back:hover { background: #f0591c; border-color: #f0591c; }
+.topbar .back:hover { background: #2b2d32; border-color: #2b2d32; }
 .topbar .mark { font-family: "TeXMain", serif; font-size: 30px; line-height: 1; color: var(--ink); text-decoration: none; }
 .topbar .mark i { font-family: "TeXMath", serif; font-style: italic; margin-left: 0.04em; }
 .topbar h1 { margin: 0; font-weight: 400; font-size: 24px; letter-spacing: -0.03em; white-space: nowrap; }
@@ -297,13 +297,13 @@ body.human .now { display: none; }
 #actList:empty { display: none; }
 #actGuide { grid-column: 1 / -1; margin: 6px 0 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.16); display: flex; gap: 12px; align-items: baseline; font-size: 16px; }
 #actGuide[hidden] { display: none; }
-#actGuide b { flex: none; font: 600 12px var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: #f0591c; }
+#actGuide b { flex: none; font: 600 12px var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: #2a8db5; }
 #actGuide span { border-left: 3px solid var(--c); padding-left: 10px; }
 .eig { display: flex; gap: 4px; align-items: flex-end; height: 64px; margin-top: 4px; }
 .eig span { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; }
 .eig u { display: block; min-height: 2px; background: rgba(255, 255, 255, 0.3); }
 .eig b { font: 500 10px var(--f-body); color: rgba(255, 255, 255, 0.6); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: clip; margin-top: 3px; }
-.eig .best u { background: #f0591c; }
+.eig .best u { background: #2a8db5; }
 .eig .cur b { color: #fff; font-weight: 700; }
 .eig .cur { outline: 1px solid #fff; outline-offset: 2px; }
 body.human .cam { bottom: auto; top: 86px; }
@@ -371,6 +371,7 @@ body.human .cam { bottom: auto; top: 86px; }
   <p>Right answer published: points. Wrong answer: a retraction. Too slow: the question expires.</p>
   <div class="go" id="watchBox"><button type="button" id="btnWatch3d">Watch the model run the lab</button><select id="run3d" aria-label="Recorded run"></select></div>
   <div class="go"><button type="button" class="alt" id="btnPlay3d">Drive the robot yourself</button></div>
+  <p class="by">A demo of the idea. The task we submit for grading is the <a href="proof.html">black-box credit desk</a>.</p>
   <div class="go"><a class="backlink" href="index.html#lab">Back to the main page</a></div>
   <p class="by">Robot model: &ldquo;<a href="https://sketchfab.com/3d-models/microduck-1579de821da94e1e819619869cb0093c" target="_blank" rel="noopener">Microduck</a>&rdquo; by william.rodrigo, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Compressed and re-timed for this page.</p>
 </div></div>

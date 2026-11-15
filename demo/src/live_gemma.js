@@ -38,17 +38,17 @@
     font-size: 11px; font-variant-numeric: tabular-nums; color: #fff; background: rgb(13 58 77 / calc(0.12 + 0.88 * var(--p, 0))); transition: background .4s; }
   #live-gemma .lg-c.lo { color: var(--ink, #0b0c0e); }
   #live-gemma .lg-c.hit::after, #live-gemma .lg-c.miss::after { content: ''; position: absolute; width: 38%; height: 38%; border-radius: 50%; }
-  #live-gemma .lg-c.hit::after { background: var(--accent, #f0591c); }
+  #live-gemma .lg-c.hit::after { background: var(--accent, #2a8db5); }
   #live-gemma .lg-c.miss::after { border: 2px solid currentColor; opacity: .7; }
-  #live-gemma .lg-c.ship { outline: 2px solid var(--accent, #f0591c); outline-offset: -2px; }
+  #live-gemma .lg-c.ship { outline: 2px solid var(--accent, #2a8db5); outline-offset: -2px; }
   #live-gemma .lg-c.scan { box-shadow: inset 0 0 0 2px #fff; }
   #live-gemma .lg-rules { margin-top: 14px; display: grid; gap: 4px; font-size: 12px; }
   #live-gemma .lg-rules div { display: grid; grid-template-columns: 96px 1fr 36px; gap: 8px; align-items: center; }
   #live-gemma .lg-rules u { height: 6px; border-radius: 3px; background: var(--line, #ddd); position: relative; overflow: hidden; text-decoration: none; }
   #live-gemma .lg-rules u::after { content: ''; position: absolute; inset: 0; width: calc(var(--p) * 100%); background: var(--ink, #0b0c0e); }
-  #live-gemma .lg-rules .true span:first-child { color: var(--accent, #f0591c); font-weight: 600; }
+  #live-gemma .lg-rules .true span:first-child { color: var(--accent, #2a8db5); font-weight: 600; }
   #live-gemma .lg-status { font-size: 15px; margin: 0 0 10px; min-height: 1.5em; }
-  #live-gemma .lg-status.warn { color: var(--accent, #f0591c); }
+  #live-gemma .lg-status.warn { color: var(--accent, #2a8db5); }
   #live-gemma .lg-log { font-size: 13px; line-height: 1.5; max-height: 300px; overflow: auto; border-top: 1px solid var(--line, #ddd); }
   #live-gemma .lg-log div { padding: 6px 0; border-bottom: 1px solid var(--line, #ddd); display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; }
   #live-gemma .lg-log code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; color: var(--mute, #666); }
@@ -185,7 +185,7 @@
     say(`Game over (${ended}): ${history.length} moves, ${nScan} scans, ${history.length - nScan} shots.`);
     scoreEl.innerHTML = `Score of the exact posterior after its moves: <b>${s.toFixed(2)}</b>` +
       (ref !== undefined ? ` · exact-Bayes reference on this board: <b>${ref.toFixed(2)}</b>` : '') +
-      `. The rule was <b>${RULE_LABEL[E.NAMES[bd.rule]]}</b>; orange outlines are the ships.`;
+      `. The rule was <b>${RULE_LABEL[E.NAMES[bd.rule]]}</b>; blue outlines are the ships.`;
     go.disabled = false;
     stopBtn.hidden = true;
   }

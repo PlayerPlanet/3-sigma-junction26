@@ -1,6 +1,6 @@
 // A physically based ocean with a fog bank over a 6x6 grid.
 // The fog is the player's belief: dense where a cell is uncertain, clear where it is known,
-// amber where a ship is likely. Everything is procedural (no texture files), so the page
+// sea blue where a ship is likely. Everything is procedural (no texture files), so the page
 // works from file:// with no server.
 import * as THREE from 'three';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
@@ -223,8 +223,8 @@ const FOG_FRAG = /* glsl */ `
         float h = p.y / TOP;
         vec3 light = uSunColor * sunT * phase * mix(0.6, 1.0, powder) + uAmbient * (0.45 + 0.55 * h);
         float pr = belief(p.xz).y;
-        vec3 alb = mix(vec3(1.0), vec3(1.0, 0.50, 0.20), smoothstep(0.30, 0.85, pr) * 0.85);
-        vec3 c = light * alb + vec3(1.0, 0.38, 0.10) * smoothstep(0.45, 0.95, pr) * 0.55 * (1.0 - h);
+        vec3 alb = mix(vec3(1.0), vec3(0.24, 0.66, 0.92), smoothstep(0.30, 0.85, pr) * 0.85);
+        vec3 c = light * alb + vec3(0.10, 0.52, 0.95) * smoothstep(0.45, 0.95, pr) * 0.55 * (1.0 - h);
         float a = 1.0 - exp(-den * dt * 0.62);
         acc += trans * a * c; trans *= 1.0 - a;
       }
@@ -491,11 +491,11 @@ export class Sea {
     this.shots.set(cell, n + 1);
     const x = cellX(c) + (n ? (n % 2 ? 2.4 : -2.4) : 0), z = cellZ(r) + (n > 1 ? 2.4 : 0);
     this._ripple(x, z, 1);
-    const col = hit ? 0xff5a1f : 0xf4f8fb;
+    const col = hit ? 0x38a8d8 : 0xf4f8fb;
     const g = new THREE.Group();
     const buoy = new THREE.Mesh(
       new THREE.CylinderGeometry(0.55, 0.75, 1.5, 16),
-      new THREE.MeshStandardMaterial({ color: hit ? 0xc23a12 : 0xdfe6ea, roughness: 0.5 }),
+      new THREE.MeshStandardMaterial({ color: hit ? 0x1c6f94 : 0xdfe6ea, roughness: 0.5 }),
     );
     buoy.position.y = 0.5;
     const lamp = new THREE.Mesh(

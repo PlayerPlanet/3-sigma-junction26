@@ -33,10 +33,10 @@ font.
 | Paper 2 | `#EBE8E1` | cards and panels on light |
 | Muted text | Ink at 58% | secondary lines on light |
 | Hairline | Ink at 12% | dividers, chart axes |
-| Signal orange | `#F0591C` | one thing per slide at most: the number or bar that matters |
+| Sea blue | `#2A8DB5` | only if needed, one thing per slide at most: the number or bar that matters |
 | Deep sea | `#0C1A22` | frame around sea renders |
 
-Orange means "look here" or "not yet measured". Do not use it for decoration or for body text.
+Sea blue means "look here". Use it only when a slide needs it; never orange, never for decoration or body text.
 No gradients, no drop shadows, no other colours.
 
 ## Type
@@ -83,7 +83,7 @@ Keynote both have Inter).
 
 ## Charts
 
-- Black bars on Paper, a single orange bar for the one we want read. Hairline axis, no grid
+- Black bars on Paper, at most one sea-blue bar for the one we want read. Hairline axis, no grid
   lines, no legend box: label the bars directly.
 - Always show the two anchors: 0 (do nothing) and the reference.
 - A result that has not been run is a dashed empty bar labelled "not yet measured". Never an

@@ -1,15 +1,21 @@
-"""Small tests for the black-box credit task engine. run: pytest -q test_blackbox.py (from harbor_bb/)"""
+"""Small tests for the black-box credit task engine, on the first of the six submitted desks.
+
+    pytest -q credit_blackbox/test_blackbox.py        # from the repository root, about 2-3 minutes
+"""
 import asyncio, json, sys
+from pathlib import Path
 import numpy as np
 import pytest
-sys.path.insert(0, "template/environment/mcp-server"); sys.path.append("template/solution")
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / "template/environment/mcp-server")); sys.path.append(str(HERE / "template/solution"))
 import credit_core as cc
 import bbpub as P
 import bbsecret as Z
 import bblab as L
 import refpolicy
 
-META = {int(k): v for k, v in json.load(open("tasks_meta.json")).items()}
+# The six submitted desks (tasks/credit-blackbox-v2), not the screening list in v2_results/.
+META = {int(k): v for k, v in json.loads((HERE.parent / "tasks/credit-blackbox-v2/tasks_meta.json").read_text()).items()}
 D = sorted(META)[0]
 SEEDS = META[D]["seeds"]
 
