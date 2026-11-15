@@ -1,4 +1,7 @@
-[![A render of the sea from the 3σ demo: Rulebound Battleship in fog](demo/assets/sea.jpg)](demo/index.html)
+<p align="center">
+  <a href="https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run/bench-pressure.html"><img src="demo/assets/lab-robot.gif" width="49%" alt="A robot carries plates between the freezer, the bench and the incubators in the 3D lab of the demo"></a>
+  <a href="https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run/"><img src="demo/assets/tubes.gif" width="49%" alt="Test tubes on a lab bench, from the intro of the demo (AI-generated clip)"></a>
+</p>
 
 # Bitshift Happens
 
@@ -317,7 +320,7 @@ Konsta Kiirikki · Nikolas Juhava · Qilun Li · Atte Laakso (Aalto University S
 
 AfterQuery for the challenge, the Harbor harness and model credits · Junction 2026 ·
 [Harbor](https://github.com/laude-institute/harbor) · the "Microduck" robot model in the demo by
-william.rodrigo on [Sketchfab](https://sketchfab.com/3d-models/microduck-1579de821da94e1e819619869cb0093c), CC BY 4.0.
+william.rodrigo on [Sketchfab](https://sketchfab.com/3d-models/microduck-1579de821da94e1e819619869cb0093c), CC BY 4.0. The test-tube clip is AI-generated (Google Gemini).
 
 ## Use of AI
 
