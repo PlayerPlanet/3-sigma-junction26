@@ -265,7 +265,9 @@ the prediction grader uses a particle approximation.
 \label{sec:problems}
 
 The recipe needs only a prior, a simulator with a computable (or numerically exact) likelihood,
-and, for decision tasks, a solvable DP. Table~\ref{tab:envs} lists the environments we built
+and, for decision tasks, a solvable DP. Simulators without a tractable likelihood, including
+general black-box simulators, can be brought in through a learned surrogate likelihood, at the
+cost of exactness (Section~\ref{sec:discussion}). Table~\ref{tab:envs} lists the environments we built
 with it. Each was calibrated so that a named shortcut loses clearly to the reference.
 
 \begin{table}[t]
@@ -488,6 +490,7 @@ held-out instances of training families (500 rows each; chance 0.49 / 0.39).}
 \end{table}
 
 \section{Discussion}
+\label{sec:discussion}
 
 The Bayesian reward replaces an estimate with the quantity it estimates, and every property we
 measured follows from that: no credit for guessing, less noise, an exact account of each loss,
