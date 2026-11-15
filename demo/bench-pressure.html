@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A robot runs a simulated lab against deadlines. Watch a model choose experiments, or drive it yourself.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bench Pressure · 3σ">
+<meta property="og:description" content="A robot runs a simulated lab against deadlines. Watch a model choose experiments, or drive it yourself.">
+<meta name="theme-color" content="#0b0c0e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0c0e'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23f4f2ed' text-anchor='middle'%3E3%26%23963%3B%3C/text%3E%3C/svg%3E">
 <title>3σ · Bench Pressure</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 
@@ -240,8 +246,10 @@ body.charts-open #scrim { display: block; }
 body.charts-open .cam { visibility: hidden; }
 .credit { display: none; }
 
-.topbar { position: fixed; z-index: 5; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 22px; padding: 16px 26px; pointer-events: none; }
+.topbar { position: fixed; z-index: 7; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 22px; padding: 16px 26px; pointer-events: none; }
 .topbar > * { pointer-events: auto; }
+.topbar .back { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: 99px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font: 500 14px var(--f-body); text-decoration: none; }
+.topbar .back:hover { background: #f0591c; border-color: #f0591c; }
 .topbar .mark { font-family: "TeXMain", serif; font-size: 30px; line-height: 1; color: var(--ink); text-decoration: none; }
 .topbar .mark i { font-family: "TeXMath", serif; font-style: italic; margin-left: 0.04em; }
 .topbar h1 { margin: 0; font-weight: 400; font-size: 24px; letter-spacing: -0.03em; white-space: nowrap; }
@@ -278,10 +286,34 @@ body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .
 .cam button:hover, .cam button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
 .cam .zoom button { font-size: 20px; padding: 0; }
 
+body.human .now { display: none; }
+#act { position: fixed; z-index: 4; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(820px, calc(100vw - 52px)); box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 6px 26px; align-items: start; background: rgba(11, 12, 14, 0.72); color: #fff; padding: 16px 20px; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+#act[hidden] { display: none; }
+#act h3 { margin: 0 0 4px; font: 500 20px var(--f-body); letter-spacing: -0.01em; }
+#act .where p { margin: 0; font-size: 14px; line-height: 1.4; color: rgba(255, 255, 255, 0.66); }
+#actList { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+#actList li { display: flex; gap: 10px; align-items: baseline; font-size: 16px; line-height: 1.3; border-left: 3px solid var(--c, transparent); padding-left: 8px; margin-left: -11px; }
+#actList kbd { flex: none; min-width: 58px; text-align: center; font: 600 12px var(--f-body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); background: #f4f2ed; padding: 4px 8px; }
+#actList:empty { display: none; }
+#actGuide { grid-column: 1 / -1; margin: 6px 0 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.16); display: flex; gap: 12px; align-items: baseline; font-size: 16px; }
+#actGuide[hidden] { display: none; }
+#actGuide b { flex: none; font: 600 12px var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: #f0591c; }
+#actGuide span { border-left: 3px solid var(--c); padding-left: 10px; }
+.eig { display: flex; gap: 4px; align-items: flex-end; height: 64px; margin-top: 4px; }
+.eig span { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; }
+.eig u { display: block; min-height: 2px; background: rgba(255, 255, 255, 0.3); }
+.eig b { font: 500 10px var(--f-body); color: rgba(255, 255, 255, 0.6); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: clip; margin-top: 3px; }
+.eig .best u { background: #f0591c; }
+.eig .cur b { color: #fff; font-weight: 700; }
+.eig .cur { outline: 1px solid #fff; outline-offset: 2px; }
+body.human .cam { bottom: auto; top: 86px; }
+.sheet3d .backlink { font-size: 15px; color: var(--ink); }
+.sheet3d .by { margin: 22px 0 0; font-size: 13px; }
+.sheet3d .by a { color: inherit; }
 #toasts { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
 .toast { position: absolute; left: 0; top: 0; background: #fff; color: var(--ink); border-bottom: 3px solid var(--c); border-radius: 0; padding: 6px 12px; font-size: 14px; font-weight: 500; white-space: nowrap; box-shadow: 0 6px 20px rgba(11, 12, 14, 0.16); }
 
-.sheet3d { position: fixed; z-index: 7; inset: 0; display: grid; place-items: center; background: rgba(233, 231, 226, 0.5); backdrop-filter: blur(6px); padding: 20px; }
+.sheet3d { position: fixed; z-index: 6; inset: 0; display: grid; place-items: center; background: rgba(233, 231, 226, 0.5); backdrop-filter: blur(6px); padding: 20px; }
 .sheet3d[hidden] { display: none; }
 .sheet3d > div { width: min(620px, 100%); background: rgba(244, 242, 237, 0.9); border-radius: 0; padding: 38px 40px 34px; box-shadow: 0 20px 70px rgba(11, 12, 14, 0.18); }
 .sheet3d h2 { margin: 0 0 16px; font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); letter-spacing: -0.03em; line-height: 1.06; }
@@ -294,6 +326,8 @@ body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .
 #paused[hidden] { display: none; }
 
 @media (max-width: 900px) {
+  #act { grid-template-columns: 1fr; width: calc(100vw - 20px); bottom: 10px; padding: 12px 14px; }
+  #act .where p { display: none; }
   .topbar { padding: 12px 14px; gap: 12px; }
   .topbar .what { display: none; }
   .topbar h1 { font-size: 20px; margin-right: auto; }
@@ -311,6 +345,7 @@ body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .
 <body class="lab3d">
 <div id="lab" aria-label="The lab, in 3D"></div>
 <header class="topbar">
+  <a class="back" href="index.html#lab">Back</a>
   <a class="mark" href="index.html" aria-label="3 sigma, back to the main page">3<i>&sigma;</i></a>
   <h1>Bench Pressure</h1>
   <p class="what">A robot gets questions with deadlines. It chooses experiments, reads the plates, and publishes its best answer.</p>
@@ -320,8 +355,13 @@ body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .
 <section id="cards" aria-label="Open questions"></section>
 <div id="toasts"></div>
 <footer class="now" aria-live="polite"><p id="say"></p><p id="why"></p></footer>
+<aside id="act" aria-live="polite" hidden>
+  <div class="where"><h3 id="actName"></h3><p id="actInfo"></p></div>
+  <ul id="actList"></ul>
+  <p id="actGuide" hidden></p>
+</aside>
 <div class="cam">
-  <div><button type="button" id="speed" hidden></button><button type="button" id="btnCharts" aria-pressed="false">Charts</button></div>
+  <div><button type="button" id="btnGoggles" aria-pressed="false" hidden>Bayes goggles (G)</button><button type="button" id="speed" hidden></button><button type="button" id="btnCharts" aria-pressed="false">Charts</button></div>
   <div><button type="button" id="camFollow" aria-pressed="false">Follow the duck</button><button type="button" id="camAll">Whole lab</button></div>
   <div class="zoom"><button type="button" id="camOut" aria-label="Zoom out">&minus;</button><button type="button" id="camIn" aria-label="Zoom in">+</button></div>
 </div>
@@ -331,6 +371,8 @@ body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .
   <p>Right answer published: points. Wrong answer: a retraction. Too slow: the question expires.</p>
   <div class="go" id="watchBox"><button type="button" id="btnWatch3d">Watch the model run the lab</button><select id="run3d" aria-label="Recorded run"></select></div>
   <div class="go"><button type="button" class="alt" id="btnPlay3d">Drive the robot yourself</button></div>
+  <div class="go"><a class="backlink" href="index.html#lab">Back to the main page</a></div>
+  <p class="by">Robot model: &ldquo;<a href="https://sketchfab.com/3d-models/microduck-1579de821da94e1e819619869cb0093c" target="_blank" rel="noopener">Microduck</a>&rdquo; by william.rodrigo, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Compressed and re-timed for this page.</p>
 </div></div>
 <div class="sheet3d" id="endCard" hidden><div>
   <h2>Round over.</h2>
@@ -342,7 +384,7 @@ body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .
 
 <div class="wrap">
   <div class="top">
-    <div class="brand"><a class="mark" href="index.html" aria-label="3 sigma, back to the main page">3<i>&sigma;</i></a><h1>Bench Pressure</h1><a class="back" href="index.html#play">Battleship demo</a></div>
+    <div class="brand"><a class="mark" href="index.html" aria-label="3 sigma, back to the main page">3<i>&sigma;</i></a><h1>Bench Pressure</h1><a class="back" href="index.html#lab">Back</a></div>
     <div class="score">
       <span><span class="lbl">Score</span><b id="hudScore">0</b></span>
       <span><span class="lbl">Time</span><b id="hudTime">3:00</b></span>
@@ -2009,7 +2051,8 @@ requestAnimationFrame(frame);
 SPEEDS.push(10); // the replay speed button now cycles 1, 2, 4, 10 (same array object, game script untouched)
 window.__bp = {
   get G() { return G; }, get state() { return state; }, get auto() { return auto; }, get GEM() { return GEM; },
-  activeTickets, ticketById, T, FY, COLS, ROWS, MAP, TYPES,
+  get goggles() { return goggles; },
+  activeTickets, ticketById, plateTicket, targetKey, accepts, REFUSE, NAMES, Bayes, GROW, T, FY, COLS, ROWS, MAP, TYPES,
   start: (n) => start(n), startReplay: (tr) => startReplay(tr),
   menu: () => document.getElementById("btnMenu").click(),
 };

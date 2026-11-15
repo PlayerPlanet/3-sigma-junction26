@@ -38,6 +38,9 @@ results/e3_smoke*.jsonl
 results/sft/
 results/sft_smoke/
 results/fig_*.png
+results/droplet_ode_table.npz
+results/droplet_tune*.json
+results/*.log
 results/log_*.txt
 results/*.log
 results/request_budget.json

@@ -453,6 +453,21 @@ targetRing.rotation.x = -Math.PI / 2;
 targetRing.visible = false;
 scene.add(targetRing);
 
+// goggles guide: a bobbing marker over the device the guide would go to next, and a line to it
+const guide = new THREE.Group();
+{
+  const m = new THREE.MeshBasicMaterial({ color: 0xf0591c, toneMapped: false });
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.34, 4), m);
+  cone.rotation.x = Math.PI;
+  guide.add(cone);
+  guide.visible = false;
+  scene.add(guide);
+}
+const guideLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineDashedMaterial({ color: 0xf0591c, dashSize: 0.18, gapSize: 0.12, toneMapped: false }));
+guideLine.visible = false;
+guideLine.frustumCulled = false;
+scene.add(guideLine);
+
 const robots = [robot(new THREE.Color(css('--p2') || '#f0591c')), robot(new THREE.Color(0x2f6fb3))];
 robots.forEach((b) => {
   b.g.visible = false;
@@ -497,7 +512,7 @@ function adoptDuck(b, model, clip, colour) {
   const holder = new THREE.Group();
   b.g.clear();
   b.g.add(pivot, holder, ringFor(colour));
-  Object.assign(b, { duck: true, mixer, aIdle, aWalk, w: 0, holder, headBone: model.getObjectByName('head_roll') || model.getObjectByName('head_pitch'), pivot });
+  Object.assign(b, { duck: true, mixer, aIdle, aWalk, w: 0, v: 0, px: b.sx, pz: b.sz, holder, headBone: model.getObjectByName('head_roll') || model.getObjectByName('head_pitch'), pivot });
 }
 if (window.DUCK_GLB) {
   try {
@@ -609,6 +624,176 @@ function cards(G) {
     a.querySelector('.guess').textContent = `Best guess: ${t.labels[best]}${t.type === 'dose' ? ' µM' : ''}, ${Math.round(t.post[best] * 100)}% sure`;
   }
 }
+// ---------------------------------------------------------------- what you can do here (human play)
+const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const PLATE = { clean: 'clean plate', inoc: 'inoculated plate', prep: 'prepared plate', grown: 'grown plate', contam: 'contaminated plate', dirty: 'used plate' };
+const itemName = (it) => (it.kind === 'paper' ? 'paper' : PLATE[it.st] || 'plate');
+const PURPOSE = {
+  counter: 'A spare worktop. Park anything here.',
+  rack: 'Clean plates start here.',
+  freezer: 'Puts a question\'s strain on a clean plate.',
+  bench: 'Choose which experiment the plate will run.',
+  incubator: 'Grows a prepared plate in 6 s. Leave it too long and it contaminates.',
+  reader: 'Reads a grown plate. This is where you learn something.',
+  autoclave: 'Washes used plates so the rack refills.',
+  bin: 'For contaminated plates and bad drafts.',
+  desk: 'Write up your best answer to a question.',
+  hatch: 'Submit a paper. Right: points. Wrong: retraction.',
+};
+const qName = (t) => `${QUESTION[t.type]}`;
+const unit = (t) => (t.type === 'dose' ? ' µM' : '');
+const eigsOf = (t) => t.exps.map((x) => BP.Bayes.eig(t.post, x.lik));
+const argmax = (a) => a.indexOf(Math.max(...a));
+const lc = (x) => x.charAt(0).toLowerCase() + x.slice(1); // gene names keep their capitals
+
+// Each entry: [key label or '', text]. Mirrors the game's own pick/tap/work rules, read-only.
+function actionsAt(s, h) {
+  const A = [];
+  const tl = BP.activeTickets();
+  const it = s.item;
+  if (!h) {
+    if (it) A.push(['Space', `Pick up the ${itemName(it)}`]);
+    else if (s.type === 'rack') A.push(s.count > 0 ? ['Space', `Take a clean plate (${s.count} left)`] : ['', 'Empty. Wash used plates in the autoclave.']);
+  } else if (s.type === 'bin') {
+    if (h.kind === 'paper') A.push(['Space', 'Shred the draft']);
+    else if (h.st !== 'clean' && h.st !== 'dirty') A.push(['Space', 'Bin what is on the plate (it then needs washing)']);
+  } else if (s.type === 'hatch') {
+    A.push(h.kind === 'paper' ? ['Space', 'Submit the paper'] : ['', 'The journal takes papers, not plates.']);
+  } else if (s.type === 'rack') {
+    A.push(h.kind === 'plate' && h.st === 'clean' ? ['Space', 'Put the clean plate back'] : ['', BP.REFUSE.rack + '.']);
+  } else if (!it) {
+    A.push(BP.accepts(s, h) ? ['Space', `Put the ${itemName(h)} down here`] : ['', (BP.REFUSE[s.type] || 'That does not go here') + '.']);
+  }
+  if (s.type === 'freezer' && it && it.st === 'clean' && tl.length) {
+    const t = tl[s.sel % tl.length];
+    if (tl.length > 1) A.push(['tap F', 'Switch question']);
+    A.push(['hold F', `Inoculate for: ${qName(t)}`, t]);
+  } else if (s.type === 'bench' && it && it.kind === 'plate' && (it.st === 'inoc' || it.st === 'prep')) {
+    const t = BP.plateTicket(it);
+    if (t) {
+      const i = s.sel % t.exps.length;
+      A.push(['tap F', `Next experiment (${i + 1} of ${t.exps.length})`]);
+      if (it.st === 'inoc' || it.exp !== i) A.push(['hold F', `Prepare: ${t.exps[i].long}`, t]);
+      else A.push(['', `Prepared: ${t.exps[i].long}`, t]);
+    }
+  } else if (s.type === 'incubator' && it && it.kind === 'plate') {
+    if (it.st === 'prep') A.push(['', `Growing. Ready in ${((1 - it.grow) * BP.GROW).toFixed(0)} s.`]);
+    else if (it.st === 'grown') A.push(['', 'Ready. Take it to the reader before it contaminates.']);
+  } else if (s.type === 'reader' && it && it.kind === 'plate' && it.st === 'grown') {
+    A.push(['hold F', 'Read the plate']);
+  } else if (s.type === 'autoclave' && it && it.kind === 'plate' && it.st === 'dirty') {
+    A.push(['hold F', 'Wash the plate']);
+  } else if (s.type === 'desk' && !it && tl.length) {
+    const t = tl[s.sel % tl.length], m = argmax(t.post);
+    if (tl.length > 1) A.push(['tap F', 'Switch question']);
+    A.push(['hold F', `Write the paper for: ${qName(t)} Answer ${t.labels[m]}${unit(t)}, ${Math.round(t.post[m] * 100)}% sure`, t]);
+  }
+  return A;
+}
+
+// The goggles guide: a simple greedy rule, not a proven optimum. Work on the most urgent question
+// that is under 80% sure, always run the experiment with the highest expected information gain,
+// publish once a question is 80% sure or has under 25 s left, and never leave a plate to spoil.
+const SURE = 0.8, LATE = 25;
+function advise(G, p) {
+  const tl = BP.activeTickets();
+  const S = [...G.stations.values()];
+  const near = (pred) => {
+    let best = null, bd = 1e9;
+    for (const s of S) {
+      if (!pred(s)) continue;
+      const d = Math.hypot(s.c * T + T / 2 - p.x, FY + s.r * T + T / 2 - p.y);
+      if (d < bd) { bd = d; best = s; }
+    }
+    return best;
+  };
+  const type = (ty, free) => near((s) => s.type === ty && (!free || !s.item));
+  const conf = (t) => Math.max(...t.post);
+  const byTime = (a, b) => a.timeLeft - b.timeLeft;
+  const ready = tl.filter((t) => conf(t) >= SURE || t.timeLeft < LATE).sort(byTime)[0];
+  const study = tl.filter((t) => conf(t) < SURE && t.timeLeft >= LATE).sort(byTime)[0];
+  const best = (t) => { const e = eigsOf(t), i = argmax(e); return { i, bits: e[i], exp: t.exps[i] }; };
+  const out = (s, text, t) => ({ s, text, t });
+  const h = p.held;
+  if (h) {
+    if (h.kind === 'paper') return out(type('hatch'), 'Submit the paper at the journal hatch.');
+    const t = BP.plateTicket(h);
+    if (h.st === 'clean') return study ? out(type('freezer', true), `Freezer: inoculate for “${qName(study)}”`, study) : out(type('rack'), 'Nothing left to test. Put the plate back on the rack.');
+    if (h.st === 'inoc') { if (!t) return out(type('bin'), 'That question closed. Bin the plate.'); const b = best(t); return out(type('bench', true), `Design bench: ${lc(b.exp.long)} gives the most, ${b.bits.toFixed(2)} bits.`, t); }
+    if (h.st === 'prep') return out(type('incubator', true), 'Put it in a free incubator.', t);
+    if (h.st === 'grown') return out(type('reader', true), 'Read it at the plate reader.', t);
+    if (h.st === 'contam') return out(type('bin'), 'Contaminated. Bin it.');
+    return out(type('autoclave', true) || type('counter', true), 'Used plate: wash it in the autoclave.');
+  }
+  const has = (ty, f) => near((s) => s.type === ty && s.item && f(s.item, s));
+  let s;
+  if ((s = has('incubator', (i) => i.st === 'contam'))) return out(s, 'A plate contaminated. Take it to the bin.');
+  if ((s = has('incubator', (i) => i.st === 'grown'))) return out(s, 'A plate is grown. Take it to the reader now.');
+  if ((s = has('reader', (i) => i.st === 'grown'))) return out(s, 'Hold F to read the plate.');
+  if ((s = has('desk', (i) => i.kind === 'paper'))) return out(s, 'Pick up the paper and submit it.');
+  if ((s = has('freezer', (i) => i.st === 'clean')) && study) {
+    const cur = tl[s.sel % tl.length];
+    return out(s, cur === study ? `Hold F to inoculate for “${qName(study)}”` : `Tap F to switch to “${qName(study)}”, then hold F.`, study);
+  }
+  if ((s = has('freezer', (i) => i.st === 'inoc'))) return out(s, 'Pick up the plate and take it to the design bench.');
+  if ((s = has('bench', (i) => i.st === 'inoc' || i.st === 'prep'))) {
+    const t = BP.plateTicket(s.item);
+    if (t) {
+      const b = best(t), cur = s.sel % t.exps.length;
+      if (s.item.st === 'prep' && s.item.exp === b.i) return out(s, 'Prepared. Pick it up and take it to an incubator.', t);
+      return out(s, cur === b.i ? `Hold F to prepare: ${lc(b.exp.long)} (${b.bits.toFixed(2)} bits, the most on offer).` : `Tap F until you reach: ${lc(b.exp.long)} (${b.bits.toFixed(2)} bits, the most on offer).`, t);
+    }
+  }
+  if ((s = has('autoclave', (i) => i.st === 'dirty'))) return out(s, 'Hold F to wash the plate.');
+  if (ready && (s = type('desk', true))) {
+    const cur = tl[s.sel % tl.length], m = argmax(ready.post);
+    const why = conf(ready) >= SURE ? `${Math.round(conf(ready) * 100)}% sure` : 'nearly out of time';
+    return out(s, cur === ready ? `Writing desk: hold F to write up ${ready.labels[m]}${unit(ready)} (${why}).` : `Writing desk: tap F to switch question, then write up ${ready.labels[m]}${unit(ready)} (${why}).`, ready);
+  }
+  if ((s = near((x) => x.item && x.item.kind === 'plate' && x.item.st === 'dirty' && x.type !== 'autoclave'))) return out(s, 'Pick up the used plate and wash it.');
+  if (study) {
+    s = near((x) => x.type === 'rack' && x.count > 0);
+    if (s) return out(s, `Take a clean plate for “${qName(study)}”`, study);
+  }
+  return out(null, 'Nothing to do until a plate grows or a new question arrives.');
+}
+
+const act = { box: $('#act'), name: $('#actName'), info: $('#actInfo'), list: $('#actList'), guide: $('#actGuide'), btn: $('#btnGoggles'), sig: '', target: null };
+act.btn?.addEventListener('click', (e) => { document.getElementById('gogglesBtn').click(); e.currentTarget.blur(); });
+function actions(G, st) {
+  const human = !BP.auto && (st === 'play' || st === 'pause') && !!G.players[0];
+  act.box.hidden = !human;
+  act.btn.hidden = !human;
+  document.body.classList.toggle('human', human);
+  act.target = null;
+  if (!human) return;
+  const p = G.players[0], on = BP.goggles;
+  const s = G.stations.get(BP.targetKey(p));
+  const A = s ? actionsAt(s, p.held) : [];
+  const adv = on ? advise(G, p) : null;
+  act.target = adv && adv.s;
+  let extra = '';
+  if (on && s && s.type === 'bench' && s.item && BP.plateTicket(s.item)) {
+    const t = BP.plateTicket(s.item), e = eigsOf(t), b = argmax(e), cur = s.sel % t.exps.length, mx = Math.max(e[b], 1e-6);
+    extra = `<div class="eig">${t.exps.map((x, i) => `<span class="${i === cur ? 'cur' : ''} ${i === b ? 'best' : ''}" title="${esc(x.long)}: ${e[i].toFixed(2)} bits"><u style="height:${Math.round((e[i] / mx) * 100)}%"></u><b>${esc(x.label)}</b></span>`).join('')}</div>`;
+  }
+  const name = s ? BP.NAMES[s.type] : p.held ? `Carrying a ${itemName(p.held)}` : 'Walk up to a device';
+  const info = s ? PURPOSE[s.type] : 'WASD or arrows to move. Space picks up and puts down. F uses a device: tap to choose, hold to work.';
+  const html = A.map(([k, text, t]) => `<li${t ? ` style="--c:${STRAIN_CSS[t.slot]}"` : ''}>${k ? `<kbd>${k}</kbd>` : ''}<span>${esc(text)}</span></li>`).join('') + extra;
+  const g = adv ? adv.text : '';
+  const sig = [name, info, html, g, on].join('|');
+  if (sig === act.sig) return;
+  act.sig = sig;
+  act.name.textContent = name;
+  act.info.textContent = info;
+  act.list.innerHTML = html;
+  act.guide.hidden = !on;
+  act.guide.innerHTML = on ? `<b>Goggles</b><span>${esc(g)}</span>` : '';
+  act.guide.style.setProperty('--c', adv && adv.t ? STRAIN_CSS[adv.t.slot] : 'var(--accent, #f0591c)');
+  act.btn.setAttribute('aria-pressed', String(on));
+  act.btn.textContent = on ? 'Goggles on (G)' : 'Bayes goggles (G)';
+}
+
 let sayN = -1;
 function narrate() {
   const auto = BP.auto;
@@ -734,6 +919,7 @@ function frame() {
     el.time.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
     cards(G);
     narrate();
+    actions(G, st);
     toasts(G);
     if (st === 'end' && el.endLine.dataset.t !== String(G.t)) {
       el.endLine.dataset.t = String(G.t);
@@ -790,6 +976,7 @@ function frame() {
       if (!p) return;
       const x = pxX(p.x), z = pxZ(p.y);
       const moving = Math.hypot(x - b.sx, z - b.sz) > 0.0005;
+      b.px = b.sx; b.pz = b.sz;
       b.sx = x; b.sz = z;
       b.g.position.set(x, 0, z);
       const want = Math.atan2(p.fx, p.fy);
@@ -802,7 +989,11 @@ function frame() {
         b.w += ((moving ? 1 : 0) - b.w) * Math.min(1, dt * 10);
         b.aWalk.setEffectiveWeight(b.w);
         b.aIdle.setEffectiveWeight(1 - b.w);
-        b.aWalk.timeScale = 3.2;
+        // stride rate follows the speed the game moved it at (about 3.7 tiles/s at a walk).
+        // The model's own stride is far too short for that, so this is a fast waddle, capped.
+        const v = Math.hypot(x - b.px, z - b.pz) / Math.max(dt, 1e-3);
+        b.v += (Math.min(v, 6) - b.v) * Math.min(1, dt * 8);
+        b.aWalk.timeScale = THREE.MathUtils.clamp(b.v * 2.0, 3, 9);
         b.mixer.update(dt);
         // carried plate rides level on the flat head
         b.g.updateMatrixWorld(true);
@@ -837,6 +1028,18 @@ function frame() {
         targetRing.material.opacity = 0.55 + 0.3 * Math.sin(now * 6);
       }
     } else targetRing.visible = false;
+    const gt = st === 'play' && p0 ? act.target : null;
+    guide.visible = guideLine.visible = !!gt;
+    if (gt) {
+      const gx = tileX(gt.c), gz = tileZ(gt.r);
+      guide.position.set(gx, TOP + 1.25 + 0.08 * Math.sin(now * 5), gz);
+      guide.rotation.y = now * 1.5;
+      const a = guideLine.geometry.attributes.position;
+      a.setXYZ(0, pxX(p0.x), 0.03, pxZ(p0.y));
+      a.setXYZ(1, gx, 0.03, gz);
+      a.needsUpdate = true;
+      guideLine.computeLineDistances();
+    }
     if (follow && lead) {
       tmp.set(lead.sx, 0.7, lead.sz);
       const d = tmp.clone().sub(controls.target).multiplyScalar(Math.min(1, dt * 3));
@@ -846,6 +1049,7 @@ function frame() {
   } else {
     robots.forEach((b) => (b.g.visible = false));
     targetRing.visible = false;
+    guide.visible = guideLine.visible = false;
     // idle: a slow sway of the empty lab behind the start card
     if (!userMoved) {
       const a = Math.sin(now * 0.12) * 0.3;

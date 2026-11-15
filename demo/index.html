@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>3σ · An environment that grades how agents do science</title>
+<meta name="description" content="Play Rulebound Battleship against an AI agent, then watch one run a simulated lab. An environment that scores how agents choose experiments.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="3σ · An environment that grades how agents do science">
+<meta property="og:description" content="Play Rulebound Battleship against an AI agent, then watch one run a simulated lab. An environment that scores how agents choose experiments.">
+<meta name="theme-color" content="#0b0c0e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230b0c0e'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23f4f2ed' text-anchor='middle'%3E3%26%23963%3B%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="intro-on">
@@ -40,7 +46,8 @@
     <a href="#play">Play</a>
     <a href="#rl">Training</a>
     <a href="#wetlab">Wet lab</a>
-    <a href="bench-pressure.html">Bench Pressure</a>
+    <a href="droplet.html">Droplet panel</a>
+    <a href="#lab">The lab</a>
   </nav>
 </header>
 
@@ -111,6 +118,18 @@
 
   <div class="wrap controls" id="controls"></div>
   <div class="wrap results" id="results" hidden></div>
+</section>
+
+<!-- ============ Second environment: Bench Pressure (light) ============ -->
+<section id="lab" class="light">
+  <div class="wrap split reveal">
+    <div>
+      <h2>Now a whole lab.</h2>
+      <p class="body">Same skill, more moving parts. A robot gets questions with deadlines, chooses experiments, reads the plates and publishes its answer.</p>
+      <p class="lab-cta"><a class="btn solid" href="bench-pressure.html">Open the lab</a></p>
+    </div>
+    <a class="sq" href="bench-pressure.html" aria-label="Open the lab"><img src="assets/lab.jpg" alt="A robot carrying a plate through a 3D lab"></a>
+  </div>
 </section>
 
 <!-- ============ Wet lab transfer (light) ============ -->

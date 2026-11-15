@@ -56,6 +56,11 @@ How it is put together:
 - `python demo/tools/wrap_bench_pressure.py` builds both pages. The game's script is copied
   unchanged, so rules, random numbers, the bot and the recorded model runs are the published
   ones. Run it again after the upstream page changes.
+- Driving the duck yourself shows an action panel: what the device in front of you does and
+  which key does it. `G` turns on Bayes goggles: expected information gain per experiment at
+  the design bench, and a marker on the next device a greedy guide would visit (most urgent
+  open question, highest-EIG experiment, publish at 80% sure or under 25 s left). The guide is
+  a heuristic, not a proven optimum.
 - `src/lab3d.js` (bundled to `lab3d.js` by `npm run build`) only reads the game's state each
   frame through `window.__bp`, a read-only accessor the wrapper adds, and draws it. The
   original page keeps running out of sight; its charts open from the "Charts" button.
@@ -67,7 +72,9 @@ How it is put together:
   87 MB source with `gltf-transform optimize --texture-size 1024 --texture-compress webp
   --compress meshopt`). `npm run duck` writes `duck-data.js` so it loads from `file://`.
   Its one 10 s clip is cut into a standing loop and one stride; the game decides where the
-  duck is. Check the model's licence before publishing. If `duck-data.js` is missing the page
+  duck is. The model is "Microduck" by william.rodrigo on Sketchfab
+  (https://sketchfab.com/3d-models/microduck-1579de821da94e1e819619869cb0093c), CC BY 4.0; the
+  credit is on the page's start card and must stay. If `duck-data.js` is missing the page
   falls back to a simple drawn robot. The page wraps the static game, not `bench-pressure/deploy/` (the
   live-partner server).
 
@@ -130,3 +137,16 @@ npm run build                         # src/*.js -> app.js
 the page frames them from the top-left and credits them as AI-generated in the footer. Keep
 that credit wherever the clips are shown. Check the licence of each photo before this folder is
 pushed to a public repository or hosted.
+
+## Putting it online
+
+Everything under `demo/` is static and uses relative paths, so any static host works, also
+under a sub-path. `.github/workflows/demo-pages.yml` publishes it to GitHub Pages: set
+Settings > Pages > Source to "GitHub Actions" once, then push to `main` (or run the workflow by
+hand). The workflow reruns `tools/wrap_bench_pressure.py`, so the lab page follows
+`bench-pressure/index.html`; `app.js` and `lab3d.js` are committed bundles and are not rebuilt
+there. Pages on a private repository needs a paid GitHub plan; otherwise point Cloudflare
+Pages or Netlify at the repo with `demo` as the output folder and no build command.
+
+Before the link goes public: check the photo licences in `assets/`, and keep the AI-generated
+note in the footer and the Microduck credit on the lab's start card.
