@@ -373,12 +373,14 @@ step.
 
 What it showed about current agents is specific. Given a stated model and a shell, frontier
 agents infer and plan exactly. What they lack is treating ``how much should I learn?'' as a
-decision with a computable answer; the reference's 12 draws per cell was found by simulation with
-tools every agent has. The priced-learning task turns that into a gradable, trainable problem.
+decision with a computable answer. The reference's 12 draws per cell was chosen by simulation on
+separate development desks, using their true generators; an agent could reach a similar budget
+by simulating under estimates from a small pilot, but the reference does not do this itself, which
+we list as a limitation. The priced-learning task turns that into a gradable, trainable problem.
 
 \paragraph{Limitations.} The black-box results are at most six trials per agent on one task
 family, with different harnesses; for three agents most trials hit a time limit that the
-instruction did not state. The reference is good, not optimal. The verifier shares a container
+instruction did not state. The reference is good, not optimal, and its fixed calibration budget was tuned on development desks with known generators rather than chosen from its own pilot data. The verifier shares a container
 with the agent. Stated-model results rest on 2--15 trials per environment. Training results are
 on design decisions and one prediction task; we have not yet trained on the priced task, and
 long GRPO runs collapsed.
