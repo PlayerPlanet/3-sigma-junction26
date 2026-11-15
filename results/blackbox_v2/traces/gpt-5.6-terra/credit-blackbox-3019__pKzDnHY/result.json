@@ -1,0 +1,130 @@
+{
+    "id": "ace7665a-43ab-41f3-b850-0fb8e2f1e6df",
+    "task_name": "3-sigma/credit-blackbox-3019",
+    "trial_name": "credit-blackbox-3019__pKzDnHY",
+    "trial_uri": "file:///root/work/jobs/v2-gpt-terra/credit-blackbox-3019__pKzDnHY",
+    "task_id": {
+        "path": "tasks/credit-blackbox-3019"
+    },
+    "source": "tasks",
+    "task_checksum": "937f39fcac8b6212bcd27843390675b20fe4014045f61e5572700c1f31dceab0",
+    "config": {
+        "task": {
+            "path": "tasks/credit-blackbox-3019",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "tasks"
+        },
+        "trial_name": "credit-blackbox-3019__pKzDnHY",
+        "trials_dir": "/root/work/jobs/v2-gpt-terra",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "oc_oauth:OpenCodeOAuth",
+            "import_path": null,
+            "model_name": "openai/gpt-5.6-terra",
+            "base_url": null,
+            "model_api_key_name": null,
+            "model_api_format": null,
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "871ac550-7d06-4c9d-aca7-45bdea0bd8c1",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "gpt-5.6-terra",
+            "provider": "openai"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 1156979,
+        "n_cache_tokens": 1090560,
+        "n_output_tokens": 1935,
+        "cost_usd": null,
+        "model_usage": {
+            "openai/gpt-5.6-terra": {
+                "n_input_tokens": 1156979,
+                "n_cache_tokens": 1090560,
+                "n_output_tokens": 1935,
+                "cost_usd": null
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T23:57:18.374524Z",
+    "finished_at": "2026-11-15T00:04:01.215847Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T23:57:18.383343Z",
+        "finished_at": "2026-11-14T23:57:28.528704Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T23:57:28.528732Z",
+        "finished_at": "2026-11-14T23:59:33.676868Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-14T23:59:33.677154Z",
+        "finished_at": "2026-11-15T00:03:42.098101Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-15T00:03:42.618307Z",
+        "finished_at": "2026-11-15T00:03:43.529531Z"
+    },
+    "step_results": null
+}

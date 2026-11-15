@@ -335,6 +335,25 @@ GRPO on Eq.~\eqref{eq:reward} ($+0.137\ [0.049, 0.225]$ over supervised alone). 
 the smallest model reached 0.57--0.60 on unseen families ($+0.19$) before sampling collapsed:
 late in training almost all prompts produced identical completions and no reward signal.
 
+\emph{On the black-box desk.} We trained Gemma~4 E2B with GRPO on the decision steps of the
+priced task, rewarding each action by the true-model advantage it gave up, on development desks
+disjoint from the six evaluation desks. Over 20 sandbox datasets per desk, the full-episode reward
+rose from 0.00 untrained to $0.28 \pm 0.05$ (0.05--0.51 by desk); the dollars lost per decision
+fell from 2{,}644 to 28, because the base model approves about half of all applicants unchecked.
+That matches one-step lookahead (0.05--0.30) but stays far below the reference (0.88--0.99 on the
+same seeds), and the calibration choice did not train: base and trained models both buy 8 draws
+per cell. The decision reward trains; the value of calibration, which is where frontier agents
+also fail, did not move (Figure~\ref{fig:gemma}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_gemma}
+\caption{GRPO on the black-box desk with Gemma~4 E2B. (a) Mean true-model advantage lost per
+decision on held-out states during training. (b) Full-episode reward on the six evaluation desks,
+20 sandbox datasets each (bars: 95\% intervals); the untrained model scores 0 on every desk.}
+\label{fig:gemma}
+\end{figure}
+
 \begin{table}[t]
 \centering\small
 \begin{tabular}{lcccc}
@@ -382,8 +401,9 @@ we list as a limitation. The priced-learning task turns that into a gradable, tr
 family, with different harnesses; for three agents most trials hit a time limit that the
 instruction did not state. The reference is good, not optimal, and its fixed calibration budget was tuned on development desks with known generators rather than chosen from its own pilot data. The verifier shares a container
 with the agent. Stated-model results rest on 2--15 trials per environment. Training results are
-on design decisions and one prediction task; we have not yet trained on the priced task, and
-long GRPO runs collapsed.
+small: on the priced task, GRPO improved a 2B model's decisions but not its calibration budget,
+needed injected off-policy samples because the base model never chose to check, and long GRPO
+runs collapsed.
 
 \section{Conclusion}
 

@@ -1,0 +1,130 @@
+{
+    "id": "a41f585a-8168-4d2a-8142-fb74381eb188",
+    "task_name": "3-sigma/credit-blackbox-3016",
+    "trial_name": "credit-blackbox-3016__e3AQ4mM",
+    "trial_uri": "file:///home/server/harbor-work/codex-myopia/jobs/cm-v2-minimax/credit-blackbox-3016__e3AQ4mM",
+    "task_id": {
+        "path": "bbtasks-v2/credit-blackbox-3016"
+    },
+    "source": "bbtasks-v2",
+    "task_checksum": "443c0dd0faf92516e78b180a8e0207f5355cf098fc3238c0d87e5ea690ba70b2",
+    "config": {
+        "task": {
+            "path": "bbtasks-v2/credit-blackbox-3016",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "bbtasks-v2"
+        },
+        "trial_name": "credit-blackbox-3016__e3AQ4mM",
+        "trials_dir": "/home/server/harbor-work/codex-myopia/jobs/cm-v2-minimax",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": 3.0,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "opencode",
+            "import_path": null,
+            "model_name": "minimax/MiniMax-M3",
+            "base_url": "https://api.minimax.io/v1",
+            "model_api_key_name": "MINIMAX_API_KEY",
+            "model_api_format": "openai_chat_completions",
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "fca0f650-c046-4c35-bb3f-813c336db9a4",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "opencode",
+        "version": "1.19.5",
+        "model_info": {
+            "name": "MiniMax-M3",
+            "provider": "minimax"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 11465789,
+        "n_cache_tokens": 11423616,
+        "n_output_tokens": 37938,
+        "cost_usd": 0.7661400599999998,
+        "model_usage": {
+            "minimax/MiniMax-M3": {
+                "n_input_tokens": 11465789,
+                "n_cache_tokens": 11423616,
+                "n_output_tokens": 37938,
+                "cost_usd": 0.7661400599999998
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.5897
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-14T23:59:15.795243Z",
+    "finished_at": "2026-11-15T00:24:54.425202Z",
+    "environment_setup": {
+        "started_at": "2026-11-14T23:59:15.800705Z",
+        "finished_at": "2026-11-14T23:59:33.493164Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-14T23:59:33.493187Z",
+        "finished_at": "2026-11-15T00:05:51.055882Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-15T00:05:51.056149Z",
+        "finished_at": "2026-11-15T00:24:39.065903Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-15T00:24:39.586380Z",
+        "finished_at": "2026-11-15T00:24:40.429950Z"
+    },
+    "step_results": null
+}

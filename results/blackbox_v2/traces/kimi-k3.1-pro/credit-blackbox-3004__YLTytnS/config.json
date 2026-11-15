@@ -1,0 +1,16 @@
+{
+    "task": {
+        "path": "bbtasks-v2/credit-blackbox-3004",
+        "source": "bbtasks-v2"
+    },
+    "trial_name": "credit-blackbox-3004__YLTytnS",
+    "trials_dir": "/home/server/harbor-work/codex-myopia/jobs/cm-v2-kimi",
+    "agent": {
+        "name": "opencode",
+        "model_name": "verda/kimi-k3-1-pro",
+        "base_url": "https://inference.verda.com/v1",
+        "model_api_key_name": "VERDA_KIMI_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "43b49bb5-8b82-49ae-be99-cf669b04f231"
+}

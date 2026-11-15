@@ -1,0 +1,14 @@
+{
+    "task": {
+        "path": "tasks/credit-blackbox-3008",
+        "source": "tasks"
+    },
+    "trial_name": "credit-blackbox-3008__DSZj46U",
+    "trials_dir": "/root/work/jobs/v2-argon-r3",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agent": {
+        "name": "opencode",
+        "model_name": "gemini/gemini-4-argon"
+    },
+    "job_id": "6c351d41-2d6e-4091-8ec7-380852cc869c"
+}

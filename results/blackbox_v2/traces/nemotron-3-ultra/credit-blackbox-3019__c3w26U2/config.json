@@ -1,0 +1,17 @@
+{
+    "task": {
+        "path": "bbtasks-v2/credit-blackbox-3019",
+        "source": "bbtasks-v2"
+    },
+    "trial_name": "credit-blackbox-3019__c3w26U2",
+    "trials_dir": "/home/server/harbor-work/codex-myopia/jobs/cm-v2-nemotron",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agent": {
+        "name": "opencode",
+        "model_name": "nim/nvidia/nemotron-3-ultra-550b-a55b",
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "model_api_key_name": "NVIDIA_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "c0be66cb-1cc9-4842-b007-700975c788a0"
+}

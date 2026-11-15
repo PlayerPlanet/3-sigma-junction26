@@ -1,0 +1,17 @@
+{
+    "task": {
+        "path": "tasks\\credit-blackbox-3004",
+        "source": "tasks"
+    },
+    "trial_name": "credit-blackbox-3004__MCVo6rB",
+    "trials_dir": "jobs\\lap-v2-deepseek",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agent": {
+        "name": "opencode",
+        "model_name": "verda/deepseek-4-1-flash-1017",
+        "base_url": "https://inference.verda.com/v1",
+        "model_api_key_name": "VERDA_DEEPSEEK_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "a160bb6e-19b4-45c5-9ac4-a5d748d78aff"
+}

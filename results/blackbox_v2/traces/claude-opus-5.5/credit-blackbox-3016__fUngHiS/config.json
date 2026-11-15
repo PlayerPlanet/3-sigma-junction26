@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "final/tasks_opus/credit-blackbox-3016",
+        "source": "tasks_opus"
+    },
+    "trial_name": "credit-blackbox-3016__fUngHiS",
+    "trials_dir": "/root/work/jobs/bb2-opus-v2",
+    "agent": {
+        "name": "claude-code",
+        "model_name": "claude-opus-5-5"
+    },
+    "job_id": "ae59e2e1-1597-427e-ae6a-c0d6f6204673"
+}

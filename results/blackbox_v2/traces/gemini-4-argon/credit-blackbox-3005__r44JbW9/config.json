@@ -1,0 +1,14 @@
+{
+    "task": {
+        "path": "bbtasks-v2/credit-blackbox-3005",
+        "source": "bbtasks-v2"
+    },
+    "trial_name": "credit-blackbox-3005__r44JbW9",
+    "trials_dir": "/home/server/harbor-work/codex-myopia/jobs/cm-v2-argon-r2",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agent": {
+        "name": "opencode",
+        "model_name": "gemini/gemini-4-argon"
+    },
+    "job_id": "ff25561a-e767-4df0-8a70-4adcca73b851"
+}
