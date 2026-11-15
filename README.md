@@ -202,9 +202,9 @@ The black-box desk is the end of a longer search; the paper reports the whole of
 3. **Stated problems are solved.** We then built ten environments whose model is fully stated,
    covering fault diagnosis, causal discovery, likelihood-free inference, planning, blackjack and a
    stated-model credit desk. Agents with a shell wrote exact inference and DPs and matched the
-   reference on all ten. On Rulebound Battleship, run last, Opus's inference was exact (inference
-   loss 0 in 3 of 3 trials) but its experiment choice fell short on one board: 0.41 against the
-   reference's 0.52, too few trials to call.
+   reference on all ten. Rulebound Battleship, run last, makes eleven: over six Harbor trials on
+   all five boards Opus scored 0.53 against the reference's 0.50 (traces in
+   `results/battleship_harbor/`).
 4. **The gap reappears only when the model must be bought.** That is the black-box desk.
 5. **Two follow-ups failed screening.** One was a desk grounded in real credit data (UCI Taiwan), the
    other an assay-validation desk grounded in published diagnostic accuracies. In both, value of

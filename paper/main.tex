@@ -377,9 +377,9 @@ reference knew. Disclosing them took Opus to 0.98 and Codex with GPT-6 Luna from
 \emph{It confirms that stated problems are solved.} We then built harder stated problems, each
 against a named shortcut (Table~\ref{tab:stated}). In all ten environments an agent with a shell
 wrote exact inference, and where needed an exact DP, and reached the reference. Rulebound
-Battleship, an eleventh, measured last, is the one partial exception: Opus's inference was exact
-(inference loss 0 in 3 of 3 trials) but its experiment choice fell short on one of three boards
-(design gap $-0.06$, $+0.06$, $-0.33$; mean score 0.41 against the reference's 0.52).
+Battleship, measured last, makes eleven: over six trials on all five boards Opus scored 0.53
+against the reference's 0.50, with exact inference in five of six; its one low score (0.28) came
+on a board where a rerun scored 0.68.
 
 \begin{table}[t]
 \centering\small
@@ -394,11 +394,10 @@ Diagnostic planning & Greedy tests (1.06 vs.\ DP 1.71) & 1.69 over 8 trials \\
 Likelihood-free gene lab & Moment matching, ABC & 0.93, 1.00 (reference 0.88) \\
 Blackjack, hidden shoe & Card-counting heuristics & Zero regret, 4 of 4 trials \\
 Credit desk, model stated & One-step lookahead (0.19) & 1.0 in 3 of 3 trials \\
-Rulebound Battleship & Noise-ignoring coder (0.35) & 0.41 vs.\ 0.52; inference loss 0, 3 trials \\
+Rulebound Battleship & Noise-ignoring coder (0.35) & 0.53 vs.\ reference 0.50, 6 trials \\
 \bottomrule
 \end{tabular}
-\caption{Stated-model environments. With the two disclosed prediction tasks, the first seven rows
-make ten; Battleship was run last.}
+\caption{Stated-model environments. With the two disclosed prediction tasks, these make eleven.}
 \label{tab:stated}
 \end{table}
 
