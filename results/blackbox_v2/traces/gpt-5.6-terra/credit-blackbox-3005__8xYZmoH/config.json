@@ -1,0 +1,13 @@
+{
+    "task": {
+        "path": "tasks/credit-blackbox-3005",
+        "source": "tasks"
+    },
+    "trial_name": "credit-blackbox-3005__8xYZmoH",
+    "trials_dir": "/root/work/jobs/v2-gpt-terra",
+    "agent": {
+        "name": "oc_oauth:OpenCodeOAuth",
+        "model_name": "openai/gpt-5.6-terra"
+    },
+    "job_id": "871ac550-7d06-4c9d-aca7-45bdea0bd8c1"
+}

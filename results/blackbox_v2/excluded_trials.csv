@@ -1,0 +1,16 @@
+agent,desk,job,trial,reason
+claude-sonnet-5.5,3016,v2-sonnet,credit-blackbox-3016__Esxk3c8,NetworkConnectionError
+gemini-4-argon,3004,cm-v2-argon,credit-blackbox-3004__gdXDxnf,AgentSetupTimeoutError
+gemini-4-argon,3004,cm-v2-argon-r2,credit-blackbox-3004__Gg7vpw8,NetworkConnectionError
+gemini-4-argon,3004,v2-argon,credit-blackbox-3004__HrTXWTM,CancelledError
+gemini-4-argon,3005,cm-v2-argon,credit-blackbox-3005__bfDWQyu,AgentSetupTimeoutError
+gemini-4-argon,3005,v2-argon,credit-blackbox-3005__v2uxYuJ,CancelledError
+gemini-4-argon,3008,cm-v2-argon,credit-blackbox-3008__DoKEZgM,AgentSetupTimeoutError
+gemini-4-argon,3008,cm-v2-argon-r2,credit-blackbox-3008__9jGUDFK,NetworkConnectionError
+gemini-4-argon,3008,v2-argon,credit-blackbox-3008__vpz37jH,CancelledError
+gemini-4-argon,3019,cm-v2-argon,credit-blackbox-3019__jRheL9H,AgentSetupTimeoutError
+kimi-k3.1-pro,3008,cm-v2-kimi,credit-blackbox-3008__JhvTpie,AgentSetupTimeoutError
+kimi-k3.1-pro,3016,cm-v2-kimi,credit-blackbox-3016__X2yKGEx,AgentSetupTimeoutError
+kimi-k3.1-pro,3017,cm-v2-kimi,credit-blackbox-3017__98yJtnW,AgentSetupTimeoutError
+minimax-m3,3008,cm-v2-minimax,credit-blackbox-3008__wv53QhJ,NonZeroAgentExitCodeError
+nemotron-3-ultra,3017,cm-v2-nemotron,credit-blackbox-3017__2VRU4zd,agent never acted (API failure)

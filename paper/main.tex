@@ -6,6 +6,12 @@
 \usepackage{microtype}
 \usepackage{amsmath,amssymb,amsthm}
 \newtheorem{proposition}{Proposition}
+\newtheorem{corollary}[proposition]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\theoremstyle{plain}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\KL}{\mathrm{KL}}
 \usepackage{booktabs}
@@ -123,33 +129,159 @@ draws from the posterior: an agent that used only its own data cannot tell the t
 a posterior draw, so a submission that leans towards the truth is detected without knowing how
 it cheated.
 
-\paragraph{Guarantees.} Call a submission \emph{no-leak} if it depends on $\theta$ only through
-the agent's data. Appendix~\ref{app:proofs} proves:
+\subsection{Guarantees}
+\label{sec:guarantees}
+
+\paragraph{Setup.} Let $(\Theta,\pi)$ be the parameter space with its public prior and
+$p(y\mid x,\theta)$ the simulator's likelihood for design $x$. Nature draws $\thetastar\sim\pi$. The
+agent follows a design policy $\sigma$: at step $t$ it picks $x_t=\sigma_t(D_{t-1},U)$, where
+$D_{t-1}=((x_1,y_1),\dots,(x_{t-1},y_{t-1}))$ and $U$ is private randomness independent of
+$\thetastar$, and observes $y_t\sim p(\cdot\mid x_t,\thetastar)$. After $T$ steps it holds
+$D=D_T$. An evaluation design $x$ is drawn independently of $(\thetastar,D,U)$ and the agent
+submits a density $q$ for the outcome $Y$ at $x$. For any $\theta$ write
+\[
+p_\theta=p(\cdot\mid x,\theta),\qquad
+p_D=\int_\Theta p_\theta\,\pi(\theta\mid D)\,d\theta,\qquad
+p_0=\int_\Theta p_\theta\,\pi(\theta)\,d\theta,\qquad
+S(q;\theta)=\E_{Y\sim p_\theta}\big[\log q(Y)\big],
+\]
+the true, posterior-predictive and prior-predictive densities and the expected log score. Results
+are stated for one evaluation design and extend to the average over designs by linearity.
+
+\begin{definition}[No leak]\label{def:noleak}
+A submission $q$ has \emph{no leak} if $q\perp\thetastar\mid(D,U,x)$: given everything the agent
+legitimately observed, the submission carries no further information about the truth.
+\end{definition}
+
+The key fact used throughout is that adaptivity does not distort the posterior: because each
+$x_t$ is a function of $(D_{t-1},U)$ only, the likelihood of the data factorises as
+$\pi(\theta)\prod_{t}p(y_t\mid x_t,\theta)$ times terms free of $\theta$, so
+\begin{equation}
+\thetastar \mid (D,U,x)\;\sim\;\pi(\cdot\mid D).
+\label{eq:adaptive}
+\end{equation}
+
+\begin{proposition}[Strict propriety]\label{prop:proper}
+For every $\theta$ and every density $q$,
+$S(p_\theta;\theta)-S(q;\theta)=\KL(p_\theta\,\|\,q)\ge 0$, with equality iff $q=p_\theta$ a.e.
+\end{proposition}
+
+\begin{proposition}[Nobody beats the posterior]\label{prop:bayes}
+For every design policy and every no-leak $q$,
+\[
+\E\big[S(p_D;\thetastar)\big]-\E\big[S(q;\thetastar)\big]=\E\big[\KL(p_D\,\|\,q)\big]\ \ge 0 .
+\]
+If $q$ is restricted to a family $\mathcal Q$, the optimal no-leak submission is
+$\arg\min_{q\in\mathcal Q}\KL(p_D\|q)$; for Gaussian $\mathcal Q$ it is the Gaussian with the mean
+and variance of $p_D$.
+\end{proposition}
+
+\begin{corollary}[Exact loss decomposition]\label{cor:decomp}
+Let $S_\mathrm{ref}$ be the expected score of the reference. For any agent with data $D$ and
+no-leak submission $q$,
+\[
+\E\big[S_\mathrm{ref}-S(q;\thetastar)\big]
+=\underbrace{\E\big[S_\mathrm{ref}-S(p_D;\thetastar)\big]}_{\text{design loss}}
++\underbrace{\E\big[\KL(p_D\,\|\,q)\big]}_{\text{inference loss}\ \ge\ 0}.
+\]
+\end{corollary}
+
+\begin{proposition}[The reward measures information]\label{prop:info}
+$\E\big[S(p_D;\thetastar)-S(p_0;\thetastar)\big]=I(Y;D\mid x)$. For a discrete hypothesis
+$h^{*}$ and the reward $r(q)=\log q(h^{*})-\log p_0(h^{*})$, every no-leak $q$ satisfies
+\[
+\E[r(q)] = I(h^{*};D)-\E\big[\KL(\pi(\cdot\mid D)\,\|\,q)\big],
+\]
+and $r(p_0)=0$ in every episode.
+\end{proposition}
+
+\begin{proposition}[Dense per-step reward]\label{prop:step}
+Let $r_t=\log\pi(h^{*}\mid D_t)-\log\pi(h^{*}\mid D_{t-1})$. Then $\sum_{t=1}^{T}r_t=r(\pi(\cdot\mid
+D_T))$, and
+\[
+\E\big[r_t\mid D_{t-1},x_t\big]=I\big(h^{*};y_t\mid D_{t-1},x_t\big),
+\]
+the expected information gain of the chosen design. Replacing each $r_t$ by this conditional mean
+leaves the expected return of every policy unchanged and does not increase the variance of any
+step reward.
+\end{proposition}
+
+\begin{proposition}[Exact grading has lower variance]\label{prop:var}
+Let $\hat S=\log q(Y)$ with $Y\sim p_{\thetastar}$ be the score against one sampled outcome. Then
+$\E[\hat S]=\E[S(q;\thetastar)]$ and
+$\mathrm{Var}(\hat S)=\mathrm{Var}(S)+\E\big[\mathrm{Var}(\hat S\mid\thetastar,q)\big]\ge\mathrm{Var}(S)$.
+\end{proposition}
+
+\begin{proposition}[Validity of the leak test]\label{prop:ppc}
+Let $\tilde\theta_1,\dots,\tilde\theta_m$ be i.i.d.\ draws from $\pi(\cdot\mid D)$ and $T(\theta)$
+any statistic computed from $(\theta,D,q,x)$. If $q$ has no leak, the p-value
+\[
+p=\frac{1+\#\{i:\ T(\tilde\theta_i)\ge T(\thetastar)\}}{m+1}
+\quad\text{satisfies}\quad \Pr(p\le\alpha)\le\alpha\ \ \text{for all }\alpha\in[0,1].
+\]
+\end{proposition}
+
+\paragraph{Decision tasks.} Let $h\sim\pi_0$ be a hidden state, $a_t$ the action at step $t$,
+$o_t$ an observation whose law depends only on $(h,a_t)$, and $r(h,a)$ a bounded reward; the
+horizon is at most $T$. The belief state $s_t=\pi(\cdot\mid H_t)$ is the posterior given the
+history $H_t$. Let $\bar r(s,a)=\E_{h\sim s}\,r(h,a)$ and let $V^{*},Q^{*}$ solve the Bellman
+equations of the belief process,
+\[
+Q^{*}(s,a)=\bar r(s,a)+\E\big[V^{*}(s')\mid s,a\big],\qquad V^{*}(s)=\max_a Q^{*}(s,a),
+\]
+with $V^{*}=0$ after a terminal action.
+
+\begin{proposition}[Advantage grading]\label{prop:adv}
+For every policy whose actions depend only on the history and on randomness independent of $h$,
+with $\hat V$ as in Eq.~\eqref{eq:vhat}:
 \begin{enumerate}
-\item \emph{Proper:} the score is uniquely maximised by the true predictive.
-\item \emph{Nobody beats the posterior:} no no-leak submission beats $p_D$ in expectation, and
-inference loss equals $\E[\KL(p_D\|q)]$ exactly.
-\item \emph{Information:} the expected reward of $p_D$ is the mutual information between the
-agent's data and the outcome, so the reward measures how much was learned.
-\item \emph{Dense:} the per-step reward has the expected information gain of the chosen
-experiment as its conditional mean; replacing it by that mean keeps every policy's return and
-lowers variance.
-\item \emph{Lower variance:} the exact score has the same mean as the sampled one and no more
-variance.
-\item \emph{Valid leak test:} under no leak, $\Pr(p\le\alpha)\le\alpha$.
-\item \emph{Advantage grading:} $\hat V$ is an unbiased estimate of the policy's expected
-profit, never exceeds $V^{*}(s_0)$, and equals it in every episode for an optimal policy.
+\item[(i)] $\E[\hat V]=\E\big[\sum_t r(h,a_t)\big]$, the policy's expected total reward;
+\item[(ii)] $\hat V\le V^{*}(s_0)$ in every episode, with equality iff every action attains
+$\max_a Q^{*}(s_t,a)$;
+\item[(iii)] hence an optimal policy receives exactly $V^{*}(s_0)$ in every episode, whatever the
+observations.
 \end{enumerate}
-Two caveats: clipping and normalising by a $\thetastar$-dependent quantity in
-Eq.~\eqref{eq:reward} mean the guarantees hold for the score, and for the reward only up to
-clipping, which we check empirically (Section~\ref{sec:scoring}); and the leak test assumes exact
-posterior draws, where the grader uses particles.
+\end{proposition}
+
+\begin{corollary}[Normalisation preserves the optimum]\label{cor:norm}
+On the credit desk the agent's total is $V=\sum_i\hat V_i-c\,n_{\mathrm{draws}}$, and the unclipped
+reward is $(V-V_0)/(\bar V_\mathrm{ref}-V_0)$ with $V_0,\bar V_\mathrm{ref}$ constants of the
+task. By Proposition~\ref{prop:adv}(i) its expectation is an increasing affine function of the
+policy's expected profit net of calibration cost, so the profit-maximising policy maximises the
+expected unclipped reward.
+\end{corollary}
+
+\paragraph{What the grader measures.} The belief-state DP is Bayesian decision theory solved by
+backward induction: the value of a check is computed by propagating every possible reading through
+Bayes' rule and weighting the updated beliefs by their predictive probabilities (preposterior
+analysis), so the grader scores sequential, non-myopic experimental design under the task's
+monetary utility, against the optimal policy. In prediction tasks the utility is information:
+by Proposition~\ref{prop:info} the expected reward of the exact posterior is the mutual
+information between the agent's data and the outcome, Lindley's criterion, and
+Corollary~\ref{cor:decomp} isolates design quality (scored with inference held exact) from
+inference quality. Two limits apply. The prediction-task reference designs greedily, so the
+design gap is relative to one-step information gain, not to the optimal sequential design. And
+on the black-box desk the DP is Bayesian in the applicant's segment but treats the score
+generator as known: calibration is graded through its cost and the play that follows, not as a
+design problem of its own, which would require the Bayes-adaptive problem over the generator.
+
+\begin{remark}[What is not covered]\label{rem:limits}
+The guarantees concern the score $S$ and the value $\hat V$. The prediction reward of
+Eq.~\eqref{eq:reward} divides by $S(p_{\thetastar};\thetastar)-S(p_0;\thetastar)$, which depends on
+$\thetastar$, so its no-leak optimum is the predictive of a reweighted posterior rather than $p_D$;
+and clipping at $[0,1]$ is a non-linear transform, so $\E[\mathrm{clip}(Z)]$ and
+$\mathrm{clip}(\E Z)$ can order policies differently. We check both effects empirically
+(Section~\ref{sec:scoring}). Proposition~\ref{prop:ppc} assumes exact posterior draws, whereas
+the prediction grader uses a particle approximation.
+\end{remark}
 
 \section{What problems become gradable}
 \label{sec:problems}
 
 The recipe needs only a prior, a simulator with a computable (or numerically exact) likelihood,
-and, for decision tasks, a solvable DP. Table~\ref{tab:envs} lists the environments we built
+and, for decision tasks, a solvable DP. Simulators without a tractable likelihood, including
+general black-box simulators, can be brought in through a learned surrogate likelihood, at the
+cost of exactness (Section~\ref{sec:discussion}). Table~\ref{tab:envs} lists the environments we built
 with it. Each was calibrated so that a named shortcut loses clearly to the reference.
 
 \begin{table}[t]
@@ -163,14 +295,14 @@ Fault diagnosis & Chemistry lab (Arrhenius kinetics, 7 faults) & Posterior by en
 Mechanism discrimination & Wet lab; likelihood-free gene-expression lab & Finite state projection \\
 Population learning & Hierarchical lab & Conjugate updates \\
 Causal discovery & Random-DAG lab (29{,}281 graphs); optogenetics lab & Posterior over graphs \\
+Rule and structure inference & Rulebound Battleship (6 placement rules, noisy shots and scans) & Posterior over 53{,}624 layouts \\
 Cost-aware planning & Diagnostic planning lab & DP over test sequences \\
 Sequential decisions & Blackjack with a hidden shoe composition & Exact expectation \\
 Optimal stopping & Credit desk, model stated & DP over belief states \\
 \textbf{Priced model learning} & \textbf{Credit desk, generator hidden} & DP under the true generator \\
 \bottomrule
 \end{tabular}
-\caption{Environments built on the Bayesian reward. A team member also built Rulebound
-Battleship (exact posterior over 53{,}624 layouts) on the same grader.}
+\caption{Environments built on the Bayesian reward. The last row is the submission task.}
 \label{tab:envs}
 \end{table}
 
@@ -258,7 +390,10 @@ reference knew. Disclosing them took Opus to 0.98 and Codex with GPT-6 Luna from
 
 \emph{It confirms that stated problems are solved.} We then built harder stated problems, each
 against a named shortcut (Table~\ref{tab:stated}). In all ten environments an agent with a shell
-wrote exact inference, and where needed an exact DP, and reached the reference.
+wrote exact inference, and where needed an exact DP, and reached the reference. Rulebound
+Battleship, measured last, makes eleven: over six trials on all five boards Opus scored 0.53
+against the reference's 0.50, with exact inference in five of six; its one low score (0.28) came
+on a board where a rerun scored 0.68.
 
 \begin{table}[t]
 \centering\small
@@ -273,9 +408,10 @@ Diagnostic planning & Greedy tests (1.06 vs.\ DP 1.71) & 1.69 over 8 trials \\
 Likelihood-free gene lab & Moment matching, ABC & 0.93, 1.00 (reference 0.88) \\
 Blackjack, hidden shoe & Card-counting heuristics & Zero regret, 4 of 4 trials \\
 Credit desk, model stated & One-step lookahead (0.19) & 1.0 in 3 of 3 trials \\
+Rulebound Battleship & Noise-ignoring coder (0.35) & 0.53 vs.\ reference 0.50, 6 trials \\
 \bottomrule
 \end{tabular}
-\caption{Stated-model environments. With the two disclosed prediction tasks, these make ten.}
+\caption{Stated-model environments. With the two disclosed prediction tasks, these make eleven.}
 \label{tab:stated}
 \end{table}
 
@@ -335,6 +471,64 @@ GRPO on Eq.~\eqref{eq:reward} ($+0.137\ [0.049, 0.225]$ over supervised alone). 
 the smallest model reached 0.57--0.60 on unseen families ($+0.19$) before sampling collapsed:
 late in training almost all prompts produced identical completions and no reward signal.
 
+\emph{On the black-box desk.} We trained Gemma~4 E2B with GRPO on the decision steps of the
+priced task, rewarding each action by the true-model advantage it gave up, on development desks
+disjoint from the six evaluation desks. Over 20 sandbox datasets per desk, the full-episode reward
+rose from 0.00 untrained to $0.28 \pm 0.05$ (0.05--0.51 by desk); the dollars lost per decision
+fell from 2{,}644 to 28, because the base model approves about half of all applicants unchecked.
+That matches one-step lookahead (0.05--0.30) but stays far below the reference (0.88--0.99 on the
+same seeds), and the calibration choice did not train: base and trained models both buy 8 draws
+per cell. The decision reward trains; the value of calibration, which is where frontier agents
+also fail, did not move (Figure~\ref{fig:gemma}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_gemma}
+\caption{GRPO on the black-box desk with Gemma~4 E2B. (a) Mean true-model advantage lost per
+decision on held-out states during training. (b) Full-episode reward on the six evaluation desks,
+20 sandbox datasets each (bars: 95\% intervals); the untrained model scores 0 on every desk.}
+\label{fig:gemma}
+\end{figure}
+
+\emph{Transfer: skill or bias?} We evaluated the same adapter, trained only on the black-box
+desk, against the untrained model on three other tasks with identical prompts and seeds
+(Figure~\ref{fig:transfer}; paired bootstrap 95\% intervals). On the credit desk with its tables
+stated, a near transfer, reward rose from $-57.9$ (the base model approves everyone) to $0.36$,
+level with one-step lookahead (0.40). On the far tasks the scores also rose: Battleship from 0.20 to
+0.39 ($+0.19\ [0.13, 0.25]$) and the hand-designed diagnostic table from 0.60 to 0.92 nats
+($+0.31\ [0.25, 0.39]$). The exact grader shows what was learned. The gains come from no longer
+stopping early (Battleship: 87\% of base games end early, 13\% after training), while the choice of
+experiment did not improve: per-action information gain relative to the best action fell from
+0.87 to 0.82 on Battleship, the share of optimal picks among six fixed candidates fell from 0.61 to
+0.48, and the random diagnostic tables moved by only $+0.08\ [0.00, 0.17]$. Where stopping is right
+the trained model is worse: with tests priced at 0.1 nats per unit it keeps testing when the DP
+stops in 82\% of cases against 41\% for the base model. What transferred is a bias towards
+gathering information, which pays only on tasks where information is free until the budget ends.
+
+\emph{Why the reward did not teach the price.} The per-step training reward was
+$0.5\,e^{-\mathrm{adv}/4}+0.5\,e^{-\mathrm{adv}/40}$ with $\mathrm{adv}=V^{*}(s)-Q^{*}(s,a)$ in
+dollars under the true model. This does charge for information: $Q^{*}$ of a check already
+subtracts its \$20 cost, so a wasted check has positive advantage, and the DP is non-myopic, so
+stopping where several checks together would pay is charged too. But the transform compresses
+large losses: a wasted check worth \$10 scores 0.43, while a \$2{,}000 wrongful approval scores 0,
+only about twice as bad instead of two hundred times. With group-normalised GRPO advantages and a
+base model that approves half of all applicants unchecked, the strongest signal was ``do not
+commit'', which on the credit desk appears as too few approvals (12\%) and on other tasks as too
+much gathering. The calibration choice had almost no signal because its value curve is flat. The
+grader's own reward prices information exactly in dollars; our training transform weakened that
+price. A reward linear in dollars with a per-group baseline, and training on tasks where experiments
+are priced, are the natural next steps.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_transfer}
+\caption{Transfer of the adapter trained only on the black-box desk (dark blue) against the
+untrained model (orange) and baselines. Left: diagnostic lab, expected score in nats. Centre:
+Rulebound Battleship, 60 games. Right: credit desk with tables stated (0 = decide on the prior,
+1 = exact DP). Bars: 95\% intervals.}
+\label{fig:transfer}
+\end{figure}
+
 \begin{table}[t]
 \centering\small
 \begin{tabular}{lcccc}
@@ -353,6 +547,7 @@ held-out instances of training families (500 rows each; chance 0.49 / 0.39).}
 \end{table}
 
 \section{Discussion}
+\label{sec:discussion}
 
 The Bayesian reward replaces an estimate with the quantity it estimates, and every property we
 measured follows from that: no credit for guessing, less noise, an exact account of each loss,
@@ -371,6 +566,15 @@ surrogate's error, but that error can be measured on held-out simulations before
 environment is released, and it costs the grader compute once rather than every agent at every
 step.
 
+The per-step hypothesis reward of Proposition~\ref{prop:step},
+$\log\pi(h^{*}\mid D_t)-\log\pi(h^{*}\mid D_{t-1})$, is exactly the payout of a logarithmic market
+scoring rule~\citep{hanson2003combinatorial} to a trader who moves the price from the old
+posterior to the new one, so an agent running experiments is a trader paid for the information
+it brings. This suggests prediction-market environments: a market maker that quotes the exact
+posterior given public information, traders who buy private signals at a price, and, with
+several agents, a check of whether prices converge to the exact pooled posterior. The grader
+supplies what real markets lack, the price an ideal aggregator would quote.
+
 What it showed about current agents is specific. Given a stated model and a shell, frontier
 agents infer and plan exactly. What they lack is treating ``how much should I learn?'' as a
 decision with a computable answer. The reference's 12 draws per cell was chosen by simulation on
@@ -382,8 +586,9 @@ we list as a limitation. The priced-learning task turns that into a gradable, tr
 family, with different harnesses; for three agents most trials hit a time limit that the
 instruction did not state. The reference is good, not optimal, and its fixed calibration budget was tuned on development desks with known generators rather than chosen from its own pilot data. The verifier shares a container
 with the agent. Stated-model results rest on 2--15 trials per environment. Training results are
-on design decisions and one prediction task; we have not yet trained on the priced task, and
-long GRPO runs collapsed.
+small: on the priced task, GRPO improved a 2B model's decisions but not its calibration budget,
+needed injected off-policy samples because the base model never chose to check, and transferred
+as a bias towards gathering information rather than a skill; long GRPO runs collapsed.
 
 \section{Conclusion}
 
@@ -408,69 +613,77 @@ responsibility for the content. The models named in the results were experimenta
 \section{Proofs}
 \label{app:proofs}
 
-Let $\theta \sim \pi$, let the agent choose designs from its history and private randomness $U$
-independent of $\theta$, and let $q$ be \emph{no-leak}: conditionally independent of $\theta$
-given $D$ and the evaluation design $x$. Write $p_\theta = p(\cdot\mid x,\theta)$ and
-$p_D = \int p_\theta\, p(\theta\mid D)\,d\theta$.
+All statements use the setup of Section~\ref{sec:guarantees}. The step used repeatedly is
+Eq.~\eqref{eq:adaptive}: since each design is a function of the past data and of $U$, the joint
+density of $(\thetastar,D)$ given $U$ is $\pi(\theta)\prod_t p(y_t\mid x_t,\theta)$ times factors
+that do not involve $\theta$, so conditioning on $(D,U,x)$ gives the ordinary posterior.
 
-\begin{proposition}[Proper]\label{prop:proper}
-$S(p_\theta;\theta) - S(q;\theta) = \KL(p_\theta\|q) \ge 0$, with equality only if $q = p_\theta$.
-\end{proposition}
-\emph{Proof.} The difference is $\E_{Y\sim p_\theta}[\log p_\theta(Y) - \log q(Y)]$; apply Gibbs'
-inequality. \qed
+\paragraph{Proof of Proposition~\ref{prop:proper}.}
+$S(p_\theta;\theta)-S(q;\theta)=\E_{Y\sim p_\theta}[\log p_\theta(Y)-\log q(Y)]=\KL(p_\theta\|q)$,
+which is non-negative and zero iff $q=p_\theta$ a.e.\ by Gibbs' inequality. \qed
 
-\begin{proposition}[Nobody beats the posterior]\label{prop:bayes}
-$\E[S(p_D;\theta)] - \E[S(q;\theta)] = \E[\KL(p_D\|q)] \ge 0$.
-\end{proposition}
-\emph{Proof.} Each design is a function of the past data and $U$, so the joint density of
-$(\theta, D)$ given $U$ is $\pi(\theta)\prod_t p(y_t\mid x_t,\theta)$ times factors free of
-$\theta$; hence $\theta\mid(D,U,x)\sim p(\theta\mid D)$. Conditioning fixes $q$, and
-$\E[S(q;\theta)\mid D,U,x] = \int p_D(y)\log q(y)\,dy$. Subtract the same identity with
-$q=p_D$ and take expectations. \qed
+\paragraph{Proof of Proposition~\ref{prop:bayes}.}
+Condition on $(D,U,x)$. By no leak, $q$ is then fixed, and by Eq.~\eqref{eq:adaptive}
+\[
+\E\big[S(q;\thetastar)\mid D,U,x\big]
+=\int\pi(\theta\mid D)\int p(y\mid x,\theta)\log q(y)\,dy\,d\theta
+=\int p_D(y)\log q(y)\,dy .
+\]
+The same identity with $q=p_D$ gives $\int p_D\log p_D$; subtracting,
+$\E[S(p_D;\thetastar)-S(q;\thetastar)\mid D,U,x]=\KL(p_D\|q)\ge 0$. Take expectations. Over a family
+$\mathcal Q$ the conditional expectation is maximised by minimising $\KL(p_D\|q)$; for Gaussian $q$
+this is moment matching. \qed
 
-\begin{proposition}[Information]\label{prop:info}
-$\E[S(p_D;\theta) - S(p_0;\theta)] = I(Y;D)$.
-\end{proposition}
-\emph{Proof.} By the identity above the conditional expectation is $\KL(p_D\|p_0)$, whose mean
-over $D$ is $I(Y;D)$ since $Y\mid D\sim p_D$ and $Y\sim p_0$. \qed
+\paragraph{Proof of Corollary~\ref{cor:decomp}.}
+Add and subtract $\E[S(p_D;\thetastar)]$ and apply Proposition~\ref{prop:bayes}. \qed
 
-\begin{proposition}[Dense per-step reward]\label{prop:step}
-Let $r_t = \log p(h^{*}\mid D_t) - \log p(h^{*}\mid D_{t-1})$. Then $\sum_t r_t$ is the final
-hypothesis reward of the posterior, $\E[r_t\mid D_{t-1},x_t] = I(h;y_t\mid D_{t-1},x_t)$, and
-replacing $r_t$ by this conditional mean preserves every policy's expected return without
-increasing variance.
-\end{proposition}
-\emph{Proof.} The sum telescopes from $p(\cdot\mid D_0)=p_0$. Given $(D_{t-1},x_t)$,
-$h^{*}\sim p(\cdot\mid D_{t-1})$ and by Bayes' rule $r_t = \log p(y_t\mid x_t,h^{*}) - \log
-p(y_t\mid x_t,D_{t-1})$, whose conditional mean is the mutual information. Apply the tower
-property and the law of total variance. \qed
+\paragraph{Proof of Proposition~\ref{prop:info}.}
+By the identity above, $\E[S(p_D;\thetastar)-S(p_0;\thetastar)\mid D,x]=\int p_D\log(p_D/p_0)=
+\KL(p_D\|p_0)$. Since $Y\mid(D,x)\sim p_D$ and $Y\mid x\sim p_0$, its mean over $D$ is
+$I(Y;D\mid x)$. For hypotheses, $h^{*}\mid(D,U)\sim\pi(\cdot\mid D)$, so for no-leak $q$,
+$\E[\log q(h^{*})\mid D,U]=\sum_h\pi(h\mid D)\log q(h)$ and
+$\E[r(q)\mid D,U]=\KL(\pi(\cdot\mid D)\|p_0)-\KL(\pi(\cdot\mid D)\|q)$; the first term has mean
+$I(h^{*};D)$. Finally $r(p_0)=0$ by definition. \qed
 
-\begin{proposition}[Variance]\label{prop:var}
-If $\hat S = \log q(Y)$ with $Y\sim p_{\thetastar}$, then $\E\hat S = \E S$ and
-$\mathrm{Var}(S)\le\mathrm{Var}(\hat S)$.
-\end{proposition}
-\emph{Proof.} $S = \E[\hat S\mid\thetastar,q]$; apply the law of total variance. \qed
+\paragraph{Proof of Proposition~\ref{prop:step}.}
+The sum telescopes because $\pi(\cdot\mid D_0)=p_0$. By Bayes' rule
+$\pi(h\mid D_t)/\pi(h\mid D_{t-1})=p(y_t\mid x_t,h)/p(y_t\mid x_t,D_{t-1})$, so
+$r_t=\log p(y_t\mid x_t,h^{*})-\log p(y_t\mid x_t,D_{t-1})$. Given $(D_{t-1},x_t)$,
+$h^{*}\sim\pi(\cdot\mid D_{t-1})$ and $y_t\sim p(\cdot\mid x_t,h^{*})$, so the conditional mean is
+the mutual information $I(h^{*};y_t\mid D_{t-1},x_t)$. The tower property gives
+$\E[\sum_t r_t]=\E[\sum_t\E[r_t\mid D_{t-1},x_t]]$ for every policy, and the law of total variance
+gives $\mathrm{Var}(\E[r_t\mid D_{t-1},x_t])\le\mathrm{Var}(r_t)$. \qed
 
-\begin{proposition}[Leak test]\label{prop:ppc}
-For $\tilde\theta_1,\dots,\tilde\theta_m$ i.i.d.\ from $p(\theta\mid D)$ and any statistic $T$
-of $(D,q,x)$, the p-value $(1+\#\{i: T(\tilde\theta_i)\ge T(\thetastar)\})/(m+1)$ satisfies
-$\Pr(p\le\alpha)\le\alpha$ under no leak.
-\end{proposition}
-\emph{Proof.} Given $(D,q,x)$, $\thetastar$ and the $\tilde\theta_i$ are i.i.d., so the $m+1$
-values of $T$ are exchangeable and $T(\thetastar)$ is among the $\lfloor\alpha(m+1)\rfloor$
-largest with probability at most $\alpha$. \qed
+\paragraph{Proof of Proposition~\ref{prop:var}.}
+By definition $S(q;\thetastar)=\E[\hat S\mid\thetastar,q]$. The means agree by the tower property
+and the variance identity is the law of total variance. \qed
 
-\begin{proposition}[Advantage grading]\label{prop:adv}
-In a finite-horizon problem with hidden state $h$, belief states $s_t$ and optimal values
-$V^{*}, Q^{*}$ of the belief process, for any policy using only its history and independent
-randomness: (i) $\E[\hat V]$ is the policy's expected total reward; (ii) $\hat V\le V^{*}(s_0)$,
-with equality iff every action was optimal, so an optimal policy scores $V^{*}(s_0)$ in every
-episode.
-\end{proposition}
-\emph{Proof.} As above, $h\mid(H_t,U)\sim s_t$, so with $\bar r(s,a)=\E_{h\sim s}r(h,a)$ we have
-$Q^{*}(s_t,a_t)=\bar r(s_t,a_t)+\E[V^{*}(s_{t+1})\mid s_t,a_t]$. Substituting into
-Eq.~\eqref{eq:vhat} gives $\hat V=\sum_t\bar r(s_t,a_t)-\sum_t(V^{*}(s_{t+1})-\E[V^{*}(s_{t+1})\mid
-s_t,a_t])$; the second sum has mean zero, which gives (i). Each bracket in Eq.~\eqref{eq:vhat} is
-non-negative since $V^{*}=\max_a Q^{*}$, which gives (ii). \qed
+\paragraph{Proof of Proposition~\ref{prop:ppc}.}
+Condition on $(D,q,x)$. Under no leak and Eq.~\eqref{eq:adaptive}, $\thetastar\sim\pi(\cdot\mid D)$
+and the $\tilde\theta_i$ are independent draws from the same law, so
+$T(\thetastar),T(\tilde\theta_1),\dots,T(\tilde\theta_m)$ are exchangeable. Let
+$k=\lfloor\alpha(m+1)\rfloor$. The event $p\le\alpha$ requires $T(\thetastar)$ to rank among the $k$
+largest of the $m+1$ values, ties counted against it, which by exchangeability has probability at
+most $k/(m+1)\le\alpha$. The bound holds conditionally, hence unconditionally. \qed
+
+\paragraph{Proof of Proposition~\ref{prop:adv}.}
+Let $U$ be the policy's private randomness. As in Eq.~\eqref{eq:adaptive},
+$h\mid(H_t,U)\sim s_t$, so the expected immediate reward of $a_t$ given $(H_t,U)$ is
+$\bar r(s_t,a_t)$ and $s_{t+1}$ follows the transition law of the belief process. Substituting the
+Bellman equation for $Q^{*}(s_t,a_t)$ into Eq.~\eqref{eq:vhat} and regrouping,
+\[
+\hat V=\sum_{t=0}^{T}\bar r(s_t,a_t)\;-\;\sum_{t=0}^{T-1}\Big(V^{*}(s_{t+1})-\E\big[V^{*}(s_{t+1})\mid
+s_t,a_t\big]\Big).
+\]
+Each term of the second sum has conditional mean zero given $(H_t,U,a_t)$ and the horizon is
+bounded, so the sum has mean zero; the first sum has the policy's expected total reward as its mean
+by the tower property. This proves (i). Each bracket $V^{*}(s_t)-Q^{*}(s_t,a_t)$ in
+Eq.~\eqref{eq:vhat} is non-negative because $V^{*}=\max_aQ^{*}$, and all vanish iff every action is
+a maximiser, which proves (ii); (iii) is its equality case. \qed
+
+\paragraph{Proof of Corollary~\ref{cor:norm}.}
+$\E[V]=\sum_i\E[\hat V_i]-c\,\E[n_\mathrm{draws}]$, which by Proposition~\ref{prop:adv}(i) is the
+policy's expected profit net of calibration cost. The map $v\mapsto(v-V_0)/(\bar V_\mathrm{ref}-V_0)$
+is affine and increasing because $\bar V_\mathrm{ref}>V_0$ on every selected desk. \qed
 
 \end{document}

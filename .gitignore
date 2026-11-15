@@ -50,3 +50,4 @@ data/
 
 # Local editor state
 .obsidian/
+!results/blackbox_v2/*.csv

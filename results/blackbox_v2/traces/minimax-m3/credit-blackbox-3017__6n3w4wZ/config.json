@@ -1,0 +1,17 @@
+{
+    "task": {
+        "path": "bbtasks-v2/credit-blackbox-3017",
+        "source": "bbtasks-v2"
+    },
+    "trial_name": "credit-blackbox-3017__6n3w4wZ",
+    "trials_dir": "/home/server/harbor-work/codex-myopia/jobs/cm-v2-minimax",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agent": {
+        "name": "opencode",
+        "model_name": "minimax/MiniMax-M3",
+        "base_url": "https://api.minimax.io/v1",
+        "model_api_key_name": "MINIMAX_API_KEY",
+        "model_api_format": "openai_chat_completions"
+    },
+    "job_id": "fca0f650-c046-4c35-bb3f-813c336db9a4"
+}

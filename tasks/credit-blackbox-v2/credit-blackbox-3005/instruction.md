@@ -1,0 +1,98 @@
+# Underwrite 20 loan applications
+
+You are a credit underwriter. An MCP server named `credit-desk` is connected to you. It holds
+20 personal-loan applicants, presented one at a time. For each applicant you may buy live
+verification checks and then must **approve** or **decline** the loan.
+
+## Rules
+
+Each applicant belongs to exactly one of six risk segments, drawn at random from that applicant's
+prior (table below). Segment default probabilities (PD):
+
+| segment | PD |
+|---|---|
+| S1 super-prime | 0.02 |
+| S2 prime | 0.05 |
+| S3 near-prime | 0.12 |
+| S4 subprime | 0.30 |
+| S5 deep subprime | 0.60 |
+| S6 very high risk | 0.90 |
+
+**Payoffs.** Approving earns the interest margin of $1,000 if the loan is repaid and loses $16,000
+(loss given default) if it defaults. You are credited with the expected payoff given the applicant's
+true segment: approve = (1 - PD) x 1000 - PD x 16000; decline = $0.
+
+**Live checks.** Three kinds: `bureau`, `income` and `bank`. Each costs $20 and returns only the band
+of the applicant's score:
+
+- band 0: score < 560
+- band 1: 560 <= score < 630
+- band 2: 630 <= score < 690
+- band 3: 690 <= score < 750
+- band 4: 750 <= score < 820
+- band 5: score >= 820
+
+At most 8 live checks per applicant (any mix of kinds). You may decide at any time, including
+before any check. A decision is final and the next applicant starts.
+
+**How scores are generated.** For each check kind, score = (a location that depends on the applicant's
+segment) + noise. The noise distribution is specific to the check kind, symmetric around 0, and the same
+for every segment and every applicant. The locations and noise distributions are not disclosed. Every
+check run, including a repeat of the same kind, is an independent draw.
+
+**Sandbox.** `simulate(segment, check, n)` returns n raw (unbanded) scores of that check for synthetic
+applicants of a known segment, drawn from exactly the same generator. It costs $1 per draw
+(at most 50 per call and 1000 per episode), can be used at any time, and
+does not affect the live applicants.
+
+## Applicant priors
+
+| applicant | S1 | S2 | S3 | S4 | S5 | S6 |
+|---|---|---|---|---|---|---|
+| 1 | 0.19 | 0.2 | 0.14 | 0.24 | 0.19 | 0.04 |
+| 2 | 0.1 | 0.16 | 0.09 | 0.37 | 0.12 | 0.16 |
+| 3 | 0.17 | 0.21 | 0.23 | 0.16 | 0.04 | 0.19 |
+| 4 | 0.24 | 0.3 | 0.08 | 0.08 | 0.18 | 0.12 |
+| 5 | 0.26 | 0.32 | 0.15 | 0.03 | 0.1 | 0.14 |
+| 6 | 0.41 | 0.13 | 0.11 | 0.28 | 0.03 | 0.04 |
+| 7 | 0.12 | 0.07 | 0.08 | 0.26 | 0.17 | 0.3 |
+| 8 | 0.22 | 0.11 | 0.13 | 0.36 | 0.08 | 0.1 |
+| 9 | 0.2 | 0.07 | 0.32 | 0.08 | 0.09 | 0.24 |
+| 10 | 0.15 | 0.28 | 0.13 | 0.08 | 0.2 | 0.16 |
+| 11 | 0.19 | 0.29 | 0.28 | 0.15 | 0.06 | 0.03 |
+| 12 | 0.12 | 0.04 | 0.28 | 0.3 | 0.12 | 0.14 |
+| 13 | 0.17 | 0.32 | 0.12 | 0.11 | 0.05 | 0.23 |
+| 14 | 0.37 | 0.12 | 0.07 | 0.29 | 0.07 | 0.08 |
+| 15 | 0.16 | 0.09 | 0.09 | 0.16 | 0.2 | 0.3 |
+| 16 | 0.21 | 0.15 | 0.2 | 0.11 | 0.18 | 0.15 |
+| 17 | 0.17 | 0.08 | 0.08 | 0.04 | 0.53 | 0.1 |
+| 18 | 0.3 | 0.11 | 0.04 | 0.33 | 0.16 | 0.06 |
+| 19 | 0.2 | 0.21 | 0.22 | 0.03 | 0.1 | 0.24 |
+| 20 | 0.09 | 0.14 | 0.03 | 0.41 | 0.27 | 0.06 |
+
+## Tools
+
+- `get_rules`: these rules as JSON.
+- `simulate(segment, check, n)`: sandbox draws ($1 each).
+- `status`: current applicant, its prior, checks so far, money spent.
+- `run_check(check)`: live check on the current applicant ($20); returns the band.
+- `decide(decision)`: `approve` or `decline` the current applicant (final; moves to the next one).
+
+Applicants left undecided count as declined.
+
+You have a shell with Python 3, numpy and scipy.
+
+## Score
+
+Your profit is graded exactly, using the true generator:
+
+- For each applicant, the grader takes the expected profit of the best possible strategy for that
+  applicant (given its prior, the true generator, the $20 check cost and the 8-check limit) and subtracts,
+  for every action you took (each live check and the final decision), how much expected profit that
+  action gave up compared with the best action in the same situation. This equals the expected payoff of
+  your decisions minus your live-check costs, with the randomness of the live readings averaged out.
+- Your total V is the sum over applicants, minus everything spent in the sandbox.
+- V0 is the total for deciding every applicant from its prior alone (no checks, no sandbox).
+- V_ref is a constant fixed for this task: the expected total of a reference strategy that uses only
+  the tools above.
+- Reward = (V - V0) / (V_ref - V0), clipped to the range [0, 1].

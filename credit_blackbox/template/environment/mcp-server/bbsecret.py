@@ -6,6 +6,7 @@ from scipy import stats
 import credit_core as cc
 
 CHECKS = ["bureau", "income", "bank"]
+SWAP_P = 0.0
 _DIST = {"gauss": stats.norm, "t3": stats.t(3), "cauchy": stats.cauchy}
 
 
@@ -15,14 +16,21 @@ def rng_of(*parts) -> np.random.Generator:
 
 
 def desk_model(desk: int) -> dict:
+    """generator v2: base locations credit_core.Inst(desk).mu, then per check a random offset U(-50, 50), segment
+    jitter N(0, 12) and, with probability SWAP_P (0 in v2), one adjacent pair of segments swapped; rounded to 1. Per check one noise family (at least one Cauchy) and a scale."""
     mu = cc.Inst(desk).mu
     r = rng_of("desk", desk)
     fams = list(r.permutation(["cauchy", "t3", str(r.choice(["cauchy", "gauss"]))]))
     out = {}
     for e, c in enumerate(CHECKS):
-        f = fams[e]
+        f = str(fams[e])
         lo, hi = {"cauchy": (30, 55), "t3": (35, 60), "gauss": (60, 100)}[f]
-        out[c] = dict(family=f, mu=[float(v) for v in mu[e]], scale=float(round(r.uniform(lo, hi))))
+        scale = float(round(r.uniform(lo, hi)))
+        loc = mu[e] + r.uniform(-50, 50) + r.normal(0, 12, cc.K)
+        if r.random() < SWAP_P:
+            k = int(r.integers(0, cc.K - 1))
+            loc[k], loc[k + 1] = loc[k + 1], loc[k]
+        out[c] = dict(family=f, mu=[float(round(v)) for v in loc], scale=scale)
     return out
 
 

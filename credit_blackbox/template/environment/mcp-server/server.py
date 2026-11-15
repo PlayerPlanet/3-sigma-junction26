@@ -61,7 +61,7 @@ def get_rules() -> dict:
 @mcp.tool()
 def simulate(segment: str, check: str, n: int = 1) -> dict:
     """Sandbox: n independent raw (unbanded) scores of `check` ('bureau', 'income' or 'bank') for synthetic
-    applicants of the known `segment` ('S1'..'S6'). Costs $2 per draw (n <= 50 per call, 1000 per episode).
+    applicants of the known `segment` ('S1'..'S6'). Costs $1 per draw (n <= 50 per call, 1000 per episode).
     Usable at any time; it does not affect the live applicants."""
     with lock:
         try:

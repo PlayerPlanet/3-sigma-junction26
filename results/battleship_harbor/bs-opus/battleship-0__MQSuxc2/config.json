@@ -1,0 +1,14 @@
+{
+    "task": {
+        "path": "tasks/battleship-0",
+        "source": "tasks"
+    },
+    "trial_name": "battleship-0__MQSuxc2",
+    "trials_dir": "/root/work/jobs/bs-opus",
+    "agent_setup_timeout_multiplier": 3.0,
+    "agent": {
+        "name": "claude-code",
+        "model_name": "claude-opus-5-5"
+    },
+    "job_id": "cd5a7999-8b0b-4059-8b00-ff7fd9fa582f"
+}

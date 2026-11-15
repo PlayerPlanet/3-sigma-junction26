@@ -3,7 +3,7 @@
 Hidden generator (bbsecret.desk_model): per (segment, check) score location, per check a noise family
 (gauss / t3 / cauchy) and scale; the same for every applicant in the episode and for the sandbox.
 Streams (all salted; the salt lives only in this container):
-  sandbox draws : rng(desk, salt, "sandbox")            -- independent of
+  sandbox draws : rng("sandbox", desk), fixed per desk (not salted) -- independent of
   live readings : rng(desk, applicant seed, salt, i)     (true segment + uniforms per check run)
 
 Grading (exact, under the TRUE generator):
@@ -23,7 +23,7 @@ import bbpub as P
 import bbsecret as Z
 
 PR = 16.0
-SIM_PRICE = 2.0
+SIM_PRICE = 1.0
 SIM_MAX_PER_CALL = 50
 SIM_MAX_TOTAL = 1000
 
@@ -44,7 +44,7 @@ class Lab:
         self.model = Z.desk_model(desk)
         self.tables = Z.true_tables(self.model)
         self.priors = [np.array(list(applicant_prior(s).values())) for s in self.seeds]
-        self.sim_rng = Z.rng_of("sandbox", desk, salt)
+        self.sim_rng = Z.rng_of("sandbox", desk)          # fixed per desk: the reference run is reproducible
         self.worlds = []
         for i, s in enumerate(self.seeds):
             r = Z.rng_of("live", desk, s, salt, i)

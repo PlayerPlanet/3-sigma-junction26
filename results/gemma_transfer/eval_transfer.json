@@ -1,0 +1,2737 @@
+{
+ "diag_free": {
+  "n": 150,
+  "metrics": {
+   "expected_value_nats": {
+    "base": [
+     0.6040222224220974,
+     0.5370960076302849,
+     0.6697915508438277
+    ],
+    "trained": [
+     0.9179802368243526,
+     0.87201440662624,
+     0.9651735153171208
+    ],
+    "diff": [
+     0.31395801440225524,
+     0.24610673109424358,
+     0.38478514278871373
+    ]
+   },
+   "realised_logscore": {
+    "base": [
+     0.6051784473310006,
+     0.44513836903695153,
+     0.7611907613553089
+    ],
+    "trained": [
+     0.925564088139375,
+     0.7616316331325393,
+     1.0844937236602872
+    ],
+    "diff": [
+     0.3203856408083744,
+     0.1531812187868874,
+     0.4940190273077287
+    ]
+   },
+   "adv_lost_per_decision": {
+    "base": [
+     0.27348755653676005,
+     0.2432398322844303,
+     0.30622729335394083
+    ],
+    "trained": [
+     0.1453575508710456,
+     0.13339628852390034,
+     0.15791788044791893
+    ],
+    "diff": [
+     -0.12813000566571445,
+     -0.1596757530708583,
+     -0.09981171393788
+    ]
+   },
+   "share_dp_optimal": {
+    "base": [
+     0.18491921005385997,
+     0.1334491219525214,
+     0.23661585197204654
+    ],
+    "trained": [
+     0.31077348066298344,
+     0.26379394495141467,
+     0.3560012517385257
+    ],
+    "diff": [
+     0.12585427060912346,
+     0.0733507424038877,
+     0.18180180816030372
+    ]
+   },
+   "stop_when_dp_continues": {
+    "base": [
+     0.15798922800718132,
+     0.1311167711598746,
+     0.18702596718567369
+    ],
+    "trained": [
+     0.024861878453038673,
+     0.014444915731946457,
+     0.036775106082036775
+    ],
+    "diff": [
+     -0.13312734955414265,
+     -0.16253758761971232,
+     -0.10580560544533366
+    ]
+   },
+   "continue_when_dp_stops": {
+    "base": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "trained": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "diff": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   },
+   "selection_loss_per_test": {
+    "base": [
+     0.1775584444181685,
+     0.15900470429495003,
+     0.19767748677026376
+    ],
+    "trained": [
+     0.14169465173619666,
+     0.1296158186601461,
+     0.154194277722272
+    ],
+    "diff": [
+     -0.035863792681971846,
+     -0.05490502378080807,
+     -0.019291329676899102
+    ]
+   },
+   "tests_per_episode": {
+    "base": [
+     3.1266666666666665,
+     2.86,
+     3.4
+    ],
+    "trained": [
+     4.706666666666667,
+     4.506666666666667,
+     4.906666666666666
+    ],
+    "diff": [
+     1.5800000000000005,
+     1.2931666666666664,
+     1.873333333333334
+    ]
+   },
+   "budget_spent": {
+    "base": [
+     6.98,
+     6.473166666666667,
+     7.466833333333334
+    ],
+    "trained": [
+     9.546666666666667,
+     9.333333333333334,
+     9.746666666666666
+    ],
+    "diff": [
+     2.5666666666666664,
+     2.0666666666666664,
+     3.086666666666667
+    ]
+   },
+   "gather_share_of_decisions": {
+    "base": [
+     0.8420107719928187,
+     0.8129740328143263,
+     0.8688832288401254
+    ],
+    "trained": [
+     0.9751381215469613,
+     0.9632248939179632,
+     0.9855550842680536
+    ],
+    "diff": [
+     0.13312734955414263,
+     0.10580560544533373,
+     0.16253758761971232
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.06338939197930142,
+     0.041720990873533245,
+     0.08629556099220263
+    ],
+    "diff": [
+     0.06338939197930142,
+     0.041720990873533245,
+     0.08629556099220263
+    ]
+   }
+  },
+  "baselines": {
+   "dp": {
+    "expected_value_nats": 1.6195726823619334,
+    "realised_logscore": 1.7396030255698125,
+    "adv_lost_per_decision": 0.0,
+    "share_dp_optimal": 1.0,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.0,
+    "tests_per_episode": 6.0,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     1.6195726823619334,
+     1.6195726823619334
+    ]
+   },
+   "greedy": {
+    "expected_value_nats": 0.8342438327005084,
+    "realised_logscore": 0.9186411426542859,
+    "adv_lost_per_decision": 0.2205979914779283,
+    "share_dp_optimal": 0.16292134831460675,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.2205979914779283,
+    "tests_per_episode": 3.56,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     0.8142781861777453,
+     0.8553968628857012
+    ]
+   },
+   "greedy_per_cost": {
+    "expected_value_nats": 0.9126926970004502,
+    "realised_logscore": 0.9207758736339963,
+    "adv_lost_per_decision": 0.12728931309030303,
+    "share_dp_optimal": 0.14405762304921968,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.12728931309030303,
+    "tests_per_episode": 5.553333333333334,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     0.8976659892996335,
+     0.9284846469849874
+    ]
+   },
+   "random": {
+    "expected_value_nats": 0.7538356252140517,
+    "realised_logscore": 0.756526476448305,
+    "adv_lost_per_decision": 0.16396535173255333,
+    "share_dp_optimal": 0.21212121212121213,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.16396535173255333,
+    "tests_per_episode": 5.28,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     0.713852000965601,
+     0.7940406942192099
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_hplc_in_process",
+    "check_hplc_crude",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_thermocouple_audit",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_catalyst_metals_assay",
+    "check_batch_record_review",
+    "check_hplc_crude",
+    "check_lot_certificate_review",
+    "check_hplc_crude",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay"
+   ],
+   "trained": [
+    "check_repeat_yield_assay",
+    "check_hplc_aqueous_layer",
+    "check_catalyst_metals_assay",
+    "check_hplc_in_process",
+    "check_hplc_crude",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_thermocouple_audit",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_catalyst_metals_assay",
+    "check_batch_record_review",
+    "check_hplc_mother_liquor",
+    "check_lot_certificate_review",
+    "check_hplc_mother_liquor",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_repeat_yield_assay",
+    "check_batch_record_review"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "check_repeat_yield_assay": 100,
+    "check_catalyst_metals_assay": 60,
+    "stop": 60,
+    "check_batch_record_review": 30,
+    "check_hplc_crude": 25,
+    "check_hplc_aqueous_layer": 24,
+    "check_hplc_in_process": 23,
+    "check_hplc_mother_liquor": 21,
+    "check_solvent_water_external_lab": 18,
+    "check_hplc_reference_standard": 15,
+    "check_lot_certificate_review": 9,
+    "check_thermocouple_audit": 6,
+    "check_equipment_inspection": 5,
+    "check_colour_check": 3,
+    "check_stirrer_torque_log": 1
+   },
+   "trained": {
+    "check_repeat_yield_assay": 63,
+    "check_catalyst_metals_assay": 58,
+    "check_hplc_mother_liquor": 53,
+    "check_hplc_aqueous_layer": 52,
+    "check_batch_record_review": 44,
+    "check_hplc_in_process": 31,
+    "check_hplc_crude": 25,
+    "check_lot_certificate_review": 18,
+    "check_colour_check": 16,
+    "check_thermocouple_audit": 11,
+    "check_solvent_water_external_lab": 11,
+    "check_equipment_inspection": 5,
+    "check_catalyst_poisoned": 4,
+    "check_stirrer_torque_log": 4,
+    "check_hplc_reference_standard": 3,
+    "check_temperature_excursion": 2
+   }
+  }
+ },
+ "diag_random": {
+  "n": 120,
+  "metrics": {
+   "expected_value_nats": {
+    "base": [
+     0.6413974272408666,
+     0.5620221931257228,
+     0.7220892434456498
+    ],
+    "trained": [
+     0.7238667560752879,
+     0.6419858701913245,
+     0.808293073004069
+    ],
+    "diff": [
+     0.08246932883442137,
+     -0.0007228497711980835,
+     0.16914809948680873
+    ]
+   },
+   "realised_logscore": {
+    "base": [
+     0.7597149248953596,
+     0.5876985542070057,
+     0.923852793340321
+    ],
+    "trained": [
+     0.9322960082077064,
+     0.781113676721306,
+     1.0798479463016
+    ],
+    "diff": [
+     0.17258108331234678,
+     0.03471633588847413,
+     0.3250229163706599
+    ]
+   },
+   "adv_lost_per_decision": {
+    "base": [
+     0.1730445650549832,
+     0.14305277998161517,
+     0.20732062809763238
+    ],
+    "trained": [
+     0.14806776142450603,
+     0.11993170740957733,
+     0.18178063205526498
+    ],
+    "diff": [
+     -0.024976803630477162,
+     -0.05737861985586763,
+     0.0065350309209422286
+    ]
+   },
+   "share_dp_optimal": {
+    "base": [
+     0.2193158953722334,
+     0.18629292734717282,
+     0.2514509597656294
+    ],
+    "trained": [
+     0.22957198443579765,
+     0.194966386866736,
+     0.26430005180005184
+    ],
+    "diff": [
+     0.010256089063564261,
+     -0.03053028963369437,
+     0.05176251108822051
+    ]
+   },
+   "stop_when_dp_continues": {
+    "base": [
+     0.1267605633802817,
+     0.09774436090225563,
+     0.15982940128115977
+    ],
+    "trained": [
+     0.07587548638132295,
+     0.052346570397111915,
+     0.1035960209863972
+    ],
+    "diff": [
+     -0.050885076998958736,
+     -0.08262040918448835,
+     -0.020566209570112706
+    ]
+   },
+   "continue_when_dp_stops": {
+    "base": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "trained": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "diff": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   },
+   "selection_loss_per_test": {
+    "base": [
+     0.04883848517293711,
+     0.041916345518406624,
+     0.056097180813026934
+    ],
+    "trained": [
+     0.06382622109878801,
+     0.05493456653239347,
+     0.07382370789728783
+    ],
+    "diff": [
+     0.014987735925850898,
+     0.0051394365411677285,
+     0.025042860369653048
+    ]
+   },
+   "tests_per_episode": {
+    "base": [
+     3.6166666666666667,
+     3.2164583333333336,
+     4.025
+    ],
+    "trained": [
+     3.9583333333333335,
+     3.5083333333333333,
+     4.400208333333334
+    ],
+    "diff": [
+     0.3416666666666668,
+     -0.09166666666666635,
+     0.7666666666666666
+    ]
+   },
+   "budget_spent": {
+    "base": [
+     6.291666666666667,
+     5.541666666666667,
+     7.041666666666667
+    ],
+    "trained": [
+     7.3,
+     6.491666666666666,
+     8.091666666666667
+    ],
+    "diff": [
+     1.0083333333333329,
+     0.21666666666666679,
+     1.8083333333333336
+    ]
+   },
+   "gather_share_of_decisions": {
+    "base": [
+     0.8732394366197183,
+     0.8401705987188401,
+     0.9022556390977443
+    ],
+    "trained": [
+     0.9241245136186771,
+     0.8964039790136028,
+     0.9476534296028881
+    ],
+    "diff": [
+     0.050885076998958834,
+     0.02056620957011269,
+     0.08262040918448832
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.11565836298932385,
+     0.08135490587062341,
+     0.15120381920240672
+    ],
+    "trained": [
+     0.21044546850998463,
+     0.17241125387232747,
+     0.249196269891004
+    ],
+    "diff": [
+     0.09478710552066079,
+     0.06148967020233163,
+     0.12793726142506257
+    ]
+   }
+  },
+  "baselines": {
+   "dp": {
+    "expected_value_nats": 1.358090334176922,
+    "realised_logscore": 1.491760394641498,
+    "adv_lost_per_decision": 0.0,
+    "share_dp_optimal": 1.0,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.0,
+    "tests_per_episode": 6.008333333333334,
+    "budget_spent": 10.3,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     1.3308965549776997,
+     1.3867327809196028
+    ]
+   },
+   "greedy": {
+    "expected_value_nats": 1.1469291107923352,
+    "realised_logscore": 1.1879573600900548,
+    "adv_lost_per_decision": 0.04316754140741129,
+    "share_dp_optimal": 0.3986371379897785,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.04316754140741129,
+    "tests_per_episode": 4.891666666666667,
+    "budget_spent": 10.391666666666667,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     1.1004298249042777,
+     1.192798918726033
+    ]
+   },
+   "greedy_per_cost": {
+    "expected_value_nats": 1.2819145728375223,
+    "realised_logscore": 1.3665346289206484,
+    "adv_lost_per_decision": 0.012522042959901343,
+    "share_dp_optimal": 0.5397260273972603,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": 0.0,
+    "selection_loss_per_test": 0.012573715764412623,
+    "tests_per_episode": 6.058333333333334,
+    "budget_spent": 10.191666666666666,
+    "gather_share_of_decisions": 0.9958904109589041,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     1.2415022743613142,
+     1.3206907396635217
+    ]
+   },
+   "random": {
+    "expected_value_nats": 0.9441302413308208,
+    "realised_logscore": 1.1447833791242266,
+    "adv_lost_per_decision": 0.07677776065151799,
+    "share_dp_optimal": 0.20865533230293662,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": NaN,
+    "selection_loss_per_test": 0.07677776065151799,
+    "tests_per_episode": 5.391666666666667,
+    "budget_spent": 10.325,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     0.8962375360138773,
+     0.9895858600188058
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_romeo",
+    "check_alpha",
+    "check_romeo",
+    "check_bravo",
+    "check_romeo",
+    "check_tango",
+    "check_alpha",
+    "check_alpha",
+    "check_lima",
+    "check_kilo",
+    "check_G",
+    "check_g"
+   ],
+   "trained": [
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_f",
+    "check_romeo",
+    "check_golf",
+    "check_romeo",
+    "check_bravo",
+    "check_romeo",
+    "check_tango",
+    "check_kilo",
+    "check_tango",
+    "check_lima",
+    "check_kilo",
+    "check_G",
+    "check_gulf"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "check_alpha": 55,
+    "check_kilo": 46,
+    "check_echo": 39,
+    "check_oscar": 33,
+    "check_romeo": 31,
+    "stop": 31,
+    "check_delta": 24,
+    "check_hotel": 24,
+    "check_f": 19,
+    "check_lima": 17,
+    "check_golf": 16,
+    "check_bravo": 15,
+    "check_tango": 14,
+    "check_hote": 7,
+    "check_h": 7,
+    "check_gulf": 7,
+    "check_H": 3,
+    "check_e": 3,
+    "check_c_oscar": 2,
+    "check_gilo": 2,
+    "check_G": 1,
+    "check_g": 1,
+    "check_c_tango": 1,
+    "check_c_o_n_s_t_": 1,
+    "check_c_delta": 1
+   },
+   "trained": {
+    "check_alpha": 61,
+    "check_romeo": 51,
+    "check_echo": 35,
+    "check_kilo": 34,
+    "check_f": 31,
+    "check_oscar": 27,
+    "check_delta": 26,
+    "check_gulf": 21,
+    "check_bravo": 15,
+    "check_lima": 15,
+    "check_hote": 14,
+    "check_golf": 13,
+    "check_hotel": 12,
+    "check_tango": 9,
+    "check_e": 8,
+    "check_eho": 5,
+    "check_c_o_n_s_t_": 5,
+    "check_h": 4,
+    "check_H": 3,
+    "check_gilo": 3,
+    "check_c_": 2,
+    "check_c": 2,
+    "check_G": 1,
+    "check_GOLF": 1,
+    "check_c_tango": 1,
+    "check_F": 1
+   }
+  }
+ },
+ "diag_priced": {
+  "n": 150,
+  "metrics": {
+   "expected_value_nats": {
+    "base": [
+     -0.0847764182818595,
+     -0.12234496809877601,
+     -0.04479960200564939
+    ],
+    "trained": [
+     -0.05180486509804689,
+     -0.09397138749295977,
+     -0.009290408529069483
+    ],
+    "diff": [
+     0.03297155318381261,
+     -0.013544070157081943,
+     0.07841768826981017
+    ]
+   },
+   "realised_logscore": {
+    "base": [
+     -0.06980074338929491,
+     -0.21114798819295877,
+     0.06588660988281542
+    ],
+    "trained": [
+     -0.10164854112411942,
+     -0.26619029918846526,
+     0.05647613274054844
+    ],
+    "diff": [
+     -0.031847797734824504,
+     -0.19412766258635747,
+     0.12748476285674937
+    ]
+   },
+   "adv_lost_per_decision": {
+    "base": [
+     0.21520659977086556,
+     0.1971732935639059,
+     0.23451619577627128
+    ],
+    "trained": [
+     0.1598391419955497,
+     0.14989075566418167,
+     0.169764776792814
+    ],
+    "diff": [
+     -0.055367457775315876,
+     -0.07340958513526633,
+     -0.03817301730276225
+    ]
+   },
+   "share_dp_optimal": {
+    "base": [
+     0.12567324955116696,
+     0.09821263227513227,
+     0.15454779756326148
+    ],
+    "trained": [
+     0.15577190542420027,
+     0.13212599457063437,
+     0.17945293291183703
+    ],
+    "diff": [
+     0.030098655873033314,
+     -0.0019283877904603792,
+     0.06112224856709882
+    ]
+   },
+   "stop_when_dp_continues": {
+    "base": [
+     0.14339622641509434,
+     0.11732826775306053,
+     0.17281553398058253
+    ],
+    "trained": [
+     0.0030349013657056147,
+     0.0,
+     0.007716049382716049
+    ],
+    "diff": [
+     -0.14036132504938872,
+     -0.16981243314151864,
+     -0.11409891797098402
+    ]
+   },
+   "continue_when_dp_stops": {
+    "base": [
+     0.4074074074074074,
+     0.20833333333333334,
+     0.5925925925925926
+    ],
+    "trained": [
+     0.8166666666666667,
+     0.7036892361111111,
+     0.9090909090909091
+    ],
+    "diff": [
+     0.40925925925925927,
+     0.17694101731601733,
+     0.6410730832580629
+    ]
+   },
+   "selection_loss_per_test": {
+    "base": [
+     0.182363247726906,
+     0.16458672498759694,
+     0.20162026323946447
+    ],
+    "trained": [
+     0.1578129039926662,
+     0.14745534887960432,
+     0.16797768903382626
+    ],
+    "diff": [
+     -0.02455034373423981,
+     -0.04319363842923316,
+     -0.006902217190088493
+    ]
+   },
+   "tests_per_episode": {
+    "base": [
+     3.1,
+     2.82,
+     3.3733333333333335
+    ],
+    "trained": [
+     4.706666666666667,
+     4.526666666666666,
+     4.873333333333333
+    ],
+    "diff": [
+     1.606666666666667,
+     1.3066666666666666,
+     1.9
+    ]
+   },
+   "budget_spent": {
+    "base": [
+     6.68,
+     6.1465,
+     7.180166666666667
+    ],
+    "trained": [
+     9.626666666666667,
+     9.406666666666666,
+     9.813333333333333
+    ],
+    "diff": [
+     2.946666666666667,
+     2.420000000000001,
+     3.4866666666666672
+    ]
+   },
+   "gather_share_of_decisions": {
+    "base": [
+     0.8348294434470377,
+     0.8051470588235294,
+     0.8613013698630136
+    ],
+    "trained": [
+     0.9819193324061196,
+     0.9716301982591876,
+     0.9904761904761905
+    ],
+    "diff": [
+     0.14708988895908193,
+     0.12035874073222956,
+     0.17623333752745113
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.0017921146953405018,
+     0.0,
+     0.0055871142901895285
+    ],
+    "trained": [
+     0.051451187335092345,
+     0.032981530343007916,
+     0.07298406415737521
+    ],
+    "diff": [
+     0.04965907263975184,
+     0.03022377398833798,
+     0.07109037330557551
+    ]
+   }
+  },
+  "baselines": {
+   "dp": {
+    "expected_value_nats": 0.7143574222006212,
+    "realised_logscore": 0.7887930608621153,
+    "adv_lost_per_decision": 0.0,
+    "share_dp_optimal": 1.0,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": 0.0,
+    "selection_loss_per_test": 0.0,
+    "tests_per_episode": 4.8533333333333335,
+    "budget_spent": 8.326666666666666,
+    "gather_share_of_decisions": 0.8646080760095012,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     0.7143574222006212,
+     0.7143574222006212
+    ]
+   },
+   "greedy": {
+    "expected_value_nats": -0.16863157730462722,
+    "realised_logscore": -0.19211586946396333,
+    "adv_lost_per_decision": 0.24664497192884038,
+    "share_dp_optimal": 0.1452513966480447,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": 1.0,
+    "selection_loss_per_test": 0.23290889668077894,
+    "tests_per_episode": 3.58,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     -0.17836013518170485,
+     -0.159311152386636
+    ]
+   },
+   "greedy_per_cost": {
+    "expected_value_nats": -0.0851165357054837,
+    "realised_logscore": -0.22277192677590796,
+    "adv_lost_per_decision": 0.14225515265233188,
+    "share_dp_optimal": 0.03795966785290629,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": 1.0,
+    "selection_loss_per_test": 0.13297155125973445,
+    "tests_per_episode": 5.62,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     -0.09949500233531317,
+     -0.06995535325546139
+    ]
+   },
+   "random": {
+    "expected_value_nats": -0.2518649591514006,
+    "realised_logscore": -0.21364190379260312,
+    "adv_lost_per_decision": 0.18299666313485263,
+    "share_dp_optimal": 0.13131313131313133,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": 1.0,
+    "selection_loss_per_test": 0.1798274112328438,
+    "tests_per_episode": 5.28,
+    "budget_spent": 10.0,
+    "gather_share_of_decisions": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_expected_value_nats": [
+     -0.28969917336562817,
+     -0.21229015813225546
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "check_repeat_yield_assay",
+    "check_hplc_aqueous_layer",
+    "check_repeat_yield_assay",
+    "check_hplc_in_process",
+    "check_hplc_crude",
+    "check_hplc_aqueous_layer",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_catalyst_metals_assay",
+    "check_hplc_mother_liquor",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_hplc_crude",
+    "check_lot_certificate_review",
+    "check_hplc_crude",
+    "check_repeat_yield_assay",
+    "check_hplc_reference_standard",
+    "check_repeat_yield_assay",
+    "check_lot_certificate_review"
+   ],
+   "trained": [
+    "check_repeat_yield_assay",
+    "check_hplc_aqueous_layer",
+    "check_catalyst_metals_assay",
+    "check_hplc_in_process",
+    "check_hplc_crude",
+    "check_hplc_aqueous_layer",
+    "check_repeat_yield_assay",
+    "check_lot_certificate_review",
+    "check_repeat_yield_assay",
+    "check_hplc_aqueous_layer",
+    "check_batch_record_review",
+    "check_catalyst_metals_assay",
+    "check_batch_record_review",
+    "check_hplc_in_process",
+    "check_lot_certificate_review",
+    "check_hplc_mother_liquor",
+    "check_repeat_yield_assay",
+    "check_hplc_mother_liquor",
+    "check_repeat_yield_assay",
+    "check_lot_certificate_review"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "check_repeat_yield_assay": 89,
+    "stop": 63,
+    "check_catalyst_metals_assay": 58,
+    "check_hplc_in_process": 35,
+    "check_batch_record_review": 28,
+    "check_hplc_mother_liquor": 27,
+    "check_hplc_aqueous_layer": 22,
+    "check_hplc_crude": 21,
+    "check_lot_certificate_review": 13,
+    "check_colour_check": 9,
+    "check_hplc_reference_standard": 8,
+    "check_equipment_inspection": 8,
+    "check_solvent_water_external_lab": 8,
+    "check_thermocouple_audit": 5,
+    "check_stirrer_torque_log": 5,
+    "check_catalyst_poisoned": 1
+   },
+   "trained": {
+    "check_catalyst_metals_assay": 67,
+    "check_hplc_mother_liquor": 54,
+    "check_repeat_yield_assay": 53,
+    "check_hplc_aqueous_layer": 45,
+    "check_batch_record_review": 40,
+    "check_hplc_in_process": 35,
+    "check_lot_certificate_review": 27,
+    "check_hplc_crude": 23,
+    "check_colour_check": 19,
+    "check_solvent_water_external_lab": 11,
+    "check_hplc_reference_standard": 6,
+    "check_equipment_inspection": 6,
+    "check_catalyst_poisoned": 6,
+    "check_thermocouple_audit": 4,
+    "check_stirrer_torque_log": 2,
+    "check_air_leak": 1,
+    "check_temperature_excursion": 1
+   }
+  }
+ },
+ "credit": {
+  "n": 600,
+  "metrics": {
+   "reward_normalised": {
+    "base": [
+     -57.87697995632648,
+     -61.88987892206709,
+     -54.145357205853756
+    ],
+    "trained": [
+     0.35674995183985114,
+     0.2780178708833336,
+     0.4304944124950364
+    ],
+    "diff": [
+     58.23372990816633,
+     54.50996872943698,
+     62.25448071706381
+    ]
+   },
+   "dollars_lost_per_decision": {
+    "base": [
+     4696.8141877277285,
+     4580.312797282685,
+     4810.342337672371
+    ],
+    "trained": [
+     15.340572214078104,
+     13.641578914234408,
+     17.07759870987158
+    ],
+    "diff": [
+     -4681.473615513651,
+     -4795.075725676801,
+     -4564.698178054439
+    ]
+   },
+   "share_dp_optimal": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.30742401594419533,
+     0.28142791069689804,
+     0.33437159964859825
+    ],
+    "diff": [
+     0.30742401594419533,
+     0.28142791069689804,
+     0.33437159964859825
+    ]
+   },
+   "stop_when_dp_continues": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.17128987517337033,
+     0.15452659306833988,
+     0.18897680557852065
+    ],
+    "diff": [
+     -0.8287101248266296,
+     -0.8454734069316601,
+     -0.8110231944214794
+    ]
+   },
+   "continue_when_dp_stops": {
+    "base": [
+     NaN,
+     NaN,
+     NaN
+    ],
+    "trained": [
+     0.3752212389380531,
+     0.3287615897297164,
+     0.4173655074188554
+    ],
+    "diff": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   },
+   "approve_rate": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.22666666666666666,
+     0.19166666666666668,
+     0.26166666666666666
+    ],
+    "diff": [
+     -0.7733333333333333,
+     -0.8083333333333333,
+     -0.7383333333333333
+    ]
+   },
+   "checks_per_applicant": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     2.345,
+     2.1766666666666667,
+     2.51
+    ],
+    "diff": [
+     2.345,
+     2.1766666666666667,
+     2.51
+    ]
+   },
+   "gather_share_of_decisions": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.7010463378176383,
+     0.6852046169989506,
+     0.7150997150997151
+    ],
+    "diff": [
+     0.7010463378176383,
+     0.6852046169989506,
+     0.7150997150997151
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.02667313288069835,
+     0.01747540403209319,
+     0.03660370103753861
+    ],
+    "diff": [
+     0.02667313288069835,
+     0.01747540403209319,
+     0.03660370103753861
+    ]
+   }
+  },
+  "baselines": {
+   "dp": {
+    "reward_normalised": 1.0,
+    "dollars_lost_per_decision": 0.0,
+    "share_dp_optimal": 1.0,
+    "stop_when_dp_continues": 0.0,
+    "continue_when_dp_stops": 0.0,
+    "approve_rate": 0.29,
+    "checks_per_applicant": 2.3216666666666668,
+    "gather_share_of_decisions": 0.6989463120923232,
+    "invalid_rate": 0.0,
+    "_ci_reward_normalised": [
+     1.0,
+     1.0
+    ]
+   },
+   "one_step": {
+    "reward_normalised": 0.4016956451234817,
+    "dollars_lost_per_decision": 32.28550981100862,
+    "share_dp_optimal": 0.3652762119503946,
+    "stop_when_dp_continues": 0.6362484157160964,
+    "continue_when_dp_stops": 0.0,
+    "approve_rate": 0.095,
+    "checks_per_applicant": 0.47833333333333333,
+    "gather_share_of_decisions": 0.32356257046223225,
+    "invalid_rate": 0.0,
+    "_ci_reward_normalised": [
+     0.3546248337099174,
+     0.4485748639185499
+    ]
+   },
+   "check_once": {
+    "reward_normalised": -0.11467607722448293,
+    "dollars_lost_per_decision": 44.4607248716914,
+    "share_dp_optimal": 0.37916666666666665,
+    "stop_when_dp_continues": 0.38144329896907214,
+    "continue_when_dp_stops": 0.0,
+    "approve_rate": 0.08,
+    "checks_per_applicant": 1.0,
+    "gather_share_of_decisions": 0.5,
+    "invalid_rate": 0.0,
+    "_ci_reward_normalised": [
+     -0.21707172406434042,
+     -0.01446853334207013
+    ]
+   },
+   "no_check": {
+    "reward_normalised": 0.0,
+    "dollars_lost_per_decision": 79.77335439439508,
+    "share_dp_optimal": 0.0,
+    "stop_when_dp_continues": 1.0,
+    "continue_when_dp_stops": NaN,
+    "approve_rate": 0.0,
+    "checks_per_applicant": 0.0,
+    "gather_share_of_decisions": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_reward_normalised": [
+     0.0,
+     0.0
+    ]
+   },
+   "random": {
+    "reward_normalised": -28.5416133101766,
+    "dollars_lost_per_decision": 979.2106321225334,
+    "share_dp_optimal": 0.18905817174515235,
+    "stop_when_dp_continues": 0.4200404858299595,
+    "continue_when_dp_stops": 0.5942982456140351,
+    "approve_rate": 0.49166666666666664,
+    "checks_per_applicant": 1.4066666666666667,
+    "gather_share_of_decisions": 0.5844875346260388,
+    "invalid_rate": 0.0,
+    "_ci_reward_normalised": [
+     -32.61292986444227,
+     -24.880853462275006
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve"
+   ],
+   "trained": [
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "decline",
+    "decline",
+    "check_bank",
+    "decline",
+    "check_bank",
+    "decline",
+    "check_bank",
+    "decline",
+    "decline"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "approve": 400
+   },
+   "trained": {
+    "check_bank": 330,
+    "decline": 65,
+    "check_income": 5
+   }
+  }
+ },
+ "bship": {
+  "n": 60,
+  "metrics": {
+   "score_raw": {
+    "base": [
+     0.2016744328535857,
+     0.1395667542414401,
+     0.2625244815449155
+    ],
+    "trained": [
+     0.3916227533494054,
+     0.3282726406715293,
+     0.4526108502459268
+    ],
+    "diff": [
+     0.1899483204958197,
+     0.13049165048240627,
+     0.24967370717209647
+    ]
+   },
+   "rule_accuracy": {
+    "base": [
+     0.2833333333333333,
+     0.16666666666666666,
+     0.4
+    ],
+    "trained": [
+     0.3,
+     0.18333333333333332,
+     0.4166666666666667
+    ],
+    "diff": [
+     0.016666666666666663,
+     -0.09999999999999998,
+     0.1333333333333333
+    ]
+   },
+   "eig_ratio_per_action": {
+    "base": [
+     0.8659742903599768,
+     0.8434650448278278,
+     0.8890393049591416
+    ],
+    "trained": [
+     0.8189705048841125,
+     0.8017521883597187,
+     0.8354670592083212
+    ],
+    "diff": [
+     -0.04700378547586426,
+     -0.07171920435719852,
+     -0.024766033591430717
+    ]
+   },
+   "budget_used": {
+    "base": [
+     0.5850000000000001,
+     0.5233333333333333,
+     0.6467083333333336
+    ],
+    "trained": [
+     0.9533333333333334,
+     0.9133333333333333,
+     0.9866666666666667
+    ],
+    "diff": [
+     0.3683333333333333,
+     0.29666666666666663,
+     0.43833333333333324
+    ]
+   },
+   "stop_before_budget_out": {
+    "base": [
+     0.8666666666666667,
+     0.7666666666666667,
+     0.95
+    ],
+    "trained": [
+     0.13333333333333333,
+     0.05,
+     0.21666666666666667
+    ],
+    "diff": [
+     -0.7333333333333334,
+     -0.85,
+     -0.6166666666666667
+    ]
+   },
+   "scan_share_of_actions": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "diff": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "distinct_actions_per_game": {
+    "base": [
+     5.85,
+     5.233333333333333,
+     6.467083333333335
+    ],
+    "trained": [
+     9.5,
+     9.1,
+     9.833333333333334
+    ],
+    "diff": [
+     3.6500000000000004,
+     2.9333333333333336,
+     4.333333333333334
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.13303437967115098,
+     0.09393706293706293,
+     0.17073691890765064
+    ],
+    "diff": [
+     0.13303437967115098,
+     0.09393706293706293,
+     0.17073691890765064
+    ]
+   }
+  },
+  "baselines": {
+   "reference": {
+    "score_raw": 0.5327379571212929,
+    "rule_accuracy": 0.48333333333333334,
+    "eig_ratio_per_action": 1.0,
+    "budget_used": 1.0,
+    "stop_before_budget_out": 0.0,
+    "scan_share_of_actions": 0.6282225237449118,
+    "distinct_actions_per_game": 11.7,
+    "invalid_rate": 0.0,
+    "_ci_score_raw": [
+     0.47476376420782,
+     0.5870791150465428
+    ]
+   },
+   "fires_only": {
+    "score_raw": 0.3900579368289003,
+    "rule_accuracy": 0.4,
+    "eig_ratio_per_action": 0.7865337795196037,
+    "budget_used": 1.0,
+    "stop_before_budget_out": 0.0,
+    "scan_share_of_actions": 0.0,
+    "distinct_actions_per_game": 17.7,
+    "invalid_rate": 0.0,
+    "_ci_score_raw": [
+     0.31273947872447255,
+     0.45767255589158407
+    ]
+   },
+   "hunter": {
+    "score_raw": 0.31616561839141316,
+    "rule_accuracy": 0.3,
+    "eig_ratio_per_action": 0.6391504011379116,
+    "budget_used": 1.0,
+    "stop_before_budget_out": 0.0,
+    "scan_share_of_actions": 0.0,
+    "distinct_actions_per_game": 20.0,
+    "invalid_rate": 0.0,
+    "_ci_score_raw": [
+     0.2504760197851866,
+     0.3765853106208064
+    ]
+   },
+   "random": {
+    "score_raw": 0.2538365007095085,
+    "rule_accuracy": 0.31666666666666665,
+    "eig_ratio_per_action": 0.5291930332741936,
+    "budget_used": 1.0,
+    "stop_before_budget_out": 0.0,
+    "scan_share_of_actions": 0.251303441084463,
+    "distinct_actions_per_game": 13.833333333333334,
+    "invalid_rate": 0.0,
+    "_ci_score_raw": [
+     0.19016143502688335,
+     0.31372734498979804
+    ]
+   },
+   "stop_early": {
+    "score_raw": 0.027348958110537603,
+    "rule_accuracy": 0.21666666666666667,
+    "eig_ratio_per_action": 1.0,
+    "budget_used": 0.09999999999999996,
+    "stop_before_budget_out": 1.0,
+    "scan_share_of_actions": 1.0,
+    "distinct_actions_per_game": 1.0,
+    "invalid_rate": 0.0,
+    "_ci_score_raw": [
+     0.013549621517774517,
+     0.042023701615832215
+    ]
+   },
+   "do_nothing": {
+    "score_raw": -6.196272678851655e-18,
+    "rule_accuracy": 0.15,
+    "eig_ratio_per_action": NaN,
+    "budget_used": 0.0,
+    "stop_before_budget_out": 1.0,
+    "scan_share_of_actions": NaN,
+    "distinct_actions_per_game": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_score_raw": [
+     -3.139703001979798e-16,
+     2.767926641248699e-16
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0"
+   ],
+   "trained": [
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0",
+    "scan row 0"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "scan row 0": 60,
+    "scan row 1": 60,
+    "scan col 0": 55,
+    "stop": 50,
+    "scan col 1": 44,
+    "scan row 2": 41,
+    "scan col 2": 27,
+    "scan row 3": 22,
+    "scan col 3": 19,
+    "scan col 4": 14,
+    "scan row 4": 6,
+    "scan col 5": 2
+   },
+   "trained": {
+    "scan row 0": 60,
+    "scan row 1": 60,
+    "scan col 0": 60,
+    "scan col 1": 56,
+    "scan row 2": 53,
+    "scan col 2": 46,
+    "clustered": 21,
+    "scan col 3": 15,
+    "scan row 3": 13,
+    "center_clear": 11,
+    "scan row 5": 5
+   }
+  }
+ },
+ "bank_diag": {
+  "n": 240,
+  "metrics": {
+   "dp_stop:adv": {
+    "base": [
+     0.09342701928785226,
+     0.07890551314586622,
+     0.10803966560177897
+    ],
+    "trained": [
+     0.08561727416986019,
+     0.07182306744424068,
+     0.09963671370043048
+    ],
+    "diff": [
+     -0.007809745117992067,
+     -0.02262237170515024,
+     0.00711732380653701
+    ]
+   },
+   "dp_stop:commit_share": {
+    "base": [
+     0.2916666666666667,
+     0.21666666666666667,
+     0.3739148108872393
+    ],
+    "trained": [
+     0.30833333333333335,
+     0.22805947796320067,
+     0.3945014485755674
+    ],
+    "diff": [
+     0.016666666666666663,
+     -0.06154867256637168,
+     0.09804725168756029
+    ]
+   },
+   "dp_stop:optimal": {
+    "base": [
+     0.2916666666666667,
+     0.21666666666666667,
+     0.3739148108872393
+    ],
+    "trained": [
+     0.30833333333333335,
+     0.22805947796320067,
+     0.3945014485755674
+    ],
+    "diff": [
+     0.016666666666666663,
+     -0.06154867256637168,
+     0.09804725168756029
+    ]
+   },
+   "dp_stop:commit_share_valid": {
+    "base": [
+     0.27350427350427353,
+     0.1969634873323398,
+     0.3545527859237537
+    ],
+    "trained": [
+     0.011904761904761904,
+     0.0,
+     0.03847402597402602
+    ],
+    "diff": [
+     -0.2615995115995116,
+     -0.3437606515029522,
+     -0.18472315426578992
+    ]
+   },
+   "dp_stop:adv_valid": {
+    "base": [
+     0.09582258388497666,
+     0.08132821565447956,
+     0.11082809113879756
+    ],
+    "trained": [
+     0.12231039167122884,
+     0.10837908134333563,
+     0.13648325958766322
+    ],
+    "diff": [
+     0.026487807786252177,
+     0.012024006561404477,
+     0.04193682607087679
+    ]
+   },
+   "dp_continue:adv": {
+    "base": [
+     0.23558300752376232,
+     0.19880083452412473,
+     0.2746735127626748
+    ],
+    "trained": [
+     0.20549058332190512,
+     0.17425930703534653,
+     0.238756119572724
+    ],
+    "diff": [
+     -0.030092424201857204,
+     -0.061658842924556326,
+     0.0004935239423167336
+    ]
+   },
+   "dp_continue:commit_share": {
+    "base": [
+     0.175,
+     0.11016949152542373,
+     0.24793388429752067
+    ],
+    "trained": [
+     0.05,
+     0.016,
+     0.09375667735042738
+    ],
+    "diff": [
+     -0.12499999999999999,
+     -0.2,
+     -0.056
+    ]
+   },
+   "dp_continue:optimal": {
+    "base": [
+     0.125,
+     0.06944100660066008,
+     0.18605636578636187
+    ],
+    "trained": [
+     0.08333333333333333,
+     0.039992063492063495,
+     0.13475599459642015
+    ],
+    "diff": [
+     -0.04166666666666667,
+     -0.09677419354838708,
+     0.008771929824561403
+    ]
+   },
+   "dp_continue:commit_share_valid": {
+    "base": [
+     0.175,
+     0.11016949152542373,
+     0.24793388429752067
+    ],
+    "trained": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "diff": [
+     -0.175,
+     -0.24793388429752067,
+     -0.11016949152542373
+    ]
+   },
+   "dp_continue:adv_valid": {
+    "base": [
+     0.23558300752376232,
+     0.19880083452412473,
+     0.2746735127626748
+    ],
+    "trained": [
+     0.18696073297735144,
+     0.1571001800272592,
+     0.21767167315687266
+    ],
+    "diff": [
+     -0.04862227454641088,
+     -0.08051562944754216,
+     -0.01860906644976562
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.0125,
+     0.0,
+     0.029166666666666667
+    ],
+    "trained": [
+     0.175,
+     0.125,
+     0.225
+    ],
+    "diff": [
+     0.16249999999999998,
+     0.11666666666666667,
+     0.2125
+    ]
+   }
+  },
+  "baselines": {
+   "dp": {
+    "dp_stop:adv": 0.0,
+    "dp_stop:commit_share": 1.0,
+    "dp_stop:optimal": 1.0,
+    "dp_stop:commit_share_valid": 1.0,
+    "dp_stop:adv_valid": 0.0,
+    "dp_continue:adv": 0.0,
+    "dp_continue:commit_share": 0.0,
+    "dp_continue:optimal": 1.0,
+    "dp_continue:commit_share_valid": 0.0,
+    "dp_continue:adv_valid": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_dp_stop:adv": [
+     0.0,
+     0.0
+    ]
+   },
+   "greedy": {
+    "dp_stop:adv": 0.14522131563422047,
+    "dp_stop:commit_share": 0.0,
+    "dp_stop:optimal": 0.0,
+    "dp_stop:commit_share_valid": 0.0,
+    "dp_stop:adv_valid": 0.14522131563422047,
+    "dp_continue:adv": 0.22095974090562034,
+    "dp_continue:commit_share": 0.0,
+    "dp_continue:optimal": 0.21666666666666667,
+    "dp_continue:commit_share_valid": 0.0,
+    "dp_continue:adv_valid": 0.22095974090562034,
+    "invalid_rate": 0.0,
+    "_ci_dp_stop:adv": [
+     0.12688614203808238,
+     0.16491758106129437
+    ]
+   },
+   "greedy_per_cost": {
+    "dp_stop:adv": 0.07682936982366333,
+    "dp_stop:commit_share": 0.0,
+    "dp_stop:optimal": 0.0,
+    "dp_stop:commit_share_valid": 0.0,
+    "dp_stop:adv_valid": 0.07682936982366333,
+    "dp_continue:adv": 0.06596998373585532,
+    "dp_continue:commit_share": 0.0,
+    "dp_continue:optimal": 0.2916666666666667,
+    "dp_continue:commit_share_valid": 0.0,
+    "dp_continue:adv_valid": 0.06596998373585532,
+    "invalid_rate": 0.0,
+    "_ci_dp_stop:adv": [
+     0.07082005721924206,
+     0.08315380497220219
+    ]
+   },
+   "random": {
+    "dp_stop:adv": 0.12194344720737468,
+    "dp_stop:commit_share": 0.0,
+    "dp_stop:optimal": 0.0,
+    "dp_stop:commit_share_valid": 0.0,
+    "dp_stop:adv_valid": 0.12194344720737468,
+    "dp_continue:adv": 0.20302065990985188,
+    "dp_continue:commit_share": 0.0,
+    "dp_continue:optimal": 0.11666666666666667,
+    "dp_continue:commit_share_valid": 0.0,
+    "dp_continue:adv_valid": 0.20302065990985188,
+    "invalid_rate": 0.0,
+    "_ci_dp_stop:adv": [
+     0.11035223223217966,
+     0.13449780965422195
+    ]
+   },
+   "always_commit": {
+    "dp_stop:adv": 0.0,
+    "dp_stop:commit_share": 1.0,
+    "dp_stop:optimal": 1.0,
+    "dp_stop:commit_share_valid": 1.0,
+    "dp_stop:adv_valid": 0.0,
+    "dp_continue:adv": 0.4655849163553551,
+    "dp_continue:commit_share": 1.0,
+    "dp_continue:optimal": 0.0,
+    "dp_continue:commit_share_valid": 1.0,
+    "dp_continue:adv_valid": 0.4655849163553551,
+    "invalid_rate": 0.0,
+    "_ci_dp_stop:adv": [
+     0.0,
+     0.0
+    ]
+   },
+   "always_gather": {
+    "dp_stop:adv": 0.12194344720737468,
+    "dp_stop:commit_share": 0.0,
+    "dp_stop:optimal": 0.0,
+    "dp_stop:commit_share_valid": 0.0,
+    "dp_stop:adv_valid": 0.12194344720737468,
+    "dp_continue:adv": 0.20302065990985188,
+    "dp_continue:commit_share": 0.0,
+    "dp_continue:optimal": 0.11666666666666667,
+    "dp_continue:commit_share_valid": 0.0,
+    "dp_continue:adv_valid": 0.20302065990985188,
+    "invalid_rate": 0.0,
+    "_ci_dp_stop:adv": [
+     0.11035223223217966,
+     0.13449780965422195
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "stop",
+    "check_lot_certificate_review",
+    "check_hplc_reference_standard",
+    "stop",
+    "check_repeat_yield_assay",
+    "check_batch_record_review",
+    "check_hplc_crude",
+    "check_repeat_yield_assay",
+    "check_hplc_aqueous_layer",
+    "stop",
+    "stop",
+    "stop",
+    "check_thermocouple_audit",
+    "stop",
+    "check_lot_certificate_review",
+    "stop",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_repeat_yield_assay",
+    "check_hplc_in_process"
+   ],
+   "trained": [
+    "check_colour_check",
+    "check_lot_certificate_review",
+    "check_hplc_reference_standard",
+    "check_catalyst_metals_assay",
+    "check_repeat_yield_assay",
+    "check_lot_certificate_review",
+    "check_hplc_crude",
+    "check_repeat_yield_assay",
+    "check_lot_certificate_review",
+    "check_catalyst_poisoned",
+    "check_repeat_yield_assay",
+    "check_hplc_in_process",
+    "check_catalyst_poisoned",
+    "check_hplc_mother_liquor",
+    "check_lot_certificate_review",
+    "check_catalyst_poisoned",
+    "check_thermocouple_audit",
+    "check_repeat_yield_assay",
+    "check_catalyst_metals_assay",
+    "check_colour_check"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "check_repeat_yield_assay": 60,
+    "stop": 53,
+    "check_colour_check": 18,
+    "check_lot_certificate_review": 17,
+    "check_hplc_in_process": 17,
+    "check_catalyst_metals_assay": 14,
+    "check_batch_record_review": 11,
+    "check_hplc_crude": 9,
+    "check_hplc_aqueous_layer": 9,
+    "check_thermocouple_audit": 8,
+    "check_stirrer_torque_log": 8,
+    "check_hplc_mother_liquor": 7,
+    "check_hplc_reference_standard": 6,
+    "check_catalyst_poisoned": 1,
+    "check_solvent_water_external_lab": 1,
+    "check_equipment_inspection": 1
+   },
+   "trained": {
+    "check_repeat_yield_assay": 43,
+    "check_catalyst_poisoned": 29,
+    "check_catalyst_metals_assay": 27,
+    "check_lot_certificate_review": 24,
+    "check_colour_check": 18,
+    "check_hplc_aqueous_layer": 16,
+    "check_hplc_mother_liquor": 14,
+    "check_batch_record_review": 14,
+    "check_thermocouple_audit": 13,
+    "check_hplc_in_process": 11,
+    "check_stirrer_torque_log": 11,
+    "check_hplc_reference_standard": 6,
+    "check_hplc_crude": 5,
+    "check_poor_mixing": 3,
+    "check_solvent_water_external_lab": 2,
+    "stop": 1,
+    "check_wet_solvent_external_lab": 1,
+    "check_temperature_excursion": 1,
+    "check_equipment_inspection": 1
+   }
+  }
+ },
+ "bank_credit": {
+  "n": 271,
+  "metrics": {
+   "dp_check:adv": {
+    "base": [
+     2157.2360659822666,
+     1658.6418234515656,
+     2656.002190177474
+    ],
+    "trained": [
+     32.21899544217091,
+     19.317518238228413,
+     46.39131794135271
+    ],
+    "diff": [
+     -2125.0170705400956,
+     -2628.370780144953,
+     -1624.3819172901879
+    ]
+   },
+   "dp_check:commit_share": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.28,
+     0.1919191919191919,
+     0.3711413843888071
+    ],
+    "diff": [
+     -0.72,
+     -0.8080808080808081,
+     -0.6288586156111929
+    ]
+   },
+   "dp_check:optimal": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.24,
+     0.1572698690856613,
+     0.32989690721649484
+    ],
+    "diff": [
+     0.24,
+     0.1572698690856613,
+     0.32989690721649484
+    ]
+   },
+   "dp_check:commit_share_valid": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.2727272727272727,
+     0.18478260869565216,
+     0.3628519710378118
+    ],
+    "diff": [
+     -0.7272727272727273,
+     -0.8152173913043479,
+     -0.6371480289621881
+    ]
+   },
+   "dp_check:adv_valid": {
+    "base": [
+     2157.2360659822666,
+     1658.6418234515656,
+     2656.002190177474
+    ],
+    "trained": [
+     29.604956877919104,
+     17.654978896516187,
+     43.03637924933366
+    ],
+    "diff": [
+     -2127.6311091043476,
+     -2630.747129229932,
+     -1629.091751154185
+    ]
+   },
+   "dp_approve:adv": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     61.63862631934249,
+     26.976645436471053,
+     102.19829728820851
+    ],
+    "diff": [
+     61.63862631934249,
+     26.976645436471053,
+     102.19829728820851
+    ]
+   },
+   "dp_approve:commit_share": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.9014084507042254,
+     0.8235294117647058,
+     0.9634146341463414
+    ],
+    "diff": [
+     -0.09859154929577463,
+     -0.17647058823529416,
+     -0.03658536585365857
+    ]
+   },
+   "dp_approve:optimal": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.7746478873239436,
+     0.674641670128791,
+     0.8656716417910447
+    ],
+    "diff": [
+     -0.22535211267605637,
+     -0.325358329871209,
+     -0.13432835820895528
+    ]
+   },
+   "dp_approve:commit_share_valid": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.8870967741935484,
+     0.8,
+     0.9577464788732394
+    ],
+    "diff": [
+     -0.11290322580645162,
+     -0.19999999999999996,
+     -0.04225352112676062
+    ]
+   },
+   "dp_approve:adv_valid": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     1.2612058787595117,
+     0.4179390786030679,
+     2.3179923059542724
+    ],
+    "diff": [
+     1.2612058787595117,
+     0.4179390786030679,
+     2.3179923059542724
+    ]
+   },
+   "dp_decline:adv": {
+    "base": [
+     1922.3120814468023,
+     1184.2110588592054,
+     2750.118197406139
+    ],
+    "trained": [
+     4.169411047774995,
+     2.7880610193315243,
+     5.6251875161185
+    ],
+    "diff": [
+     -1918.1426703990273,
+     -2745.6769433599047,
+     -1180.887758624692
+    ]
+   },
+   "dp_decline:commit_share": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.71,
+     0.6210435571687841,
+     0.7956989247311828
+    ],
+    "diff": [
+     -0.29000000000000004,
+     -0.37895644283121593,
+     -0.20430107526881724
+    ]
+   },
+   "dp_decline:optimal": {
+    "base": [
+     0.77,
+     0.6841970998925886,
+     0.8504672897196262
+    ],
+    "trained": [
+     0.71,
+     0.6210435571687841,
+     0.7956989247311828
+    ],
+    "diff": [
+     -0.06000000000000005,
+     -0.1826948924731183,
+     0.05815663474692208
+    ]
+   },
+   "dp_decline:commit_share_valid": {
+    "base": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "trained": [
+     0.71,
+     0.6210435571687841,
+     0.7956989247311828
+    ],
+    "diff": [
+     -0.29000000000000004,
+     -0.37895644283121593,
+     -0.20430107526881724
+    ]
+   },
+   "dp_decline:adv_valid": {
+    "base": [
+     1922.3120814468023,
+     1184.2110588592054,
+     2750.118197406139
+    ],
+    "trained": [
+     4.169411047774995,
+     2.7880610193315243,
+     5.6251875161185
+    ],
+    "diff": [
+     -1918.1426703990273,
+     -2745.6769433599047,
+     -1180.887758624692
+    ]
+   },
+   "invalid_rate": {
+    "base": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "trained": [
+     0.03690036900369004,
+     0.014760147601476014,
+     0.05904059040590406
+    ],
+    "diff": [
+     0.03690036900369004,
+     0.014760147601476014,
+     0.05904059040590406
+    ]
+   }
+  },
+  "baselines": {
+   "dp": {
+    "dp_check:adv": 0.0,
+    "dp_check:commit_share": 0.0,
+    "dp_check:optimal": 1.0,
+    "dp_check:commit_share_valid": 0.0,
+    "dp_check:adv_valid": 0.0,
+    "dp_approve:adv": 0.0,
+    "dp_approve:commit_share": 1.0,
+    "dp_approve:optimal": 1.0,
+    "dp_approve:commit_share_valid": 1.0,
+    "dp_approve:adv_valid": 0.0,
+    "dp_decline:adv": 0.0,
+    "dp_decline:commit_share": 1.0,
+    "dp_decline:optimal": 1.0,
+    "dp_decline:commit_share_valid": 1.0,
+    "dp_decline:adv_valid": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     0.0,
+     0.0
+    ]
+   },
+   "one_step": {
+    "dp_check:adv": 19.542165906630263,
+    "dp_check:commit_share": 0.46,
+    "dp_check:optimal": 0.46,
+    "dp_check:commit_share_valid": 0.46,
+    "dp_check:adv_valid": 19.542165906630263,
+    "dp_approve:adv": 0.0,
+    "dp_approve:commit_share": 1.0,
+    "dp_approve:optimal": 1.0,
+    "dp_approve:commit_share_valid": 1.0,
+    "dp_approve:adv_valid": 0.0,
+    "dp_decline:adv": 0.0,
+    "dp_decline:commit_share": 1.0,
+    "dp_decline:optimal": 1.0,
+    "dp_decline:commit_share_valid": 1.0,
+    "dp_decline:adv_valid": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     13.90765766971857,
+     25.401925710284836
+    ]
+   },
+   "check_once": {
+    "dp_check:adv": 90.54697609008782,
+    "dp_check:commit_share": 0.71,
+    "dp_check:optimal": 0.08,
+    "dp_check:commit_share_valid": 0.71,
+    "dp_check:adv_valid": 90.54697609008782,
+    "dp_approve:adv": 0.0,
+    "dp_approve:commit_share": 1.0,
+    "dp_approve:optimal": 1.0,
+    "dp_approve:commit_share_valid": 1.0,
+    "dp_approve:adv_valid": 0.0,
+    "dp_decline:adv": 0.0,
+    "dp_decline:commit_share": 1.0,
+    "dp_decline:optimal": 1.0,
+    "dp_decline:commit_share_valid": 1.0,
+    "dp_decline:adv_valid": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     70.72725965024519,
+     111.36026568371265
+    ]
+   },
+   "no_check": {
+    "dp_check:adv": 111.63481363389417,
+    "dp_check:commit_share": 1.0,
+    "dp_check:optimal": 0.0,
+    "dp_check:commit_share_valid": 1.0,
+    "dp_check:adv_valid": 111.63481363389417,
+    "dp_approve:adv": 0.0,
+    "dp_approve:commit_share": 1.0,
+    "dp_approve:optimal": 1.0,
+    "dp_approve:commit_share_valid": 1.0,
+    "dp_approve:adv_valid": 0.0,
+    "dp_decline:adv": 0.0,
+    "dp_decline:commit_share": 1.0,
+    "dp_decline:optimal": 1.0,
+    "dp_decline:commit_share_valid": 1.0,
+    "dp_decline:adv_valid": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     93.38982835237306,
+     130.7933556504431
+    ]
+   },
+   "random": {
+    "dp_check:adv": 620.0159192601591,
+    "dp_check:commit_share": 0.43,
+    "dp_check:optimal": 0.2,
+    "dp_check:commit_share_valid": 0.43,
+    "dp_check:adv_valid": 620.0159192601591,
+    "dp_approve:adv": 106.56125889884723,
+    "dp_approve:commit_share": 0.43661971830985913,
+    "dp_approve:optimal": 0.2112676056338028,
+    "dp_approve:commit_share_valid": 0.43661971830985913,
+    "dp_approve:adv_valid": 106.56125889884723,
+    "dp_decline:adv": 1302.376675413837,
+    "dp_decline:commit_share": 0.46,
+    "dp_decline:optimal": 0.29,
+    "dp_decline:commit_share_valid": 0.46,
+    "dp_decline:adv_valid": 1302.376675413837,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     325.17681541899043,
+     949.2352575639655
+    ]
+   },
+   "always_commit": {
+    "dp_check:adv": 111.63481363389417,
+    "dp_check:commit_share": 1.0,
+    "dp_check:optimal": 0.0,
+    "dp_check:commit_share_valid": 1.0,
+    "dp_check:adv_valid": 111.63481363389417,
+    "dp_approve:adv": 0.0,
+    "dp_approve:commit_share": 1.0,
+    "dp_approve:optimal": 1.0,
+    "dp_approve:commit_share_valid": 1.0,
+    "dp_approve:adv_valid": 0.0,
+    "dp_decline:adv": 0.0,
+    "dp_decline:commit_share": 1.0,
+    "dp_decline:optimal": 1.0,
+    "dp_decline:commit_share_valid": 1.0,
+    "dp_decline:adv_valid": 0.0,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     93.38982835237306,
+     130.7933556504431
+    ]
+   },
+   "always_gather": {
+    "dp_check:adv": 5.659559027488766,
+    "dp_check:commit_share": 0.0,
+    "dp_check:optimal": 0.39,
+    "dp_check:commit_share_valid": 0.0,
+    "dp_check:adv_valid": 5.659559027488766,
+    "dp_approve:adv": 22.82196408270578,
+    "dp_approve:commit_share": 0.014084507042253521,
+    "dp_approve:optimal": 0.0,
+    "dp_approve:commit_share_valid": 0.014084507042253521,
+    "dp_approve:adv_valid": 22.82196408270578,
+    "dp_decline:adv": 16.42683141816061,
+    "dp_decline:commit_share": 0.01,
+    "dp_decline:optimal": 0.01,
+    "dp_decline:commit_share_valid": 0.01,
+    "dp_decline:adv_valid": 16.42683141816061,
+    "invalid_rate": 0.0,
+    "_ci_dp_check:adv": [
+     4.4706275685813495,
+     6.900349961225498
+    ]
+   }
+  },
+  "raw_sample": {
+   "base": [
+    "decline",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "decline",
+    "approve",
+    "decline",
+    "approve",
+    "decline",
+    "decline",
+    "approve",
+    "decline",
+    "approve",
+    "approve",
+    "approve",
+    "approve",
+    "approve"
+   ],
+   "trained": [
+    "check_income",
+    "check_bank",
+    "decline",
+    "approve",
+    "check_bank",
+    "approve",
+    "approve",
+    "decline",
+    "check_bank",
+    "check_bank",
+    "check_bank",
+    "decline",
+    "check_bank",
+    "check_bank",
+    "check_income",
+    "decline",
+    "approve",
+    "check_bank",
+    "check_bank",
+    "check_bank"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "approve": 172,
+    "decline": 99
+   },
+   "trained": {
+    "decline": 80,
+    "check_bank": 78,
+    "approve": 73,
+    "check_income": 30,
+    "MASK": 4,
+    "carry_bank": 3,
+    "Priority is to maximize expected profit.": 1,
+    "Perfectly_decline": 1,
+    "check_bureau:\n    S1:": 1
+   }
+  }
+ },
+ "bs_rows": {
+  "n": 240,
+  "metrics": {
+   "design_reward": {
+    "base": [
+     0.6126521439423288,
+     0.5684661627873264,
+     0.6570741608125171
+    ],
+    "trained": [
+     0.48187797985476283,
+     0.4333037920033523,
+     0.5301329366202989
+    ],
+    "diff": [
+     -0.13077416408756598,
+     -0.1782860107108721,
+     -0.08744015167580887
+    ]
+   },
+   "valid_rate": {
+    "base": [
+     0.8708333333333333,
+     0.825,
+     0.9125
+    ],
+    "trained": [
+     0.6958333333333333,
+     0.6333333333333333,
+     0.750104166666667
+    ],
+    "diff": [
+     -0.17500000000000004,
+     -0.22916666666666674,
+     -0.125
+    ]
+   },
+   "scan_choice_share": {
+    "base": [
+     0.569377990430622,
+     0.5024390243902439,
+     0.6350710900473934
+    ],
+    "trained": [
+     0.6107784431137725,
+     0.5365743461651484,
+     0.6845238095238095
+    ],
+    "diff": [
+     0.04140045268315051,
+     -0.0036694993434808003,
+     0.09132423383992898
+    ]
+   },
+   "picked_best": {
+    "base": [
+     0.225,
+     0.175,
+     0.2791666666666667
+    ],
+    "trained": [
+     0.1625,
+     0.11666666666666667,
+     0.2125
+    ],
+    "diff": [
+     -0.0625,
+     -0.10416666666666666,
+     -0.024999999999999994
+    ]
+   }
+  },
+  "baselines": {},
+  "raw_sample": {
+   "base": [
+    "<observe>[1, 1, 1]</observe>",
+    "<observe>[1, 1, 0]</observe>",
+    "The first few hits/misses suggest that the ship might be near the center or edges, but the information is very sparse. I will try to scan a row to get a general idea of ship density. Row 3 has already been probed at columns 2, 3, and 5. Scanning row 3 might reveal more about the placement of the ships.\n\n<observe>[1, 1, 3]</observe>",
+    "<observe>[0, 3, 5]</observe>",
+    "<observe>[0, 5, 5]</observe>",
+    "<observe>[1, 1, 0]</observe>",
+    "<observe>[0, 2, 2]</observe>",
+    "<observe>[1, 1, 3]</observe>",
+    "The goal is to determine the underlying placement rule and the occupancy probabilities.\n\nThe prior probabilities for cell occupancy are:\nRow 0: [0.165, 0.233, 0.280, 0.280, 0.233, 0.165]\nRow 1: [0.233, 0.255, 0.272, 0.272, 0.255, 0.233]\nRow 2: [0.280",
+    "<observe>[1, 1, 0]</observe>",
+    "<observe>[0, 5, 0]</observe>",
+    "<observe>[1, 0, 1]</observe>",
+    "<observe>[0, 1, 3]</observe>",
+    "<observe>[0, 4, 0]</observe>",
+    "<observe>[1, 1, 4]</observe>",
+    "<observe>[1, 0, 1]</observe>",
+    "<observe>[0, 0, 1]</observe>",
+    "<observe>[1, 1, 5]</observe>",
+    "<observe>[1, 1, 4]</observe>",
+    "<observe>[0, 3, 0]</observe>"
+   ],
+   "trained": [
+    "<observe>[1, 1, 1]</observe>",
+    "<observe>[1, 1, 0]</observe>",
+    "The first few hits/misses suggest that the ship might be near the center or edges, but the information is very sparse. I will now use a scan to try and gain some global information about the ship placement, specifically focusing on row 3 and column 3, as these were involved in the initial hits.\n\nI will choose action [1, 1, 3] to scan column 3.\n\n<observe>[1, 1, 3]</observe>",
+    "<observe>[0, 3, 5]</observe>",
+    "<observe>[0, 2, 2]</observe>",
+    "<observe>[1, 1, 0]</observe>",
+    "<observe>[0, 2, 2]</observe>",
+    "<observe>[1, 1, 3]</observe>",
+    "The initial state is completely unknown: the board configuration (ship locations and rule) and the prior probabilities for cell occupancy.\n\nThe prior probabilities suggest a relatively high density of ship cells across the board, with the center rows/columns being slightly less dense than the edges.\n\nWe have three ships with lengths 4, 3, and 2, totaling $4+3+2=9$ cells covered.\n\nLet's start by trying to locate some ship parts using direct hits ([0, r, c]). Since we don't know the rule, a random hit is a good starting point to gather initial data.",
+    "<observe>[1, 1, 0]</observe>",
+    "<observe>[1, 1, 3]</observe>",
+    "The previous scan on column 1 suggested 4 ship cells. Given the initial hits were sparse, I will try to probe another area, specifically row 1, to see if I can confirm or deny the presence of ships there. Candidate 2, [0, 1, 4], probes a cell in row 1.\n\n<observe>[0, 1, 4]</observe>",
+    "<observe>[1, 1, 2]</observe>",
+    "The first action was a scan of column 0, which reported 3 ship cells. This is a relatively strong piece of information, as the total number of cells is 36, and the expected number of covered cells is around $36 \\times 0.233 \\approx 8.38$. A count of 3 in a single column is somewhat low, but not impossible.\n\nThe prior probabilities for cell occupancy are relatively uniform, suggesting that the rule might not be highly constraining initially.\n\nI will now try to locate the ships by probing specific cells. Since the first scan was column 0,",
+    "<observe>[1, 1, 4]</observe>",
+    "<observe>[1, 0, 1]</observe>",
+    "<observe>[0, 2, 2]</observe>",
+    "<observe>[1, 1, 5]</observe>",
+    "<observe>[1, 1, 3]</observe>",
+    "<observe>[0, 3, 0]</observe>"
+   ]
+  },
+  "raw_counts": {
+   "base": {
+    "<observe>[1, 1, 2]</observe>": 20,
+    "<observe>[1, 1, 0]</observe>": 18,
+    "<observe>[1, 1, 5]</observe>": 17,
+    "<observe>[1, 1, 1]</observe>": 16,
+    "<observe>[1, 1, 4]</observe>": 14,
+    "The initial step is to choose an experim": 12,
+    "<observe>[1, 0, 2]</observe>": 10,
+    "<observe>[0, 2, 2]</observe>": 7,
+    "<observe>[1, 1, 3]</observe>": 7,
+    "<observe>[1, 0, 1]</observe>": 6,
+    "<observe>[1, 0, 5]</observe>": 6,
+    "<observe>[0, 2, 5]</observe>": 6,
+    "<observe>[0, 4, 0]</observe>": 5,
+    "<observe>[1, 0, 4]</observe>": 5,
+    "<observe>[0, 2, 0]</observe>": 5,
+    "<observe>[0, 3, 4]</observe>": 4,
+    "<observe>[0, 1, 0]</observe>": 4,
+    "<observe>[1, 0, 0]</observe>": 4,
+    "<observe>[0, 1, 1]</observe>": 4,
+    "The goal is to determine the underlying ": 3,
+    "<observe>[0, 5, 0]</observe>": 3,
+    "<observe>[0, 1, 3]</observe>": 3,
+    "<observe>[0, 0, 1]</observe>": 3,
+    "<observe>[0, 3, 0]</observe>": 3,
+    "<observe>[0, 5, 2]</observe>": 3,
+    "<observe>[0, 0, 0]</observe>": 3,
+    "<observe>[0, 1, 4]</observe>": 3,
+    "<observe>[0, 0, 5]</observe>": 3,
+    "<observe>[0, 3, 2]</observe>": 3,
+    "<observe>[0, 2, 1]</observe>": 3,
+    "<observe>[0, 0, 4]</observe>": 3,
+    "<observe>[0, 3, 3]</observe>": 3,
+    "<observe>[0, 4, 2]</observe>": 3,
+    "<observe>[0, 3, 5]</observe>": 2,
+    "The previous actions involved scanning c": 2,
+    "<observe>[0, 2, 4]</observe>": 2,
+    "<observe>[0, 2, 3]</observe>": 2,
+    "The first few hits/misses suggest that t": 1,
+    "<observe>[0, 5, 5]</observe>": 1,
+    "<observe>[0, 0, 3]</observe>": 1
+   },
+   "trained": {
+    "<observe>[1, 1, 0]</observe>": 26,
+    "<observe>[1, 1, 2]</observe>": 26,
+    "<observe>[1, 1, 5]</observe>": 17,
+    "<observe>[1, 1, 4]</observe>": 15,
+    "<observe>[1, 1, 1]</observe>": 11,
+    "<observe>[1, 1, 3]</observe>": 11,
+    "The initial state is completely unknown:": 11,
+    "<observe>[0, 2, 2]</observe>": 10,
+    "<observe>[1, 0, 2]</observe>": 7,
+    "<observe>[0, 2, 5]</observe>": 6,
+    "<observe>[1, 0, 1]</observe>": 5,
+    "The initial state is completely unknown ": 5,
+    "<observe>[0, 3, 4]</observe>": 4,
+    "<observe>[0, 4, 2]</observe>": 4,
+    "Thought:\nThe first action was a direct p": 4,
+    "<observe>[0, 3, 3]</observe>": 4,
+    "<observe>[0, 1, 4]</observe>": 3,
+    "The first few probes have been sparse. I": 3,
+    "<observe>[0, 0, 5]</observe>": 3,
+    "<observe>[0, 4, 0]</observe>": 3,
+    "<observe>[0, 3, 2]</observe>": 3,
+    "<observe>[0, 3, 5]</observe>": 2,
+    "The first action was a scan of column 0,": 2,
+    "<observe>[0, 2, 3]</observe>": 2,
+    "<observe>[0, 2, 0]</observe>": 2,
+    "<observe>[1, 0, 0]</observe>": 2,
+    "<observe>[0, 0, 2]</observe>": 2,
+    "The previous scan on column 1 yielded 0,": 2,
+    "<observe>[0, 1, 1]</observe>": 2,
+    "<observe>[0, 0, 4]</observe>": 2,
+    "The first action was a scan of column 0.": 2,
+    "<observe>[0, 2, 1]</observe>": 2,
+    "<observe>[1, 0, 4]</observe>": 2,
+    "<observe>[0, 2, 4]</observe>": 2,
+    "<observe>[0, 0, 1]</observe>": 2,
+    "The previous scan of column 1 yielded a ": 2,
+    "The first few hits/misses suggest that t": 1,
+    "The previous scan on column 1 suggested ": 1,
+    "<observe>[0, 3, 0]</observe>": 1,
+    "The previous actions have been sparse. I": 1
+   }
+  }
+ }
+}

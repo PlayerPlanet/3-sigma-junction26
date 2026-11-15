@@ -1,0 +1,6 @@
+FROM python:3.12-slim
+WORKDIR /app
+RUN pip install --no-cache-dir fastmcp==4.2.0 numpy==2.3.4 scipy==1.16.3
+COPY credit_core.py fitlib.py bbpub.py bbsecret.py bblab.py server.py ./
+EXPOSE 8000 8001
+CMD ["python", "server.py"]

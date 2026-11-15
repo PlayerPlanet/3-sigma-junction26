@@ -1,0 +1,130 @@
+{
+    "id": "11e66f9c-62da-4b78-92ef-e029ce548187",
+    "task_name": "3-sigma/credit-blackbox-3017",
+    "trial_name": "credit-blackbox-3017__38KSnT7",
+    "trial_uri": "file:///root/work/jobs/v2-sonnet/credit-blackbox-3017__38KSnT7",
+    "task_id": {
+        "path": "tasks/credit-blackbox-3017"
+    },
+    "source": "tasks",
+    "task_checksum": "9387068cde93d345837848f88295b8f380b637e3a6e55c0e06d3d31f7ee459a0",
+    "config": {
+        "task": {
+            "path": "tasks/credit-blackbox-3017",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": "tasks"
+        },
+        "trial_name": "credit-blackbox-3017__38KSnT7",
+        "trials_dir": "/root/work/jobs/v2-sonnet",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": 3.0,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "claude-code",
+            "import_path": null,
+            "model_name": "claude-sonnet-5-5",
+            "base_url": null,
+            "model_api_key_name": null,
+            "model_api_format": null,
+            "skip_model_parsing": false,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "e44681d8-a4c6-4b8c-947d-2dab386fb210",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "claude-code",
+        "version": "2.1.325",
+        "model_info": {
+            "name": "claude-sonnet-5-5",
+            "provider": "anthropic"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 3100167,
+        "n_cache_tokens": 3071787,
+        "n_output_tokens": 12394,
+        "cost_usd": 0.5442666999999998,
+        "model_usage": {
+            "claude-sonnet-5-5": {
+                "n_input_tokens": 3100167,
+                "n_cache_tokens": 3071787,
+                "n_output_tokens": 12394,
+                "cost_usd": 0.5019757
+            }
+        },
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.609577
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-11-15T00:09:27.501402Z",
+    "finished_at": "2026-11-15T00:14:25.654861Z",
+    "environment_setup": {
+        "started_at": "2026-11-15T00:09:27.508185Z",
+        "finished_at": "2026-11-15T00:09:37.031712Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-11-15T00:09:37.031750Z",
+        "finished_at": "2026-11-15T00:11:33.172276Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-11-15T00:11:33.172609Z",
+        "finished_at": "2026-11-15T00:14:11.630822Z"
+    },
+    "verifier": {
+        "started_at": "2026-11-15T00:14:12.106704Z",
+        "finished_at": "2026-11-15T00:14:12.715330Z"
+    },
+    "step_results": null
+}
