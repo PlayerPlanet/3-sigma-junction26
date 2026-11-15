@@ -1,0 +1,55 @@
+path,agent,harness,model,desk,reward,V_hat,sandbox_draws,play_loss,decided,timed_out,mean_checks,job
+traces/reference/credit-blackbox-3004__VUMTcMr,reference,oracle,-,3004,1.0,1533.2,216,18,20,0,1.55,bb2-oracle-v2
+traces/reference/credit-blackbox-3005__4r5mMEK,reference,oracle,-,3005,0.8241,937.1,216,390,20,0,3.1,bb2-oracle-v2
+traces/reference/credit-blackbox-3008__e29pr2q,reference,oracle,-,3008,1.0,1252.4,216,67,20,0,2.1,bb2-oracle-v2
+traces/reference/credit-blackbox-3016__EGjFVk3,reference,oracle,-,3016,1.0,1142.5,216,122,20,0,2.15,bb2-oracle-v2
+traces/reference/credit-blackbox-3017__8MusK9n,reference,oracle,-,3017,1.0,1159.5,216,137,20,0,2.3,bb2-oracle-v2b
+traces/reference/credit-blackbox-3019__6asmXvK,reference,oracle,-,3019,1.0,1440.8,216,78,20,0,2.3,bb2-oracle-v2b
+traces/claude-opus-5.5/credit-blackbox-3004__uuBKwJw,claude-opus-5.5,Claude Code,claude-opus-5-5,3004,0.7134,1037.9,720,9,20,0,1.7,bb2-opus-v2
+traces/claude-opus-5.5/credit-blackbox-3005__9vQHYi2,claude-opus-5.5,Claude Code,claude-opus-5-5,3005,0.8424,957.9,550,35,20,0,2.6,v2-opus-b
+traces/claude-opus-5.5/credit-blackbox-3008__kSvwR6d,claude-opus-5.5,Claude Code,claude-opus-5-5,3008,0.7866,970.2,540,25,20,0,1.75,bb2-opus-v2
+traces/claude-opus-5.5/credit-blackbox-3016__fUngHiS,claude-opus-5.5,Claude Code,claude-opus-5-5,3016,0.8557,929.1,520,32,20,0,1.9,bb2-opus-v2
+traces/claude-opus-5.5/credit-blackbox-3017__ZUe8rxc,claude-opus-5.5,Claude Code,claude-opus-5-5,3017,0.9725,1065.5,420,26,20,0,2.2,v2-opus-b
+traces/claude-opus-5.5/credit-blackbox-3019__4xDTqhv,claude-opus-5.5,Claude Code,claude-opus-5-5,3019,0.9749,1318.8,415,1,20,0,2.6,v2-opus-b
+traces/claude-sonnet-5.5/credit-blackbox-3004__HarWABX,claude-sonnet-5.5,Claude Code,claude-sonnet-5-5,3004,0.47,683.9,410,673,20,0,0.85,v2-sonnet
+traces/claude-sonnet-5.5/credit-blackbox-3005__swdezFW,claude-sonnet-5.5,Claude Code,claude-sonnet-5-5,3005,0.7202,818.9,480,244,20,0,1.35,v2-sonnet
+traces/claude-sonnet-5.5/credit-blackbox-3008__ukP833L,claude-sonnet-5.5,Claude Code,claude-sonnet-5-5,3008,0.7633,941.5,180,414,20,0,1.3,v2-sonnet
+traces/claude-sonnet-5.5/credit-blackbox-3016__6RsEY6q,claude-sonnet-5.5,Claude Code,claude-sonnet-5-5,3016,0.9778,1061.7,225,194,20,0,2.5,v2-sonnet-r2
+traces/claude-sonnet-5.5/credit-blackbox-3017__38KSnT7,claude-sonnet-5.5,Claude Code,claude-sonnet-5-5,3017,0.6096,667.9,216,628,20,0,1.6,v2-sonnet
+traces/claude-sonnet-5.5/credit-blackbox-3019__jvPJGZm,claude-sonnet-5.5,Claude Code,claude-sonnet-5-5,3019,0.6933,937.8,420,377,20,0,1.75,v2-sonnet
+traces/gemini-4-argon/credit-blackbox-3004__8gRD96c,gemini-4-argon,OpenCode,gemini/gemini-4-argon,3004,0.0,-180.0,180,1767,0,1,0.0,v2-argon-r3
+traces/gemini-4-argon/credit-blackbox-3005__r44JbW9,gemini-4-argon,OpenCode,gemini/gemini-4-argon,3005,0.0,-355.0,355,1543,0,1,0.0,cm-v2-argon-r2
+traces/gemini-4-argon/credit-blackbox-3008__DSZj46U,gemini-4-argon,OpenCode,gemini/gemini-4-argon,3008,0.0,-180.0,180,1535,0,1,0.0,v2-argon-r3
+traces/gemini-4-argon/credit-blackbox-3016__e5EVSoi,gemini-4-argon,OpenCode,gemini/gemini-4-argon,3016,1.0,1199.7,159,122,20,0,1.85,cm-v2-argon
+traces/gemini-4-argon/credit-blackbox-3017__9HvDuqa,gemini-4-argon,OpenCode,gemini/gemini-4-argon,3017,0.1132,124.1,346,1042,13,1,2.05,cm-v2-argon
+traces/gemini-4-argon/credit-blackbox-3019__2XLHDaH,gemini-4-argon,OpenCode,gemini/gemini-4-argon,3019,0.0,-190.0,190,1735,0,1,0.0,cm-v2-argon-r2
+traces/gemini-4-carbon/credit-blackbox-3004__5rkiyDr,gemini-4-carbon,OpenCode,gemini/gemini-4-carbon,3004,0.0,-142.0,142,1767,0,1,0.0,cm-v2-carbon
+traces/gemini-4-carbon/credit-blackbox-3005__gTd6V7u,gemini-4-carbon,OpenCode,gemini/gemini-4-carbon,3005,1.0,1221.1,312,10,20,0,2.35,cm-v2-carbon
+traces/gemini-4-carbon/credit-blackbox-3008__2EmVQFR,gemini-4-carbon,OpenCode,gemini/gemini-4-carbon,3008,0.7038,868.0,168,499,18,1,1.5,cm-v2-carbon
+traces/gemini-4-carbon/credit-blackbox-3016__JobddZ6,gemini-4-carbon,OpenCode,gemini/gemini-4-carbon,3016,0.3422,371.6,188,921,9,1,1.0,cm-v2-carbon
+traces/gemini-4-carbon/credit-blackbox-3017__3ZkK8zC,gemini-4-carbon,OpenCode,gemini/gemini-4-carbon,3017,0.0,-420.4,297,1635,4,1,0.75,cm-v2-carbon
+traces/kimi-k3.1-pro/credit-blackbox-3004__YLTytnS,kimi-k3.1-pro,OpenCode,Verda kimi-k3.1-pro,3004,0.5148,749.0,1000,18,20,0,1.5,cm-v2-kimi
+traces/kimi-k3.1-pro/credit-blackbox-3005__XZ4EJER,kimi-k3.1-pro,OpenCode,Verda kimi-k3.1-pro,3005,0.1518,172.6,1000,370,14,1,1.6,cm-v2-kimi
+traces/kimi-k3.1-pro/credit-blackbox-3019__vbii8UH,kimi-k3.1-pro,OpenCode,Verda kimi-k3.1-pro,3019,0.6152,832.2,900,3,20,0,2.45,cm-v2-kimi
+traces/minimax-m3/credit-blackbox-3004__m5aMuzh,minimax-m3,OpenCode,MiniMax-M3,3004,0.0,-245.0,245,1767,0,1,0.0,cm-v2-minimax
+traces/minimax-m3/credit-blackbox-3005__6ogkMwj,minimax-m3,OpenCode,MiniMax-M3,3005,0.0,-270.0,270,1543,0,1,0.0,cm-v2-minimax
+traces/minimax-m3/credit-blackbox-3016__e3AQ4mM,minimax-m3,OpenCode,MiniMax-M3,3016,0.5897,640.3,790,51,20,0,2.25,cm-v2-minimax
+traces/minimax-m3/credit-blackbox-3017__6n3w4wZ,minimax-m3,OpenCode,MiniMax-M3,3017,0.0,-560.0,560,1512,0,1,0.0,cm-v2-minimax
+traces/minimax-m3/credit-blackbox-3019__FLW42Jy,minimax-m3,OpenCode,MiniMax-M3,3019,0.0,-900.0,900,1735,0,1,0.0,cm-v2-minimax
+traces/deepseek-v4.1-flash/credit-blackbox-3004__MCVo6rB,deepseek-v4.1-flash,OpenCode,Verda deepseek-4-1-flash,3004,0.0,-6877.2,1000,7644,20,0,1.0,lap-v2-deepseek
+traces/deepseek-v4.1-flash/credit-blackbox-3005__LZKma3Q,deepseek-v4.1-flash,OpenCode,Verda deepseek-4-1-flash,3005,0.4492,510.7,1000,32,20,0,2.25,lap-v2-deepseek
+traces/deepseek-v4.1-flash/credit-blackbox-3008__Pr2kADY,deepseek-v4.1-flash,OpenCode,Verda deepseek-4-1-flash,3008,0.4327,533.7,1000,1,20,0,1.7,lap-v2-deepseek
+traces/deepseek-v4.1-flash/credit-blackbox-3016__Y7mJJK8,deepseek-v4.1-flash,OpenCode,Verda deepseek-4-1-flash,3016,0.2855,309.9,1000,171,20,0,2.55,lap-v2-deepseek
+traces/deepseek-v4.1-flash/credit-blackbox-3017__bJTV87J,deepseek-v4.1-flash,OpenCode,Verda deepseek-4-1-flash,3017,0.4375,479.4,1000,33,20,0,2.35,lap-v2-deepseek
+traces/deepseek-v4.1-flash/credit-blackbox-3019__YnwNkkL,deepseek-v4.1-flash,OpenCode,Verda deepseek-4-1-flash,3019,0.0,-38616.7,760,39592,20,0,4.15,lap-v2-deepseek
+traces/gpt-5.6-terra/credit-blackbox-3004__Y3dujMS,gpt-5.6-terra,OpenCode,openai/gpt-5.6-terra,3004,0.3539,514.9,900,352,20,0,1.2,v2-gpt-terra
+traces/gpt-5.6-terra/credit-blackbox-3005__8xYZmoH,gpt-5.6-terra,OpenCode,openai/gpt-5.6-terra,3005,0.2573,292.6,900,350,20,0,1.4,v2-gpt-terra
+traces/gpt-5.6-terra/credit-blackbox-3008__yBMhFWZ,gpt-5.6-terra,OpenCode,openai/gpt-5.6-terra,3008,0.0,-859.5,900,1494,20,0,1.15,v2-gpt-terra
+traces/gpt-5.6-terra/credit-blackbox-3016__kubziXq,gpt-5.6-terra,OpenCode,openai/gpt-5.6-terra,3016,0.0,-1515.3,900,2096,20,0,1.65,v2-gpt-terra
+traces/gpt-5.6-terra/credit-blackbox-3017__gCNUixj,gpt-5.6-terra,OpenCode,openai/gpt-5.6-terra,3017,0.0,-83.9,900,696,20,0,1.4,v2-gpt-terra
+traces/gpt-5.6-terra/credit-blackbox-3019__pKzDnHY,gpt-5.6-terra,OpenCode,openai/gpt-5.6-terra,3019,0.0,-415.2,900,1250,20,0,2.0,v2-gpt-terra
+traces/nemotron-3-ultra/credit-blackbox-3004__xw8zSyB,nemotron-3-ultra,OpenCode,nim/nvidia/nemotron-3-ultra-550b-a55b,3004,0.0507,73.8,900,793,20,0,0.55,cm-v2-nemotron
+traces/nemotron-3-ultra/credit-blackbox-3005__bHFpuuB,nemotron-3-ultra,OpenCode,nim/nvidia/nemotron-3-ultra-550b-a55b,3005,0.0,-1958.9,980,2522,20,0,0.6,cm-v2-nemotron
+traces/nemotron-3-ultra/credit-blackbox-3008__TZ926vt,nemotron-3-ultra,OpenCode,nim/nvidia/nemotron-3-ultra-550b-a55b,3008,0.0,-1186.6,900,1822,20,0,0.9,cm-v2-nemotron
+traces/nemotron-3-ultra/credit-blackbox-3016__yCzSSRd,nemotron-3-ultra,OpenCode,nim/nvidia/nemotron-3-ultra-550b-a55b,3016,0.0,-248.3,900,829,20,0,0.75,cm-v2-nemotron
+traces/nemotron-3-ultra/credit-blackbox-3019__c3w26U2,nemotron-3-ultra,OpenCode,nim/nvidia/nemotron-3-ultra-550b-a55b,3019,0.0,-629.4,900,1464,20,0,0.1,cm-v2-nemotron
