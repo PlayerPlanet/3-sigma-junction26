@@ -514,6 +514,11 @@ function adoptDuck(b, model, clip, colour) {
   b.g.add(pivot, holder, ringFor(colour));
   Object.assign(b, { duck: true, mixer, aIdle, aWalk, w: 0, v: 0, px: b.sx, pz: b.sz, holder, headBone: model.getObjectByName('head_roll') || model.getObjectByName('head_pitch'), pivot });
 }
+// While the duck is decoding, show no robot at all, so the drawn fallback robot does not flash up
+// first. If loading fails, or takes longer than 15 s, the fallback robot is shown instead.
+let duckState = window.DUCK_GLB ? 'loading' : 'none';
+const duckFailed = (msg, e) => { duckState = 'failed'; console.warn(msg, e); };
+if (window.DUCK_GLB) setTimeout(() => { if (duckState === 'loading') duckState = 'slow'; }, 15000);
 if (window.DUCK_GLB) {
   try {
     const bytes = Uint8Array.from(atob(window.DUCK_GLB), (c) => c.charCodeAt(0));
@@ -525,9 +530,10 @@ if (window.DUCK_GLB) {
         const cols = [new THREE.Color(css('--p2') || '#2a8db5'), new THREE.Color(0xf4f2ed)];
         robots.forEach((b, i) => adoptDuck(b, i === 0 ? gltf.scene : cloneSkinned(gltf.scene), clip, cols[i]));
         window.__duck = true;
-      } catch (e) { console.warn('duck setup failed, keeping the drawn robot', e); }
-    }, (e) => console.warn('duck load failed, keeping the drawn robot', e));
-  } catch (e) { console.warn('duck decode failed, keeping the drawn robot', e); }
+        duckState = 'ready';
+      } catch (e) { duckFailed('duck setup failed, keeping the drawn robot', e); }
+    }, (e) => duckFailed('duck load failed, keeping the drawn robot', e));
+  } catch (e) { duckFailed('duck decode failed, keeping the drawn robot', e); }
 }
 
 // ---------------------------------------------------------------- post-processing
@@ -972,7 +978,7 @@ function frame() {
     let lead = null;
     robots.forEach((b, i) => {
       const p = G.players[i];
-      b.g.visible = !!p;
+      b.g.visible = !!p && duckState !== 'loading';
       if (!p) return;
       const x = pxX(p.x), z = pxZ(p.y);
       const moving = Math.hypot(x - b.sx, z - b.sz) > 0.0005;

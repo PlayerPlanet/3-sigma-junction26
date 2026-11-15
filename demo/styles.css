@@ -66,6 +66,25 @@ section.light { padding: clamp(80px, 11vw, 160px) 0; }
 .nav nav { display: flex; gap: 30px; }
 .nav nav a { color: #fff; opacity: 0.75; text-decoration: none; font-size: 14px; }
 .nav nav a:hover { opacity: 1; }
+.menu-btn { display: none; }
+
+/* phone menu: hamburger stays in the top-right corner while scrolling, nav drops down (nav.js) */
+@media (max-width: 900px) {
+  .nav { z-index: 40; }
+  .menu-btn { display: grid; place-content: center; gap: 5px; position: fixed; z-index: 2; top: 12px; right: 16px; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(11, 12, 14, 0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .menu-btn span { display: block; width: 18px; height: 1.5px; border-radius: 1px; background: #fff; transition: transform 0.25s ease, opacity 0.2s ease; }
+  .menu-open .menu-btn span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .menu-open .menu-btn span:nth-child(2) { opacity: 0; }
+  .menu-open .menu-btn span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  .nav nav { position: fixed; z-index: 1; top: 0; left: 0; right: 0; flex-direction: column; gap: 0; padding: 72px 16px 18px; background: var(--ink); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3); transform: translateY(-100%); visibility: hidden; transition: transform 0.3s ease, visibility 0s linear 0.3s; }
+  .menu-open .nav nav { transform: none; visibility: visible; transition: transform 0.3s ease; }
+  .nav nav a { font-size: 22px; padding: 14px 4px; opacity: 0.85; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+  .nav nav a:first-child { border-top: 0; }
+  body.intro-on .menu-btn { display: none; }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .nav nav, .menu-open .nav nav, .menu-btn span { transition: none; }
+}
 .hero { position: relative; min-height: 100vh; display: flex; align-items: flex-end; overflow: hidden; }
 .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* framed from the top-left; the page credits these clips as AI-generated in the footer */
@@ -206,7 +225,6 @@ footer .small { color: rgba(244, 242, 237, 0.6); margin-top: 10px; max-width: 70
   .steps article + article, .fact + .fact { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 26px; padding-top: 26px; }
   .fact { padding-right: 0; }
   .curves { grid-template-columns: repeat(2, 1fr); }
-  .nav nav { display: none; }
   .nav { padding: 18px 5vw; }
   .hero-copy { padding: 84px 5vw 8vh; }
   .hero .cta .btn { flex: 1 1 auto; justify-content: center; }
