@@ -12,7 +12,7 @@ keywords = ["value-of-information", "calibration", "optimal-stopping", "bayesian
 timeout_sec = 600.0
 
 [agent]
-timeout_sec = 4500.0
+timeout_sec = 2700.0
 
 [environment]
 build_timeout_sec = 900.0
@@ -22,7 +22,7 @@ storage_mb = 10240
 gpus = 0
 
 [[environment.mcp_servers]]
-name = "3-sigma/credit-blackbox-__TASKID__"
+name = "credit-desk"
 transport = "streamable-http"
 url = "http://mcp-server:8000/mcp"
 args = []

@@ -1,0 +1,23 @@
+# The applicants (true segments, salt, noise draws) live in a separate container: the agent reaches
+# them only through MCP and cannot read their state.
+services:
+  main:
+    depends_on:
+      mcp-server:
+        condition: service_healthy
+  mcp-server:
+    build:
+      context: ./mcp-server
+    expose: ["8000", "8001"]
+    environment:
+      TASK_DESK: "3016"
+      TASK_SEEDS: "351600,351601,351604,351607,351608,351609,351612,351613,351614,351615,351616,351617,351618,351619,351620,351621,351622,351623,351625,351626"
+      TASK_VREF: "1085.7971"
+      GRADER_TOKEN: "1TzCnnBPBAnVF1eK3dOVIcF8HNeX97-i"
+      TASK_SALT: ""  # empty = random per trial
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost',8000),timeout=2).close()"]
+      interval: 3s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
