@@ -22,6 +22,8 @@ a 4 kB body cap and at most 4 requests waiting on the GPU.
     M="uv run --no-project --with modal modal"   # PYTHONIOENCODING=utf-8 PYTHONUTF8=1 on Windows
     $M deploy --env 3-sigma-submission deploy_modal/app.py
     $M app stop --env 3-sigma-submission battleship-live
+Pushes to main that touch demo/, deploy_modal/, paper/3sigma-whitepaper.pdf or bayesenv/battleship.py redeploy
+automatically (.github/workflows/deploy-demo.yml; needs repo secrets MODAL_TOKEN_ID and MODAL_TOKEN_SECRET).
 Adapter upload (once): MSYS_NO_PATHCONV=1 $M volume put --env 3-sigma-submission battleship-live <adapter dir> /grpo-adapter
 """
 import asyncio
@@ -47,6 +49,8 @@ web_image = (
     .add_local_file(str(ROOT / "bayesenv" / "battleship.py"), "/root/battleship.py")
     .add_local_file(str(HERE / "bs_prompt.py"), "/root/bs_prompt.py")
     .add_local_dir(str(ROOT / "demo"), "/root/demo", ignore=["node_modules", "**/__pycache__", "tools"])
+    # the paper's own build, so the demo's link never serves a stale copy of demo/assets/
+    .add_local_file(str(ROOT / "paper" / "3sigma-whitepaper.pdf"), "/root/demo/assets/3sigma-whitepaper.pdf")
 )
 # same pins as train/modal_curve.py and bench-pressure/deploy/app.py
 gpu_image = (

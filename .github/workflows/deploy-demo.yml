@@ -1,0 +1,36 @@
+name: deploy-demo
+
+# Redeploys the live demo (deploy_modal/app.py, Modal app "battleship-live") when anything it serves changes.
+# Needs repo secrets MODAL_TOKEN_ID and MODAL_TOKEN_SECRET.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "demo/**"
+      - "deploy_modal/**"
+      - "paper/3sigma-whitepaper.pdf"
+      - "bayesenv/battleship.py"
+      - ".github/workflows/deploy-demo.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: modal deploy
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: uv run --no-project --with modal modal deploy --env 3-sigma-submission deploy_modal/app.py
+      - name: smoke test
+        run: |
+          url=https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run
+          curl -fsS --retry 5 --retry-delay 10 "$url/" -o /dev/null
+          curl -fsS --retry 5 --retry-delay 10 "$url/api/gemma/health"
+          curl -fsSI "$url/assets/3sigma-whitepaper.pdf" | head -1

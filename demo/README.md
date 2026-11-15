@@ -140,8 +140,9 @@ pushed to a public repository or hosted.
 
 ## Putting it online
 
-The live demo is served from Modal (`bench-pressure/deploy/app.py`, link in the top-level
-README). Everything under `demo/` is static and uses relative paths, so any static host also
+The live demo is served from Modal (`deploy_modal/app.py`, link in the top-level README).
+A push to `main` that changes `demo/`, `deploy_modal/` or `paper/3sigma-whitepaper.pdf`
+redeploys it (`.github/workflows/deploy-demo.yml`); the Actions tab can also run it by hand. Everything under `demo/` is static and uses relative paths, so any static host also
 works, under a sub-path too. Rerun `tools/wrap_bench_pressure.py` after `bench-pressure/index.html`
 changes; `app.js` and `lab3d.js` are committed bundles.
 
