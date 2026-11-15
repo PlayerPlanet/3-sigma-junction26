@@ -358,6 +358,17 @@ and a test for cheating. Its price is that the grader must know the simulator an
 compute the posterior and, for decisions, the DP. That limits it to environments the grader
 owns, which is the normal case for RL environments.
 
+The requirement of a computable likelihood can be relaxed. Our likelihood-free gene lab stays
+exact by solving the chemical master equation numerically, which does not scale to large
+reaction networks. For simulators with no tractable likelihood, the grader could instead train a
+surrogate likelihood offline from simulations, for example by neural likelihood estimation
+(NLE), which fits a conditional density estimator $\hat p(y\mid x,\theta)$ to simulated
+pairs~\citep{papamakarios2019sequential,cranmer2020frontier}. The reward would then be computed
+under the surrogate. It would no longer be exact, so the guarantees would hold only up to the
+surrogate's error, but that error can be measured on held-out simulations before the
+environment is released, and it costs the grader compute once rather than every agent at every
+step.
+
 What it showed about current agents is specific. Given a stated model and a shell, frontier
 agents infer and plan exactly. What they lack is treating ``how much should I learn?'' as a
 decision with a computable answer; the reference's 12 draws per cell was found by simulation with
