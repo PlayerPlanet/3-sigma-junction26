@@ -1,0 +1,135 @@
+C:\Users\Käyttäjä\AppData\Roaming\Python\Python314\site-packages\numpy\lib\_nanfunctions_impl.py:1396: RuntimeWarning: All-NaN slice encountered
+  return _nanquantile_unchecked(
+
+=== diag_free (n=150)
+  expected_value_nats          base 0.604 [0.537, 0.670]             trained 0.918 [0.872, 0.965]             diff 0.314 [0.246, 0.385]
+  realised_logscore            base 0.605 [0.445, 0.761]             trained 0.926 [0.762, 1.084]             diff 0.320 [0.153, 0.494]
+  adv_lost_per_decision        base 0.273 [0.243, 0.306]             trained 0.145 [0.133, 0.158]             diff -0.128 [-0.160, -0.100]
+  share_dp_optimal             base 0.185 [0.133, 0.237]             trained 0.311 [0.264, 0.356]             diff 0.126 [0.073, 0.182]
+  stop_when_dp_continues       base 0.158 [0.131, 0.187]             trained 0.025 [0.014, 0.037]             diff -0.133 [-0.163, -0.106]
+  continue_when_dp_stops       base nan [nan, nan]                   trained nan [nan, nan]                   diff nan [nan, nan]
+  selection_loss_per_test      base 0.178 [0.159, 0.198]             trained 0.142 [0.130, 0.154]             diff -0.036 [-0.055, -0.019]
+  tests_per_episode            base 3.127 [2.860, 3.400]             trained 4.707 [4.507, 4.907]             diff 1.580 [1.293, 1.873]
+  budget_spent                 base 6.980 [6.473, 7.467]             trained 9.547 [9.333, 9.747]             diff 2.567 [2.067, 3.087]
+  gather_share_of_decisions    base 0.842 [0.813, 0.869]             trained 0.975 [0.963, 0.986]             diff 0.133 [0.106, 0.163]
+  invalid_rate                 base 0.000 [0.000, 0.000]             trained 0.063 [0.042, 0.086]             diff 0.063 [0.042, 0.086]
+  [dp              ] expected_value_nats=1.620 realised_logscore=1.740 adv_lost_per_decision=0.000 share_dp_optimal=1.000 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.000 tests_per_episode=6.000 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [greedy          ] expected_value_nats=0.834 realised_logscore=0.919 adv_lost_per_decision=0.221 share_dp_optimal=0.163 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.221 tests_per_episode=3.560 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [greedy_per_cost ] expected_value_nats=0.913 realised_logscore=0.921 adv_lost_per_decision=0.127 share_dp_optimal=0.144 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.127 tests_per_episode=5.553 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [random          ] expected_value_nats=0.754 realised_logscore=0.757 adv_lost_per_decision=0.164 share_dp_optimal=0.212 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.164 tests_per_episode=5.280 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+
+=== diag_random (n=120)
+  expected_value_nats          base 0.641 [0.562, 0.722]             trained 0.724 [0.642, 0.808]             diff 0.082 [-0.001, 0.169]
+  realised_logscore            base 0.760 [0.588, 0.924]             trained 0.932 [0.781, 1.080]             diff 0.173 [0.035, 0.325]
+  adv_lost_per_decision        base 0.173 [0.143, 0.207]             trained 0.148 [0.120, 0.182]             diff -0.025 [-0.057, 0.007]
+  share_dp_optimal             base 0.219 [0.186, 0.251]             trained 0.230 [0.195, 0.264]             diff 0.010 [-0.031, 0.052]
+  stop_when_dp_continues       base 0.127 [0.098, 0.160]             trained 0.076 [0.052, 0.104]             diff -0.051 [-0.083, -0.021]
+  continue_when_dp_stops       base nan [nan, nan]                   trained nan [nan, nan]                   diff nan [nan, nan]
+  selection_loss_per_test      base 0.049 [0.042, 0.056]             trained 0.064 [0.055, 0.074]             diff 0.015 [0.005, 0.025]
+  tests_per_episode            base 3.617 [3.216, 4.025]             trained 3.958 [3.508, 4.400]             diff 0.342 [-0.092, 0.767]
+  budget_spent                 base 6.292 [5.542, 7.042]             trained 7.300 [6.492, 8.092]             diff 1.008 [0.217, 1.808]
+  gather_share_of_decisions    base 0.873 [0.840, 0.902]             trained 0.924 [0.896, 0.948]             diff 0.051 [0.021, 0.083]
+  invalid_rate                 base 0.116 [0.081, 0.151]             trained 0.210 [0.172, 0.249]             diff 0.095 [0.061, 0.128]
+  [dp              ] expected_value_nats=1.358 realised_logscore=1.492 adv_lost_per_decision=0.000 share_dp_optimal=1.000 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.000 tests_per_episode=6.008 budget_spent=10.300 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [greedy          ] expected_value_nats=1.147 realised_logscore=1.188 adv_lost_per_decision=0.043 share_dp_optimal=0.399 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.043 tests_per_episode=4.892 budget_spent=10.392 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [greedy_per_cost ] expected_value_nats=1.282 realised_logscore=1.367 adv_lost_per_decision=0.013 share_dp_optimal=0.540 stop_when_dp_continues=0.000 continue_when_dp_stops=0.000 selection_loss_per_test=0.013 tests_per_episode=6.058 budget_spent=10.192 gather_share_of_decisions=0.996 invalid_rate=0.000
+  [random          ] expected_value_nats=0.944 realised_logscore=1.145 adv_lost_per_decision=0.077 share_dp_optimal=0.209 stop_when_dp_continues=0.000 continue_when_dp_stops=nan selection_loss_per_test=0.077 tests_per_episode=5.392 budget_spent=10.325 gather_share_of_decisions=1.000 invalid_rate=0.000
+
+=== diag_priced (n=150)
+  expected_value_nats          base -0.085 [-0.122, -0.045]          trained -0.052 [-0.094, -0.009]          diff 0.033 [-0.014, 0.078]
+  realised_logscore            base -0.070 [-0.211, 0.066]           trained -0.102 [-0.266, 0.056]           diff -0.032 [-0.194, 0.127]
+  adv_lost_per_decision        base 0.215 [0.197, 0.235]             trained 0.160 [0.150, 0.170]             diff -0.055 [-0.073, -0.038]
+  share_dp_optimal             base 0.126 [0.098, 0.155]             trained 0.156 [0.132, 0.179]             diff 0.030 [-0.002, 0.061]
+  stop_when_dp_continues       base 0.143 [0.117, 0.173]             trained 0.003 [0.000, 0.008]             diff -0.140 [-0.170, -0.114]
+  continue_when_dp_stops       base 0.407 [0.208, 0.593]             trained 0.817 [0.704, 0.909]             diff 0.409 [0.177, 0.641]
+  selection_loss_per_test      base 0.182 [0.165, 0.202]             trained 0.158 [0.147, 0.168]             diff -0.025 [-0.043, -0.007]
+  tests_per_episode            base 3.100 [2.820, 3.373]             trained 4.707 [4.527, 4.873]             diff 1.607 [1.307, 1.900]
+  budget_spent                 base 6.680 [6.146, 7.180]             trained 9.627 [9.407, 9.813]             diff 2.947 [2.420, 3.487]
+  gather_share_of_decisions    base 0.835 [0.805, 0.861]             trained 0.982 [0.972, 0.990]             diff 0.147 [0.120, 0.176]
+  invalid_rate                 base 0.002 [0.000, 0.006]             trained 0.051 [0.033, 0.073]             diff 0.050 [0.030, 0.071]
+  [dp              ] expected_value_nats=0.714 realised_logscore=0.789 adv_lost_per_decision=0.000 share_dp_optimal=1.000 stop_when_dp_continues=0.000 continue_when_dp_stops=0.000 selection_loss_per_test=0.000 tests_per_episode=4.853 budget_spent=8.327 gather_share_of_decisions=0.865 invalid_rate=0.000
+  [greedy          ] expected_value_nats=-0.169 realised_logscore=-0.192 adv_lost_per_decision=0.247 share_dp_optimal=0.145 stop_when_dp_continues=0.000 continue_when_dp_stops=1.000 selection_loss_per_test=0.233 tests_per_episode=3.580 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [greedy_per_cost ] expected_value_nats=-0.085 realised_logscore=-0.223 adv_lost_per_decision=0.142 share_dp_optimal=0.038 stop_when_dp_continues=0.000 continue_when_dp_stops=1.000 selection_loss_per_test=0.133 tests_per_episode=5.620 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+  [random          ] expected_value_nats=-0.252 realised_logscore=-0.214 adv_lost_per_decision=0.183 share_dp_optimal=0.131 stop_when_dp_continues=0.000 continue_when_dp_stops=1.000 selection_loss_per_test=0.180 tests_per_episode=5.280 budget_spent=10.000 gather_share_of_decisions=1.000 invalid_rate=0.000
+
+=== credit (n=600)
+  reward_normalised            base -57.877 [-61.890, -54.145]       trained 0.357 [0.278, 0.430]             diff 58.234 [54.510, 62.254]
+  dollars_lost_per_decision    base 4696.8 [4580.3, 4810.3]          trained 15.3 [13.6, 17.1]                diff -4681.5 [-4795.1, -4564.7]
+  share_dp_optimal             base 0.000 [0.000, 0.000]             trained 0.307 [0.281, 0.334]             diff 0.307 [0.281, 0.334]
+  stop_when_dp_continues       base 1.000 [1.000, 1.000]             trained 0.171 [0.155, 0.189]             diff -0.829 [-0.845, -0.811]
+  continue_when_dp_stops       base nan [nan, nan]                   trained 0.375 [0.329, 0.417]             diff nan [nan, nan]
+  approve_rate                 base 1.000 [1.000, 1.000]             trained 0.227 [0.192, 0.262]             diff -0.773 [-0.808, -0.738]
+  checks_per_applicant         base 0.000 [0.000, 0.000]             trained 2.345 [2.177, 2.510]             diff 2.345 [2.177, 2.510]
+  gather_share_of_decisions    base 0.000 [0.000, 0.000]             trained 0.701 [0.685, 0.715]             diff 0.701 [0.685, 0.715]
+  invalid_rate                 base 0.000 [0.000, 0.000]             trained 0.027 [0.017, 0.037]             diff 0.027 [0.017, 0.037]
+  [dp              ] reward_normalised=1.000 dollars_lost_per_decision=0.000 share_dp_optimal=1.000 stop_when_dp_continues=0.000 continue_when_dp_stops=0.000 approve_rate=0.290 checks_per_applicant=2.322 gather_share_of_decisions=0.699 invalid_rate=0.000
+  [one_step        ] reward_normalised=0.402 dollars_lost_per_decision=32.286 share_dp_optimal=0.365 stop_when_dp_continues=0.636 continue_when_dp_stops=0.000 approve_rate=0.095 checks_per_applicant=0.478 gather_share_of_decisions=0.324 invalid_rate=0.000
+  [check_once      ] reward_normalised=-0.115 dollars_lost_per_decision=44.461 share_dp_optimal=0.379 stop_when_dp_continues=0.381 continue_when_dp_stops=0.000 approve_rate=0.080 checks_per_applicant=1.000 gather_share_of_decisions=0.500 invalid_rate=0.000
+  [no_check        ] reward_normalised=0.000 dollars_lost_per_decision=79.773 share_dp_optimal=0.000 stop_when_dp_continues=1.000 continue_when_dp_stops=nan approve_rate=0.000 checks_per_applicant=0.000 gather_share_of_decisions=0.000 invalid_rate=0.000
+  [random          ] reward_normalised=-28.542 dollars_lost_per_decision=979.211 share_dp_optimal=0.189 stop_when_dp_continues=0.420 continue_when_dp_stops=0.594 approve_rate=0.492 checks_per_applicant=1.407 gather_share_of_decisions=0.584 invalid_rate=0.000
+
+=== bship (n=60)
+  score_raw                    base 0.202 [0.140, 0.263]             trained 0.392 [0.328, 0.453]             diff 0.190 [0.130, 0.250]
+  rule_accuracy                base 0.283 [0.167, 0.400]             trained 0.300 [0.183, 0.417]             diff 0.017 [-0.100, 0.133]
+  eig_ratio_per_action         base 0.866 [0.843, 0.889]             trained 0.819 [0.802, 0.835]             diff -0.047 [-0.072, -0.025]
+  budget_used                  base 0.585 [0.523, 0.647]             trained 0.953 [0.913, 0.987]             diff 0.368 [0.297, 0.438]
+  stop_before_budget_out       base 0.867 [0.767, 0.950]             trained 0.133 [0.050, 0.217]             diff -0.733 [-0.850, -0.617]
+  scan_share_of_actions        base 1.000 [1.000, 1.000]             trained 1.000 [1.000, 1.000]             diff 0.000 [0.000, 0.000]
+  distinct_actions_per_game    base 5.850 [5.233, 6.467]             trained 9.500 [9.100, 9.833]             diff 3.650 [2.933, 4.333]
+  invalid_rate                 base 0.000 [0.000, 0.000]             trained 0.133 [0.094, 0.171]             diff 0.133 [0.094, 0.171]
+  [reference       ] score_raw=0.533 rule_accuracy=0.483 eig_ratio_per_action=1.000 budget_used=1.000 stop_before_budget_out=0.000 scan_share_of_actions=0.628 distinct_actions_per_game=11.700 invalid_rate=0.000
+  [fires_only      ] score_raw=0.390 rule_accuracy=0.400 eig_ratio_per_action=0.787 budget_used=1.000 stop_before_budget_out=0.000 scan_share_of_actions=0.000 distinct_actions_per_game=17.700 invalid_rate=0.000
+  [hunter          ] score_raw=0.316 rule_accuracy=0.300 eig_ratio_per_action=0.639 budget_used=1.000 stop_before_budget_out=0.000 scan_share_of_actions=0.000 distinct_actions_per_game=20.000 invalid_rate=0.000
+  [random          ] score_raw=0.254 rule_accuracy=0.317 eig_ratio_per_action=0.529 budget_used=1.000 stop_before_budget_out=0.000 scan_share_of_actions=0.251 distinct_actions_per_game=13.833 invalid_rate=0.000
+  [stop_early      ] score_raw=0.027 rule_accuracy=0.217 eig_ratio_per_action=1.000 budget_used=0.100 stop_before_budget_out=1.000 scan_share_of_actions=1.000 distinct_actions_per_game=1.000 invalid_rate=0.000
+  [do_nothing      ] score_raw=-0.000 rule_accuracy=0.150 eig_ratio_per_action=nan budget_used=0.000 stop_before_budget_out=1.000 scan_share_of_actions=nan distinct_actions_per_game=0.000 invalid_rate=0.000
+
+=== bank_diag (n=240)
+  dp_stop:adv                  base 0.093 [0.079, 0.108]             trained 0.086 [0.072, 0.100]             diff -0.008 [-0.023, 0.007]
+  dp_stop:commit_share         base 0.292 [0.217, 0.374]             trained 0.308 [0.228, 0.395]             diff 0.017 [-0.062, 0.098]
+  dp_stop:optimal              base 0.292 [0.217, 0.374]             trained 0.308 [0.228, 0.395]             diff 0.017 [-0.062, 0.098]
+  dp_stop:commit_share_valid   base 0.274 [0.197, 0.355]             trained 0.012 [0.000, 0.038]             diff -0.262 [-0.344, -0.185]
+  dp_stop:adv_valid            base 0.096 [0.081, 0.111]             trained 0.122 [0.108, 0.136]             diff 0.026 [0.012, 0.042]
+  dp_continue:adv              base 0.236 [0.199, 0.275]             trained 0.205 [0.174, 0.239]             diff -0.030 [-0.062, 0.000]
+  dp_continue:commit_share     base 0.175 [0.110, 0.248]             trained 0.050 [0.016, 0.094]             diff -0.125 [-0.200, -0.056]
+  dp_continue:optimal          base 0.125 [0.069, 0.186]             trained 0.083 [0.040, 0.135]             diff -0.042 [-0.097, 0.009]
+  dp_continue:commit_share_valid base 0.175 [0.110, 0.248]             trained 0.000 [0.000, 0.000]             diff -0.175 [-0.248, -0.110]
+  dp_continue:adv_valid        base 0.236 [0.199, 0.275]             trained 0.187 [0.157, 0.218]             diff -0.049 [-0.081, -0.019]
+  invalid_rate                 base 0.013 [0.000, 0.029]             trained 0.175 [0.125, 0.225]             diff 0.162 [0.117, 0.212]
+  [dp              ] dp_stop:adv=0.000 dp_stop:commit_share=1.000 dp_stop:optimal=1.000 dp_stop:commit_share_valid=1.000 dp_stop:adv_valid=0.000 dp_continue:adv=0.000 dp_continue:commit_share=0.000 dp_continue:optimal=1.000 dp_continue:commit_share_valid=0.000 dp_continue:adv_valid=0.000 invalid_rate=0.000
+  [greedy          ] dp_stop:adv=0.145 dp_stop:commit_share=0.000 dp_stop:optimal=0.000 dp_stop:commit_share_valid=0.000 dp_stop:adv_valid=0.145 dp_continue:adv=0.221 dp_continue:commit_share=0.000 dp_continue:optimal=0.217 dp_continue:commit_share_valid=0.000 dp_continue:adv_valid=0.221 invalid_rate=0.000
+  [greedy_per_cost ] dp_stop:adv=0.077 dp_stop:commit_share=0.000 dp_stop:optimal=0.000 dp_stop:commit_share_valid=0.000 dp_stop:adv_valid=0.077 dp_continue:adv=0.066 dp_continue:commit_share=0.000 dp_continue:optimal=0.292 dp_continue:commit_share_valid=0.000 dp_continue:adv_valid=0.066 invalid_rate=0.000
+  [random          ] dp_stop:adv=0.122 dp_stop:commit_share=0.000 dp_stop:optimal=0.000 dp_stop:commit_share_valid=0.000 dp_stop:adv_valid=0.122 dp_continue:adv=0.203 dp_continue:commit_share=0.000 dp_continue:optimal=0.117 dp_continue:commit_share_valid=0.000 dp_continue:adv_valid=0.203 invalid_rate=0.000
+  [always_commit   ] dp_stop:adv=0.000 dp_stop:commit_share=1.000 dp_stop:optimal=1.000 dp_stop:commit_share_valid=1.000 dp_stop:adv_valid=0.000 dp_continue:adv=0.466 dp_continue:commit_share=1.000 dp_continue:optimal=0.000 dp_continue:commit_share_valid=1.000 dp_continue:adv_valid=0.466 invalid_rate=0.000
+  [always_gather   ] dp_stop:adv=0.122 dp_stop:commit_share=0.000 dp_stop:optimal=0.000 dp_stop:commit_share_valid=0.000 dp_stop:adv_valid=0.122 dp_continue:adv=0.203 dp_continue:commit_share=0.000 dp_continue:optimal=0.117 dp_continue:commit_share_valid=0.000 dp_continue:adv_valid=0.203 invalid_rate=0.000
+
+=== bank_credit (n=271)
+  dp_check:adv                 base 2157.236 [1658.642, 2656.002]    trained 32.219 [19.318, 46.391]          diff -2125.017 [-2628.371, -1624.382]
+  dp_check:commit_share        base 1.000 [1.000, 1.000]             trained 0.280 [0.192, 0.371]             diff -0.720 [-0.808, -0.629]
+  dp_check:optimal             base 0.000 [0.000, 0.000]             trained 0.240 [0.157, 0.330]             diff 0.240 [0.157, 0.330]
+  dp_check:commit_share_valid  base 1.000 [1.000, 1.000]             trained 0.273 [0.185, 0.363]             diff -0.727 [-0.815, -0.637]
+  dp_check:adv_valid           base 2157.236 [1658.642, 2656.002]    trained 29.605 [17.655, 43.036]          diff -2127.631 [-2630.747, -1629.092]
+  dp_approve:adv               base 0.000 [0.000, 0.000]             trained 61.639 [26.977, 102.198]         diff 61.639 [26.977, 102.198]
+  dp_approve:commit_share      base 1.000 [1.000, 1.000]             trained 0.901 [0.824, 0.963]             diff -0.099 [-0.176, -0.037]
+  dp_approve:optimal           base 1.000 [1.000, 1.000]             trained 0.775 [0.675, 0.866]             diff -0.225 [-0.325, -0.134]
+  dp_approve:commit_share_valid base 1.000 [1.000, 1.000]             trained 0.887 [0.800, 0.958]             diff -0.113 [-0.200, -0.042]
+  dp_approve:adv_valid         base 0.000 [0.000, 0.000]             trained 1.261 [0.418, 2.318]             diff 1.261 [0.418, 2.318]
+  dp_decline:adv               base 1922.312 [1184.211, 2750.118]    trained 4.169 [2.788, 5.625]             diff -1918.143 [-2745.677, -1180.888]
+  dp_decline:commit_share      base 1.000 [1.000, 1.000]             trained 0.710 [0.621, 0.796]             diff -0.290 [-0.379, -0.204]
+  dp_decline:optimal           base 0.770 [0.684, 0.850]             trained 0.710 [0.621, 0.796]             diff -0.060 [-0.183, 0.058]
+  dp_decline:commit_share_valid base 1.000 [1.000, 1.000]             trained 0.710 [0.621, 0.796]             diff -0.290 [-0.379, -0.204]
+  dp_decline:adv_valid         base 1922.312 [1184.211, 2750.118]    trained 4.169 [2.788, 5.625]             diff -1918.143 [-2745.677, -1180.888]
+  invalid_rate                 base 0.000 [0.000, 0.000]             trained 0.037 [0.015, 0.059]             diff 0.037 [0.015, 0.059]
+  [dp              ] dp_check:adv=0.000 dp_check:commit_share=0.000 dp_check:optimal=1.000 dp_check:commit_share_valid=0.000 dp_check:adv_valid=0.000 dp_approve:adv=0.000 dp_approve:commit_share=1.000 dp_approve:optimal=1.000 dp_approve:commit_share_valid=1.000 dp_approve:adv_valid=0.000 dp_decline:adv=0.000 dp_decline:commit_share=1.000 dp_decline:optimal=1.000 dp_decline:commit_share_valid=1.000 dp_decline:adv_valid=0.000 invalid_rate=0.000
+  [one_step        ] dp_check:adv=19.542 dp_check:commit_share=0.460 dp_check:optimal=0.460 dp_check:commit_share_valid=0.460 dp_check:adv_valid=19.542 dp_approve:adv=0.000 dp_approve:commit_share=1.000 dp_approve:optimal=1.000 dp_approve:commit_share_valid=1.000 dp_approve:adv_valid=0.000 dp_decline:adv=0.000 dp_decline:commit_share=1.000 dp_decline:optimal=1.000 dp_decline:commit_share_valid=1.000 dp_decline:adv_valid=0.000 invalid_rate=0.000
+  [check_once      ] dp_check:adv=90.547 dp_check:commit_share=0.710 dp_check:optimal=0.080 dp_check:commit_share_valid=0.710 dp_check:adv_valid=90.547 dp_approve:adv=0.000 dp_approve:commit_share=1.000 dp_approve:optimal=1.000 dp_approve:commit_share_valid=1.000 dp_approve:adv_valid=0.000 dp_decline:adv=0.000 dp_decline:commit_share=1.000 dp_decline:optimal=1.000 dp_decline:commit_share_valid=1.000 dp_decline:adv_valid=0.000 invalid_rate=0.000
+  [no_check        ] dp_check:adv=111.635 dp_check:commit_share=1.000 dp_check:optimal=0.000 dp_check:commit_share_valid=1.000 dp_check:adv_valid=111.635 dp_approve:adv=0.000 dp_approve:commit_share=1.000 dp_approve:optimal=1.000 dp_approve:commit_share_valid=1.000 dp_approve:adv_valid=0.000 dp_decline:adv=0.000 dp_decline:commit_share=1.000 dp_decline:optimal=1.000 dp_decline:commit_share_valid=1.000 dp_decline:adv_valid=0.000 invalid_rate=0.000
+  [random          ] dp_check:adv=620.016 dp_check:commit_share=0.430 dp_check:optimal=0.200 dp_check:commit_share_valid=0.430 dp_check:adv_valid=620.016 dp_approve:adv=106.561 dp_approve:commit_share=0.437 dp_approve:optimal=0.211 dp_approve:commit_share_valid=0.437 dp_approve:adv_valid=106.561 dp_decline:adv=1302.377 dp_decline:commit_share=0.460 dp_decline:optimal=0.290 dp_decline:commit_share_valid=0.460 dp_decline:adv_valid=1302.377 invalid_rate=0.000
+  [always_commit   ] dp_check:adv=111.635 dp_check:commit_share=1.000 dp_check:optimal=0.000 dp_check:commit_share_valid=1.000 dp_check:adv_valid=111.635 dp_approve:adv=0.000 dp_approve:commit_share=1.000 dp_approve:optimal=1.000 dp_approve:commit_share_valid=1.000 dp_approve:adv_valid=0.000 dp_decline:adv=0.000 dp_decline:commit_share=1.000 dp_decline:optimal=1.000 dp_decline:commit_share_valid=1.000 dp_decline:adv_valid=0.000 invalid_rate=0.000
+  [always_gather   ] dp_check:adv=5.660 dp_check:commit_share=0.000 dp_check:optimal=0.390 dp_check:commit_share_valid=0.000 dp_check:adv_valid=5.660 dp_approve:adv=22.822 dp_approve:commit_share=0.014 dp_approve:optimal=0.000 dp_approve:commit_share_valid=0.014 dp_approve:adv_valid=22.822 dp_decline:adv=16.427 dp_decline:commit_share=0.010 dp_decline:optimal=0.010 dp_decline:commit_share_valid=0.010 dp_decline:adv_valid=16.427 invalid_rate=0.000
+
+=== bs_rows (n=240)
+  design_reward                base 0.613 [0.568, 0.657]             trained 0.482 [0.433, 0.530]             diff -0.131 [-0.178, -0.087]
+  valid_rate                   base 0.871 [0.825, 0.912]             trained 0.696 [0.633, 0.750]             diff -0.175 [-0.229, -0.125]
+  scan_choice_share            base 0.569 [0.502, 0.635]             trained 0.611 [0.537, 0.685]             diff 0.041 [-0.004, 0.091]
+  picked_best                  base 0.225 [0.175, 0.279]             trained 0.163 [0.117, 0.212]             diff -0.062 [-0.104, -0.025]

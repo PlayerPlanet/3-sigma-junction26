@@ -490,6 +490,45 @@ decision on held-out states during training. (b) Full-episode reward on the six 
 \label{fig:gemma}
 \end{figure}
 
+\emph{Transfer: skill or bias?} We evaluated the same adapter, trained only on the black-box
+desk, against the untrained model on three other tasks with identical prompts and seeds
+(Figure~\ref{fig:transfer}; paired bootstrap 95\% intervals). On the credit desk with its tables
+stated, a near transfer, reward rose from $-57.9$ (the base model approves everyone) to $0.36$,
+level with one-step lookahead (0.40). On the far tasks the scores also rose: Battleship from 0.20 to
+0.39 ($+0.19\ [0.13, 0.25]$) and the hand-designed diagnostic table from 0.60 to 0.92 nats
+($+0.31\ [0.25, 0.39]$). The exact grader shows what was learned. The gains come from no longer
+stopping early (Battleship: 87\% of base games end early, 13\% after training), while the choice of
+experiment did not improve: per-action information gain relative to the best action fell from
+0.87 to 0.82 on Battleship, the share of optimal picks among six fixed candidates fell from 0.61 to
+0.48, and the random diagnostic tables moved by only $+0.08\ [0.00, 0.17]$. Where stopping is right
+the trained model is worse: with tests priced at 0.1 nats per unit it keeps testing when the DP
+stops in 82\% of cases against 41\% for the base model. What transferred is a bias towards
+gathering information, which pays only on tasks where information is free until the budget ends.
+
+\emph{Why the reward did not teach the price.} The per-step training reward was
+$0.5\,e^{-\mathrm{adv}/4}+0.5\,e^{-\mathrm{adv}/40}$ with $\mathrm{adv}=V^{*}(s)-Q^{*}(s,a)$ in
+dollars under the true model. This does charge for information: $Q^{*}$ of a check already
+subtracts its \$20 cost, so a wasted check has positive advantage, and the DP is non-myopic, so
+stopping where several checks together would pay is charged too. But the transform compresses
+large losses: a wasted check worth \$10 scores 0.43, while a \$2{,}000 wrongful approval scores 0,
+only about twice as bad instead of two hundred times. With group-normalised GRPO advantages and a
+base model that approves half of all applicants unchecked, the strongest signal was ``do not
+commit'', which on the credit desk appears as too few approvals (12\%) and on other tasks as too
+much gathering. The calibration choice had almost no signal because its value curve is flat. The
+grader's own reward prices information exactly in dollars; our training transform weakened that
+price. A reward linear in dollars with a per-group baseline, and training on tasks where experiments
+are priced, are the natural next steps.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_transfer}
+\caption{Transfer of the adapter trained only on the black-box desk (dark blue) against the
+untrained model (orange) and baselines. Left: diagnostic lab, expected score in nats. Centre:
+Rulebound Battleship, 60 games. Right: credit desk with tables stated (0 = decide on the prior,
+1 = exact DP). Bars: 95\% intervals.}
+\label{fig:transfer}
+\end{figure}
+
 \begin{table}[t]
 \centering\small
 \begin{tabular}{lcccc}
@@ -548,8 +587,8 @@ family, with different harnesses; for three agents most trials hit a time limit 
 instruction did not state. The reference is good, not optimal, and its fixed calibration budget was tuned on development desks with known generators rather than chosen from its own pilot data. The verifier shares a container
 with the agent. Stated-model results rest on 2--15 trials per environment. Training results are
 small: on the priced task, GRPO improved a 2B model's decisions but not its calibration budget,
-needed injected off-policy samples because the base model never chose to check, and long GRPO
-runs collapsed.
+needed injected off-policy samples because the base model never chose to check, and transferred
+as a bias towards gathering information rather than a skill; long GRPO runs collapsed.
 
 \section{Conclusion}
 

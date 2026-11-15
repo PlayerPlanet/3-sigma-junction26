@@ -190,6 +190,12 @@ are in the paper's Training section, with the figure in [`paper/fig_gemma.png`](
 Earlier experiments in the paper show supervised fine-tuning and GRPO on the exact reward improving
 every Gemma 4 size on held-out task families.
 
+**Transfer.** Evaluated against the untrained model on other tasks, the same adapter reaches one-step
+lookahead on the stated credit desk (0.36 vs 0.40). It also scores higher on Battleship (0.20 to 0.39)
+and on the diagnostic lab. The exact grader shows these gains are a learned bias towards gathering
+information, not better experiment choice, and the model is worse where stopping is right. The
+paper traces this to our training transform, which compressed the dollar price of a wasted check.
+
 ## How we got here
 
 The black-box desk is the end of a longer search; the paper reports the whole of it.
