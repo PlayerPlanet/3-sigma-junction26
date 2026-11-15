@@ -35,22 +35,311 @@
       </article>
       <article>
         <h3>Verda</h3>
-        <p>Thank you. Our Harbor evaluation VM ran on Verda CPU, and Gemma GRPO trained on a Verda V100 spot instance. Kimi K3.1 Pro and DeepSeek V4.1 Flash ran through Verda inference: on the desk Kimi scored 0.43 and DeepSeek 0.27, and both bought calibration data up to or near the 1,000-draw cap.</p>
+        <p>Thank you. Verda GPUs are where our reward became a training signal: Gemma trained with SFT and GRPO on the exact Bayesian reward, and the recipe improved run by run. Nemotron served from one Blackwell GPU, Harbor evaluations ran on a Verda CPU VM, and Kimi K3.1 Pro and DeepSeek V4.1 Flash were tested in our environment through Verda inference. <a href="#verda">The full account, by judging criterion</a>.</p>
       </article>
       <article>
         <h3>NVIDIA</h3>
-        <p>Thank you. Nemotron 3 Ultra through NVIDIA NIM scored 0.01 on the black-box desk, overbuying calibration and then deciding poorly.</p>
+        <p>Thank you. Nemotron was how we quickly validated our RL environments: self-hosted as the first agent through each new environment, through NIM on the credit desk, and live as a lab partner in Bench Pressure. Nemotron 3 Ultra scored 0.01 on the desk, overbuying calibration and then deciding poorly. <a href="#nvidia">The full account, by judging criterion</a>.</p>
       </article>
       <article>
         <h3>Modal</h3>
-        <p>Thank you. Modal ran the CPU fan-out for our grader experiments (scripted policies over 400 seeds per cell), and hosts this demo with a live Gemma GPU endpoint.</p>
+        <p>Thank you. You are hosting our trained Gemma and both live demos right now, including this page. Modal was the backbone for running our RL environments at scale and for serving the model our Harbor agents ran on. <a href="#modal">The full account, by judging criterion</a>.</p>
       </article>
       <article>
         <h3>Google DeepMind</h3>
-        <p>Thank you. Gemini 4 Argon was the only agent we saw price its own calibration by simulation; that trial scored 1.0, though most Argon trials hit the time limit. Gemini 4 Carbon scored 1.0 on one desk. Gemini plays Bench Pressure live. Gemma 4 E2B trained with GRPO on our reward went from 0.00 to 0.28, and its transfer to other tasks is a bias towards gathering information.</p>
+        <p>Thank you. Gemini was our frontier check on every new environment, and it sped up validation. Gemini 4 Argon was the only agent we saw price its own calibration by simulation, and that trial scored 1.0. The Bench Pressure run on this site was played by Gemini, which beat every scripted baseline. Four Gemma 4 sizes were the backbone for testing our RL recipe, and Gemma 4 E2B trained with GRPO on our reward went from 0.00 to 0.28. <a href="#gemini">Gemini</a> · <a href="#gemma">Gemma</a>.</p>
       </article>
     </div>
     <p class="small" style="margin-top:32px">Desk scores are mean rewards on the black-box credit desk (1 = the reference's expected value, 0 = declining everyone), from results/blackbox_v2/trials.csv.</p>
+  </div>
+</section>
+
+<section class="light sub-page track" id="verda">
+  <div class="wrap">
+    <p class="eyebrow">Verda Compute Track</p>
+    <h2>What Verda compute let us do.</h2>
+    <p class="body">Our environment grades a scientific agent against the exact Bayesian posterior. On a laptop that is a grading tool. With Verda GPUs it became a training signal, and with Verda inference a benchmark for frontier open-weight models. Below is what we did, ordered by the track's four criteria.</p>
+
+    <div class="crit">
+      <article>
+        <p class="crit-label">Ambition <span>25%</span></p>
+        <h3>From a grader to a trained model.</h3>
+        <p>Compute let us test whether the reward trains, not only whether it scores. We did not run one recipe: we tested and improved it over the event, on whichever Verda GPU was free, and pushed each run as far as it would go.</p>
+        <ol class="runs">
+          <li><b>SFT then GRPO, A100 80 GB.</b> Gemma 4 E4B with LoRA: supervised fine-tuning on reference demonstrations plus the best 30% of Gemma 26B rollouts, then 300 GRPO steps on the exact reward. On the hyperbolic task the model went from <b>0.00</b> to <b>0.36</b> (SFT) to <b>0.50</b> (GRPO). That is above Claude Opus 5.5 without tools (0.11) and Claude Code with Opus 5.5 (0.24) on the same task. On the location task GRPO lost 0.09 against SFT, and we report that.</li>
+          <li><b>GRPO from the base model, RTX 6000 Ada.</b> A second Verda GPU ran the ablation without the supervised stage, to see what the reward does on its own.</li>
+          <li><b>What we kept.</b> GRPO trained on prediction steps while evaluation asked the model to choose its own experiments. That mismatch pointed the final recipe at decision steps, which raised Gemma 4 E2B from <b>0.00</b> to <b>0.28</b> on the credit desks.</li>
+          <li><b>A 120B agent on one GPU.</b> Nemotron 3.5 Super VL (120B, NVFP4) served on a single RTX PRO 6000 Blackwell for agent rollouts.</li>
+        </ol>
+      </article>
+
+      <article>
+        <p class="crit-label">Fit <span>25%</span></p>
+        <h3>One Verda product per job.</h3>
+        <table class="fit">
+          <thead><tr><th>Job</th><th>Verda product</th><th>Why this one</th></tr></thead>
+          <tbody>
+            <tr><td>Train Gemma (SFT + GRPO)</td><td>GPU instance, A100 80 GB; RTX 6000 Ada for the ablation</td><td>LoRA on a 4B-effective model fits one GPU; cheaper than Blackwell for training</td></tr>
+            <tr><td>Serve Nemotron 3.5 Super VL</td><td>GPU instance, RTX PRO 6000 Blackwell 96 GB, confidential-computing VM</td><td>NVFP4 weights need Blackwell; 96 GB holds 120B on one GPU; model I/O stays in an attested enclave in a European data centre</td></tr>
+            <tr><td>Test Kimi K3.1 Pro and DeepSeek V4.1 Flash</td><td>Inference API</td><td>No setup, per-token billing, models we could not host ourselves</td></tr>
+            <tr><td>Run Harbor evaluations</td><td>CPU instance</td><td>Docker and multi-container MCP tasks, off our laptops</td></tr>
+          </tbody>
+        </table>
+        <p>We used what was available and kept spend under control. Kimi reasons at 30k to 45k output tokens per episode and burned about €7 in 11 minutes at 16 parallel episodes, so we cut it to 2 and tracked every euro against a linear burn-to-zero line.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Working prototype <span>25%</span></p>
+        <h3>It runs, and every step is written down.</h3>
+        <p><b>Frontier models in our environment.</b> Through Verda inference, inside the OpenCode harness, on the black-box credit desk:</p>
+        <ul class="runs">
+          <li><b>Kimi K3.1 Pro: 0.43</b> over 3 desks (0.15 to 0.62). It bought 900 to 1,000 calibration draws, near the 1,000 cap.</li>
+          <li><b>DeepSeek V4.1 Flash: 0.27</b> over 6 desks. Four scored 0.29 to 0.45. Two lost everything after buying calibration data and then approving bad loans.</li>
+          <li><b>Kimi on Battleship:</b> about 56k output tokens per game, and no final answer the grader could read in any of 4 games, so 0.</li>
+        </ul>
+        <p><b>The judges' harness.</b> Harbor tasks ran on a Verda CPU VM: the Bayesian reference scores 0.995 and 0.959, doing nothing scores exactly 0, and 30 OpenCode trials with an open model scored 0 despite looking competent on naive accuracy.</p>
+        <p><b>Documented.</b> <code>docs/VERDA.md</code> logs the six problems we hit and how we fixed each: an API outage worked around through the legacy domain, confidential-computing images without Docker, GPUs that start "not ready" in CC mode, a FlashInfer build running out of memory, inference cost, and a resumable trainer runbook (<code>train/run_e4.sh</code>). It also names the gap we left open: NVIDIA attestation before enabling the GPU.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Path to scale <span>25%</span></p>
+        <h3>From demo to real users.</h3>
+        <ul class="runs">
+          <li><b>More environments, no new code.</b> A new lab is a YAML spec that takes minutes and gets the grader, reference and training data for free. Grading is CPU-only, parallel, and regrades a trial in under a second.</li>
+          <li><b>Training.</b> The same runbook moves from one GPU to a Verda Instant Cluster. GRPO rollouts are the bottleneck, and they parallelise across GPUs.</li>
+          <li><b>Serving.</b> The always-warm single-GPU vLLM endpoint becomes a Verda auto-scaling container.</li>
+          <li><b>Sensitive data.</b> Labs and banks that cannot send data out can run the environment and model in a confidential-computing VM in Europe, once attestation is in place.</li>
+          <li><b>Who uses it.</b> Teams training scientific and decision-making agents get a reward that cannot be gamed and says where each point was lost. Teams choosing a model get a benchmark that separates good experiment choice from luck.</li>
+        </ul>
+      </article>
+    </div>
+    <p class="small" style="margin-top:32px">Sources: docs/VERDA.md, docs/RESULTS.md (E4, E5), results/blackbox_v2/trials.csv, results/battleship_bench/bench-v1/, results/burn_ledger.csv.</p>
+  </div>
+</section>
+
+<section class="light sub-page track" id="nvidia">
+  <div class="wrap">
+    <p class="eyebrow">NVIDIA · Nemotron</p>
+    <h2>Nemotron validated our environments.</h2>
+    <p class="body">A new RL environment has to be tried by a capable model before anyone trains on it. Do the tools work, is the budget enforced, does the grader score what it should? Nemotron was our fast way to find out. We ran it three ways: self-hosted, through NVIDIA NIM, and live in a game.</p>
+
+    <div class="crit">
+      <article>
+        <p class="crit-label">Meaningful Nemotron usage <span>25%</span></p>
+        <h3>Three roles in the project.</h3>
+        <ol class="runs">
+          <li><b>First agent through each new environment.</b> Nemotron 3.5 Super VL (120B, NVFP4), self-hosted with vLLM on one Blackwell GPU. It ran our text protocol and then 10 Harbor trials as an OpenCode agent with MCP tools. That checked the whole loop end to end with an open model before we spent on frontier APIs.</li>
+          <li><b>A frontier test on the credit desk.</b> Nemotron 3 Ultra (550B) through NIM, 5 Harbor trials.</li>
+          <li><b>Live lab partner.</b> Nemotron 3.5 Super through NIM decides what the second scientist runs or publishes in Bench Pressure.</li>
+        </ol>
+        <p>Why it matters: an environment that has only been tried by its authors is untested. Nemotron gave us an outside agent early, on every environment.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Technical execution <span>25%</span></p>
+        <h3>A live partner that never breaks the game.</h3>
+        <ul class="runs">
+          <li><b>Data flow.</b> Browser → our FastAPI server on Modal → NIM. The key stays on the server, and the prompt is the same text the recorded runs used.</li>
+          <li><b>Settings.</b> Temperature 0, thinking off, at most 300 tokens. The JSON answer is parsed tolerantly and checked against the game state.</li>
+          <li><b>Error handling.</b> An invalid answer gets one corrective retry that says what was wrong. Timeouts (25 s), rate limits and errors come back as "wait", so the game keeps running. Unparsed replies are logged for review.</li>
+          <li><b>Latency and load.</b> At most 4 Nemotron calls in flight, about 30 decisions a minute shared across players. A live decision we just tested took <b>2.7 s</b>.</li>
+          <li><b>Self-hosting.</b> NVFP4 weights on Blackwell in a confidential-computing VM. We fixed a GPU that starts "not ready", a kernel build that ran out of memory, and images without Docker. All of it is logged in <code>docs/VERDA.md</code>.</li>
+        </ul>
+      </article>
+
+      <article>
+        <p class="crit-label">Quality of AI output <span>25%</span></p>
+        <h3>Graded against the exact answer, every time.</h3>
+        <p>Nemotron sees the exact posterior for each grant, so its decisions are grounded in the evidence, and we do not judge its output by eye. Each live decision comes back with the information value of the experiment it chose and the best one on offer. In our test it picked experiment 3, worth 0.564 bits, which was the best available. Its reason: "Test the leading hypothesis sodA directly to confirm or shift the posterior."</p>
+        <p>Where Nemotron did badly, the grader says why. On the credit desk Nemotron 3 Ultra bought 900 to 980 calibration draws per desk, then lost $1,464 per desk on its decisions, for a mean reward of 0.01. In the 10 self-hosted Harbor trials, one scored 0.45 and nine scored 0, meaning their predictions were no better than the prior.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Creativity and differentiation <span>25%</span></p>
+        <h3>Nemotron as the environment's first tester.</h3>
+        <ul class="runs">
+          <li><b>Testing the test.</b> Most teams use a model to solve a task. We used Nemotron to check that our tasks are fair, hard and gradable before anyone trains on them.</li>
+          <li><b>One family, three deployments.</b> A model on our own GPU, NVIDIA's hosted API, and a live game showed the same environment from three sides: cost, harness behaviour and real-time play.</li>
+          <li><b>Every failure is explained.</b> Because the grader knows the right answer, Nemotron's loss splits into choosing poor experiments and drawing wrong conclusions, not one opaque score.</li>
+        </ul>
+        <p><a href="https://playerplanet-3-sigma-submission--bench-pressure-web.us-east.modal.run/">Play Bench Pressure with Nemotron as your partner</a></p>
+      </article>
+    </div>
+    <p class="small" style="margin-top:32px">Sources: bench-pressure/deploy/app.py and prompts.py, results/e3_smoke_nemo.jsonl, results/e5/e5-opencode-nemotron/, results/blackbox_v2/trials.csv, docs/VERDA.md. The 2.7 s decision was a live call to /api/nemotron on 2026-11-15.</p>
+  </div>
+</section>
+
+<section class="light sub-page track" id="modal">
+  <div class="wrap">
+    <p class="eyebrow">Modal · Best Use of Modal</p>
+    <h2>Modal runs our stack, live.</h2>
+    <p class="body">Right now Modal is hosting our trained Gemma models and both of our live demos, including the page you are reading. During the event it was the backbone for our RL environments: every large sweep of the grader, the model our Harbor agents ran on, and the GPU training of Gemma.</p>
+
+    <div class="crit">
+      <article>
+        <p class="crit-label">Effective use of Modal <span>40%</span></p>
+        <h3>Inference, fan-out, training and serving on one platform.</h3>
+        <table class="fit">
+          <thead><tr><th>Modal feature</th><th>What we ran on it</th></tr></thead>
+          <tbody>
+            <tr><td>GPU inference (vLLM)</td><td>Gemma 4 26B-A4B on one RTX PRO 6000, always warm, with tool calling. It was the model behind the OpenCode agents in Harbor and 300 more rollouts at 64 in parallel.</td></tr>
+            <tr><td>CPU fan-out (<code>.map</code>)</td><td>Up to 100 containers per job: 7,200 episodes for grader reliability, attack tests on 400 fresh seeds, 1,200 reference demonstrations, every YAML lab's sweep, and the credit desk's exact evaluation and engine tests.</td></tr>
+            <tr><td>GPU training</td><td>SFT and GRPO runs across Gemma 4 sizes against a shuffled-reward control, about $15 for the whole sweep, plus the GRPO adapters we now serve.</td></tr>
+            <tr><td>Volumes</td><td>A shared Hugging Face cache, training rows, run outputs and the LoRA adapters, so training and serving read the same files.</td></tr>
+            <tr><td>Web endpoints</td><td>Two deployed apps: FastAPI serving the static site plus GPU classes that scale to zero.</td></tr>
+          </tbody>
+        </table>
+        <p>All of it is plain Python in this repo. No Dockerfiles, no Kubernetes. A push to <code>main</code> redeploys the demo from GitHub Actions with <code>modal deploy</code>.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Technical ambition <span>25%</span></p>
+        <h3>An exact grader, proven at scale and trained on, in 48 hours.</h3>
+        <ul class="runs">
+          <li><b>A family of environments.</b> Formula labs written as YAML specs, a chemistry lab, a wet lab with stochastic kinetics and limited stock, Rulebound Battleship and a black-box credit desk solved by exact dynamic programming. Each one is graded against the exact Bayesian answer.</li>
+          <li><b>Evidence, not anecdotes.</b> Modal's fan-out turned "the reward is sound" into thousands of graded episodes. Over 400 seeds per cell, doing nothing scores exactly 0 where naive accuracy gives it 0.92, no attack beats the reference on average, and 4 to 5 seeds are enough to separate the reference from random design, compared with 14 to 18 for the naive score.</li>
+          <li><b>RL on the reward.</b> GRPO on four Gemma sizes, then on the credit desk's decision steps: Gemma 4 E2B from 0.00 to 0.28.</li>
+          <li><b>Live inference that matches the evaluation exactly.</b> The Battleship server holds no game state. Each move, it rebuilds the exact posterior from the history, renders the prompt the model was evaluated on (checked by <code>check_prompt.py</code>), and decodes greedily.</li>
+        </ul>
+      </article>
+
+      <article>
+        <p class="crit-label">Impact <span>20%</span></p>
+        <h3>A reward for agents that cannot be gamed.</h3>
+        <p>Our main challenge is AfterQuery's Break the Agent: find where agents fail, with a grader you can trust. Outcome-based scores are noisy and can be gamed. Ours scores the decision against the exact answer, so luck earns nothing and every lost point has an explanation.</p>
+        <p>Modal is what let us show it works. The Gemma 4 26B agent we served on Modal looked competent on naive accuracy (0.70) and scored <b>exactly 0</b> on our reward over 30 Harbor trials. That is the kind of failure an outcome-based score misses. Running each claim over hundreds of seeds is what makes the reward usable by teams training real agents.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Demo <span>15%</span></p>
+        <h3>Two live apps you can use now.</h3>
+        <ul class="runs">
+          <li><b><a href="index.html">This site</a>:</b> play Rulebound Battleship in the browser and watch our GRPO-trained Gemma 4 E2B play live, on an L4 GPU (A10G as fallback), with or without its adapter.</li>
+          <li><b><a href="https://playerplanet-3-sigma-submission--bench-pressure-web.us-east.modal.run/">Bench Pressure, live</a>:</b> run the lab with a partner of your choice. Our Gemma 4 26B-A4B GRPO adapter runs on an RTX PRO 6000 next to Gemini and Nemotron, which are proxied through the same server.</li>
+        </ul>
+        <p>Built to stay up and stay cheap: GPUs scale to zero when idle, one container each, per-IP and global rate limits, small request caps, and a "warming up" answer instead of an error during a cold start. During judging one command keeps the GPU warm.</p>
+      </article>
+    </div>
+    <p class="small" style="margin-top:32px">Sources: deploy_modal/app.py, bench-pressure/deploy/app.py, experiments/batch.py, experiments/spec_modal.py, experiments/sft_modal.py, experiments/e6_stealth.py, docs/RESULTS.md (E1, E3, E5, E6), the paper's Training section, .github/workflows/deploy-demo.yml.</p>
+  </div>
+</section>
+
+<section class="light sub-page track" id="gemini">
+  <div class="wrap">
+    <p class="eyebrow">Google DeepMind · Best Use of Gemini API</p>
+    <h2>Gemini as the frontier check.</h2>
+    <p class="body">We build environments where an AI agent runs experiments and is graded against the exact Bayesian answer. An environment like that is only worth something if it still measures differences at the frontier. Gemini gave us that check fast, on every environment we built.</p>
+
+    <div class="crit">
+      <article>
+        <p class="crit-label">The problem</p>
+        <h3>Nobody can tell a good experimenter from a lucky one.</h3>
+        <p>AI agents are starting to run experiments in labs, finance and engineering. Today they are graded on outcomes, which are noisy: a careless agent can get lucky and a careful one can lose. Our grader scores the decision, not the luck, so it can say which experiment was worth running and where each point was lost.</p>
+        <p>The open question for each environment we built was whether it separates strong models from weak ones, or whether everything scores the same. Answering that needs frontier models run many times, quickly.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">How we integrated Gemini</p>
+        <h3>Four places, one protocol per place.</h3>
+        <ol class="runs">
+          <li><b>Lab lead in Bench Pressure.</b> REST <code>generateContent</code> with JSON mode and a <code>responseSchema</code> (action, ticket, experiment, and a one-sentence reason). At every decision Gemini reads each grant's posterior and the experiment menu and chooses what to run or publish. One corrective retry, exponential backoff on 429 and 5xx. Three models, 20 seeds each.</li>
+          <li><b>The judges' harness.</b> Gemini 4 Carbon and Argon as OpenCode agents on the black-box credit desk, with tools and MCP, in Harbor.</li>
+          <li><b>Without tools.</b> Gemini 4 Hydrogen through AI Studio on our text protocol, 24 episodes.</li>
+          <li><b>Live.</b> The same prompt and schema run from our server, so Gemini can be a lab partner in a live game.</li>
+        </ol>
+        <p>Gemini's weights are closed, so the RL itself runs on <b>Gemma 4</b>: GRPO on our reward took Gemma 4 E2B from 0.00 to 0.28.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">What makes it technically interesting</p>
+        <h3>Every Gemini decision is scored against the exact answer.</h3>
+        <p>Because the grader knows the posterior, we measure each experiment Gemini chose against the most informative one on offer. In Bench Pressure its choices carried <b>98%</b> of the best available information, and it decided when to stop and publish better than any rule we wrote:</p>
+        <table class="fit numeric">
+          <thead><tr><th>Player, same 20 seeds</th><th>Score</th><th>Papers</th><th>Design efficiency</th></tr></thead>
+          <tbody>
+            <tr><td>Gemini 4 Argon</td><td><b>245</b></td><td>2.3</td><td>0.984</td></tr>
+            <tr><td>Gemini 4 Carbon</td><td><b>241</b></td><td>2.3</td><td>0.984</td></tr>
+            <tr><td>EIG-greedy, batch-aware</td><td>164</td><td>1.75</td><td>0.994</td></tr>
+            <tr><td>Publish early (MAP ≥ 0.6)</td><td>163</td><td>1.9</td><td>n/a</td></tr>
+            <tr><td>Gemini 4 Hydrogen</td><td>148</td><td>1.85</td><td>0.987</td></tr>
+            <tr><td>EIG-greedy</td><td>86</td><td>1.45</td><td>1.000</td></tr>
+          </tbody>
+        </table>
+        <p>Scores vary a lot from seed to seed (standard deviation about 170 to 210), so the ranking is a mean over 20 games, not a proof. On the credit desk, Argon was the only agent we saw <b>simulate how its regret falls with sample size</b> before deciding how much calibration data to buy, which is the reference's own method. That trial scored 1.0.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">Why Gemini</p>
+        <h3>Speed, structure and a ladder of model sizes.</h3>
+        <ul class="runs">
+          <li><b>Speed of validation.</b> Gemini was the first frontier model on each new environment. Sixty full Bench Pressure games, plus desk and tool-free runs, fit inside the event.</li>
+          <li><b>Structured output.</b> JSON mode with a schema kept every answer machine-readable, so a run measured decisions, not formatting. Every Gemini decision is recorded and the Bench Pressure page replays it with Gemini's reason beside each move.</li>
+          <li><b>Three sizes, one API.</b> Argon and Carbon scored well above Hydrogen in Bench Pressure (245 and 241 against 148). That spread is what shows the environment still has room at the frontier.</li>
+          <li><b>One family, closed and open.</b> Gemini sets the frontier target; Gemma, from the same family, is what we train toward it.</li>
+        </ul>
+        <p><a href="bench-pressure.html">Watch Gemini run the lab</a></p>
+      </article>
+    </div>
+    <p class="small" style="margin-top:32px">Sources: Bench Pressure results embedded in bench-pressure/index.html (run 2026-11-14, seeds 1000–1019), bench-pressure/gemini/gemini.js, results/blackbox_v2/trials.csv, docs/RESULTS.md (E3). Design efficiency is the information of the chosen experiment divided by the best on offer for that grant.</p>
+  </div>
+</section>
+
+<section class="light sub-page track" id="gemma">
+  <div class="wrap">
+    <p class="eyebrow">Google DeepMind · Best Use of Gemma</p>
+    <h2>Gemma is the backbone of our RL recipe.</h2>
+    <p class="body">An exact reward is only useful if a model can learn from it. We needed open weights to train on, in several sizes, on whatever GPU was free. Four Gemma 4 sizes were the models we tested the recipe on, from the first failed rollout to a trained model playing live on this site.</p>
+
+    <div class="crit">
+      <article>
+        <p class="crit-label">One size per job</p>
+        <h3>Each Gemma did different work.</h3>
+        <ul class="runs">
+          <li><b>26B-A4B: the first agent, and the evidence of a gap.</b> 300 rollouts without tools and 30 trials in the judges' harness. It looked competent on naive accuracy (0.70) and scored <b>exactly 0</b> on the Bayesian reward, which showed us what the grader catches. Its best 30% of rollouts became training data.</li>
+          <li><b>E4B: the first full recipe.</b> Supervised fine-tuning, then 300 GRPO steps on the exact reward: <b>0.00 → 0.36 → 0.50</b> on the hyperbolic task, above Claude Opus 5.5 without tools (0.11).</li>
+          <li><b>E2B: the longest runs and the live model.</b> GRPO on the decision steps of the credit desk raised it from <b>0.00 to 0.28</b>, and the money lost per decision fell from $2,644 to $28. It plays Battleship on the home page, with and without the adapter.</li>
+          <li><b>E2B to 26B: the sweep.</b> The same recipe on every size, against a shuffled-reward control, for about $15 of GPU time.</li>
+        </ul>
+      </article>
+
+      <article>
+        <p class="crit-label">The recipe works at every size</p>
+        <h3>Trained on the reward, every size gets better.</h3>
+        <table class="fit numeric">
+          <thead><tr><th>Gemma 4</th><th>Base</th><th>Shuffled control</th><th>GRPO</th><th>Supervised</th></tr></thead>
+          <tbody>
+            <tr><td>E2B</td><td>.37</td><td>.42</td><td><b>.46</b></td><td><b>.55</b></td></tr>
+            <tr><td>E4B</td><td>.29</td><td>.50</td><td><b>.57</b></td><td><b>.59</b></td></tr>
+            <tr><td>12B</td><td>.45</td><td>.46</td><td><b>.74</b></td><td>n/a</td></tr>
+            <tr><td>26B</td><td>.58</td><td>.58</td><td><b>.74</b></td><td><b>.61</b></td></tr>
+          </tbody>
+        </table>
+        <p>Share of design decisions that match the optimal experiment, on task families the model never trained on (500 rows each; chance 0.49). The control trains on the same data with shuffled rewards, so the gain comes from the reward, not from extra training. A longer GRPO run on E2B reached 0.57 to 0.60 on unseen families before its samples collapsed into identical answers.</p>
+      </article>
+
+      <article>
+        <p class="crit-label">How the recipe improved</p>
+        <h3>Each run told us what to change.</h3>
+        <ol class="runs">
+          <li><b>Rollouts first.</b> 26B-A4B lost almost all its score updating beliefs (about 1.7 nats) and little choosing experiments (0.1 to 0.2), so the first recipe taught from the reference's demonstrations plus its own best rollouts.</li>
+          <li><b>SFT, then GRPO.</b> E4B showed GRPO adds to supervised fine-tuning on binary outcomes and hurts on continuous ones, and that we trained on predictions while evaluating experiment choice.</li>
+          <li><b>Decision steps.</b> E2B trained on the decisions themselves, each scored by the dollars it gave up under the true model.</li>
+          <li><b>Reading the result.</b> The exact grader showed what transferred: a bias toward gathering information (Battleship 0.20 → 0.39), not better experiment choice. Our reward transform compressed the price of a wasted check. The next recipe uses a reward linear in dollars.</li>
+        </ol>
+      </article>
+
+      <article>
+        <p class="crit-label">Why open models</p>
+        <h3>Train it, inspect it, run it anywhere.</h3>
+        <ul class="runs">
+          <li><b>We can train it.</b> RL needs the weights. Gemma's sizes let us test the recipe cheaply on E2B and check it holds on 26B.</li>
+          <li><b>We can run it on any partner platform.</b> Weights from Hugging Face; training on Verda A100 and RTX 6000 Ada GPUs and on Modal; live serving on Modal, with E2B on an L4 GPU for Battleship and a 26B-A4B GRPO adapter as a lab partner in Bench Pressure.</li>
+          <li><b>It can go where data cannot leave.</b> A lab or a bank can run a trained Gemma next to its own data, in its own cloud, with the same grader checking it.</li>
+        </ul>
+        <p><a href="index.html#live-gemma">Watch the trained Gemma play Battleship</a></p>
+      </article>
+    </div>
+    <p class="small" style="margin-top:32px">Sources: the paper's Training section (design-match table, Gemma and transfer figures), docs/RESULTS.md (E3, E4, E5), deploy_modal/app.py, bench-pressure/deploy/app.py.</p>
   </div>
 </section>
 

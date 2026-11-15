@@ -313,6 +313,37 @@ a.sq:hover img { transform: scale(1.03); }
   .page-head { padding: 110px 0 56px; }
 }
 
+/* partners: one section per partner track */
+section.light.track { padding-top: 0; }
+.track > .wrap { border-top: 1px solid var(--line); padding-top: 72px; }
+.track .eyebrow { opacity: 0.55; }
+.track h2 { max-width: 18ch; margin: 0 0 20px; }
+.track .body { max-width: 68ch; font-size: 18px; line-height: 1.6; color: var(--mute); }
+.crit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 56px; margin-top: 48px; border-top: 1px solid var(--line); }
+.crit article { padding: 32px 0 36px; border-bottom: 1px solid var(--line); min-width: 0; }
+.crit-label { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 10px; }
+.crit-label span { color: var(--mute); margin-left: 8px; }
+.crit h3 { font-size: 24px; font-weight: 500; margin: 0 0 14px; letter-spacing: -0.01em; }
+.crit p, .crit li { font-size: 16px; line-height: 1.6; color: var(--mute); max-width: 62ch; }
+.crit p + p, .crit p + .runs, .crit .runs + p, .crit .fit + p { margin-top: 14px; }
+.crit p + .fit { margin-top: 18px; }
+.track a, .cards a { color: inherit; text-underline-offset: 3px; }
+.crit b { color: var(--ink); font-weight: 500; }
+.crit code { font-size: 14px; }
+.runs { margin: 14px 0 0; padding-left: 20px; }
+.runs li + li { margin-top: 10px; }
+.fit { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.45; }
+.fit th { text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); padding: 0 12px 8px 0; border-bottom: 1px solid var(--ink); }
+.fit td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--mute); }
+.fit td:first-child { color: var(--ink); font-weight: 500; }
+@media (max-width: 900px) {
+  .crit { grid-template-columns: 1fr; }
+  .track > .wrap { padding-top: 48px; }
+  .fit:not(.numeric) thead { display: none; }
+  .fit:not(.numeric) tr { display: block; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .fit:not(.numeric) td { display: block; padding: 2px 0; border: 0; }
+}
+
 /* proof: the whitepaper behind the header */
 .paper-bg { position: relative; overflow: hidden; }
 .paper-bg .wrap { position: relative; z-index: 1; pointer-events: none; }
