@@ -12,6 +12,7 @@ services:
     environment:
       TASK_SEED: "__SEED__"
       GRADER_TOKEN: "__TOKEN__"
+      BATTLESHIP_WORLD: "__WORLD__"
       TASK_SALT: ""  # empty = random per trial (see server.py)
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost',8000),timeout=2).close()"]

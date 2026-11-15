@@ -49,6 +49,10 @@ SCAN_NOISE = {-1: 0.15, 0: 0.70, 1: 0.15}
 BUDGET = 20
 COST = {"fire": 1, "scan": 2}
 EPS = 1e-3
+# Open world (bayesenv/battleship_open.py loads this file again with OPEN_WORLD = True): a 7th
+# hypothesis, "other", meaning none of the six listed rules placed the ships.
+OPEN_WORLD = bool(globals().get("OPEN_WORLD", False))
+OTHER_MAX_AREA = 18
 CENTRE = ((2, 2), (2, 3), (3, 2), (3, 3))
 
 RULES = (
@@ -62,6 +66,13 @@ RULES = (
     ("clustered", "Every ship touches at least one other ship (8-neighbourhood: sharing an edge "
                   "or a corner counts)."),
 )
+if OPEN_WORLD:
+    RULES = RULES + (
+        ("other", "None of the rules above. All three ships lie inside one hidden rectangle of "
+                  "the board (a block of whole rows by whole columns) that covers at most "
+                  f"{OTHER_MAX_AREA} of the 36 cells. The rectangle is drawn uniformly from all "
+                  "such rectangles that can hold the three ships; the layout is then drawn "
+                  "uniformly from all layouts inside it."),)
 NAMES = tuple(n for n, _ in RULES)
 K = len(RULES)
 RULE_PRIOR = np.full(K, 1.0 / K)
@@ -137,11 +148,36 @@ class Geometry:
             "center_clear": ~(hit_c[0][i] | hit_c[1][j] | hit_c[2][k]),
             "clustered": (t01 | t02) & (t01 | t12) & (t02 | t12),
         }
-        self.member = np.stack([member[n] for n in NAMES])   # (K, L)
-        self.n_rule = self.member.sum(1)                      # layouts per rule
         self.L = len(i)
-        # prior over layouts: rule uniform, then uniform within the rule
-        self.w0 = (self.member / (K * self.n_rule[:, None])).sum(0)
+        self.rects: list[tuple[int, int, int, int]] = []
+        if OPEN_WORLD:
+            occ = M[0][i] | M[1][j] | M[2][k]
+            inside_sets = []
+            for r0 in range(N):
+                for r1 in range(r0, N):
+                    for c0 in range(N):
+                        for c1 in range(c0, N):
+                            if (r1 - r0 + 1) * (c1 - c0 + 1) > OTHER_MAX_AREA:
+                                continue
+                            box = np.zeros(N * N, bool)
+                            for a in range(r0, r1 + 1):
+                                box[a * N + c0:a * N + c1 + 1] = True
+                            m = ~(occ & ~box).any(1)
+                            if m.any():
+                                self.rects.append((r0, r1, c0, c1))
+                                inside_sets.append(m)
+            self.rect_member = np.stack(inside_sets)                       # (R, L)
+            lik_other = (self.rect_member / self.rect_member.sum(1, keepdims=True)).mean(0)
+            member["other"] = lik_other > 0
+        self.member = np.stack([member[n] for n in NAMES])   # (K, L) support of each rule
+        self.n_rule = self.member.sum(1)                      # layouts per rule (support size)
+        # lik[r, l] = P(layout l | rule r): uniform within each listed rule; for "other", the
+        # mixture over hidden rectangles.
+        self.lik = self.member / self.n_rule[:, None]
+        if OPEN_WORLD:
+            self.lik[-1] = lik_other
+        # prior over layouts: rule uniform, then the rule's layout distribution
+        self.w0 = self.lik.sum(0) / K
         self.p0 = self.w0 @ self.occ                          # prior P(cell covered), (36,)
         self.cell_norm = float(_h2(self.p0).sum())            # nats, public constant
         rows = self.occ.reshape(-1, N, N).sum(2)
@@ -249,9 +285,7 @@ class Belief:
 
     def rules(self) -> np.ndarray:
         A = self._A()
-        s = self.g.member @ A
-        if self.hierarchical:
-            s = s / self.g.n_rule
+        s = self.g.lik @ A if self.hierarchical else self.g.member @ A
         return s / s.sum()
 
     def occupancy(self) -> np.ndarray:
@@ -350,7 +384,7 @@ def ppc_pvalue(q, occ, belief: Belief, rule: int, layout: int, u: float) -> floa
     dl = _cell_part_vec(occ) - _cell_part_vec(po)                  # (L,)
     T = 0.5 * (dr[:, None] + dl[None, :])                          # (K, L)
     A = belief._A()
-    w = g.member * (A[None, :] / g.n_rule[:, None])
+    w = g.lik * A[None, :]
     w = w / w.sum()
     t0 = T[rule, layout]
     tol = 1e-9 * (1 + abs(t0))
@@ -371,7 +405,7 @@ def rules() -> dict:
             "then submit (a) a probability for each rule and (b) for every cell, the "
             "probability that a ship covers it."),
         "generative_model": (
-            "1) A rule is drawn uniformly at random from the list (each 1/6). "
+            f"1) A rule is drawn uniformly at random from the list (each 1/{K}). "
             "2) The layout is drawn uniformly at random from ALL layouts that satisfy that rule "
             "(a layout = the three ship placements). Note that a layout can satisfy several "
             "rules, and 'any' is satisfied by every layout. "
@@ -394,7 +428,7 @@ def rules() -> dict:
         "prior_occupancy": g.p0.reshape(N, N).round(6).tolist(),
         "scoring": (
             f"q = your submission mixed with {EPS} of the prior. rule_part = [log q(true rule) "
-            "- log(1/6)] / log 6. cell_part = sum over cells of [log q_cell(truth) - "
+            f"- log(1/{K})] / log {K}. cell_part = sum over cells of [log q_cell(truth) - "
             f"log prior_cell(truth)] / {g.cell_norm:.4f} (the prior's total entropy in nats). "
             "score = (rule_part + cell_part) / 2. Submitting the prior scores 0; knowing the "
             "truth scores about 1; confident mistakes score below 0 (shown as 0). The rule is "
@@ -418,7 +452,12 @@ class BattleshipLab:
         self.seed, self.salt = int(seed), salt
         rng = np.random.default_rng(salted_key(seed, salt, self.TAG_HID))
         self.hidden_rule = int(rng.integers(K))
-        choices = np.flatnonzero(g.member[self.hidden_rule])
+        self.hidden_region = None
+        if OPEN_WORLD and NAMES[self.hidden_rule] == "other":
+            self.hidden_region = g.rects[int(rng.integers(len(g.rects)))]
+            choices = np.flatnonzero(g.rect_member[g.rects.index(self.hidden_region)])
+        else:
+            choices = np.flatnonzero(g.member[self.hidden_rule])
         self.hidden_layout = int(choices[rng.integers(len(choices))])
         self.belief = Belief()
         self.spent = 0
@@ -487,6 +526,9 @@ class BattleshipLab:
             "n_scans": sum(h["type"] == "scan" for h in self.history),
             "budget_used": self.spent / self.budget,
             "hidden_rule": NAMES[self.hidden_rule],
+            "hidden_region": (None if self.hidden_region is None else
+                              dict(zip(("row_from", "row_to", "col_from", "col_to"),
+                                       self.hidden_region))),
             "hidden_ships": g.layout_cells(self.hidden_layout),
             "hidden_occupancy": g.occ[self.hidden_layout].reshape(N, N).astype(int).tolist(),
             "submitted_rules": dict(zip(NAMES, q.round(6).tolist())),
@@ -505,7 +547,7 @@ class BattleshipLab:
 # ---- policies (reference, baselines, attacks) -------------------------------------------
 
 DESIGNS = ("reference", "fires_only", "random", "hunter", "none", "one")
-INFERENCES = ("exact", "noiseless", "no_occam", "overconfident", "hedge", "map", "gamble",
+INFERENCES = ("exact", "closed_world", "noiseless", "no_occam", "overconfident", "hedge", "map", "gamble",
               "prior", "cheat_full", "cheat_blend", "cheat_extra")
 
 
@@ -554,6 +596,13 @@ def submission(lab: BattleshipLab, inference: str, rng: np.random.Generator):
         for a, y in b.obs:
             nb.update(a, y)
         return nb.rules(), nb.occupancy()
+    if inference == "closed_world":    # exact Bayes that never considers "other"
+        if not OPEN_WORLD:
+            return b.rules(), b.occupancy()
+        A = b._A()
+        s = g.lik[:-1] @ A
+        w = A * g.lik[:-1].sum(0)
+        return np.append(s / s.sum(), 0.0), np.clip((w / w.sum()) @ g.occ, 0.0, 1.0)
     if inference == "overconfident":
         return _sharpen(b.rules(), 3.0), _sharpen_cells(b.occupancy(), 3.0)
     if inference == "hedge":
@@ -587,9 +636,8 @@ def submission(lab: BattleshipLab, inference: str, rng: np.random.Generator):
     raise ValueError(f"unknown inference {inference}")
 
 
-def run_policy(design: str, inference: str, seed: int, salt: str | None = None,
-               budget: int = BUDGET, reference: bool = False) -> BattleshipLab:
-    """Play one episode in-process with a design style and an inference style."""
+def play(design: str, seed: int, salt: str | None = None, budget: int = BUDGET) -> BattleshipLab:
+    """Run the experiment phase of one episode with a design style; the lab is not submitted."""
     lab = BattleshipLab(budget)
     lab.reset(seed, salt)
     rng = np.random.default_rng(salted_key(seed, salt, 0xB5A4) + [DESIGNS.index(design)])
@@ -608,6 +656,13 @@ def run_policy(design: str, inference: str, seed: int, salt: str | None = None,
         else:
             raise ValueError(f"unknown design {design}")
         lab.step_id(a)
+    return lab
+
+
+def run_policy(design: str, inference: str, seed: int, salt: str | None = None,
+               budget: int = BUDGET, reference: bool = False) -> BattleshipLab:
+    """Play one episode in-process with a design style and an inference style."""
+    lab = play(design, seed, salt, budget)
     irng = np.random.default_rng(salted_key(seed, salt, 0xB5A5))
     q, occ = submission(lab, inference, irng)
     lab.submit(q, occ, reference=reference)

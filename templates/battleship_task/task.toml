@@ -1,7 +1,7 @@
 schema_version = "1.1"
 
 [task]
-name = "3-sigma/battleship-__SEED__"
+name = "3-sigma/__TASKNAME__"
 description = "Rulebound Battleship: find three hidden ships and the hidden rule that placed them with a budget of noisy shots and scans, then report calibrated beliefs, scored by the exact Bayesian log score."
 authors = [{ name = "3-Sigma" }]
 keywords = ["experimental-design", "bayesian", "game", "mcp"]
@@ -32,3 +32,4 @@ args = []
 [environment.env]
 
 [solution.env]
+BATTLESHIP_WORLD = "__WORLD__"

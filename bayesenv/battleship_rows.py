@@ -95,7 +95,7 @@ def system_prompt(one_tag: bool = True) -> str:
         "horizontal or vertical, never overlapping. They were placed by exactly ONE of the "
         "placement rules below. Each experiment is one action, written as a design: [0, row, col] "
         f"fires at one cell (cost {B.COST['fire']}) and reports 1 (hit) or 0 (miss), but the "
-        f"report is wrong with probability {B.FIRE_NOISE}; [1, 0, i] scans row i and [1, 1, i] "
+        f"report is {B.FIRE_NOISE_PHRASE}; [1, 0, i] scans row i and [1, 1, i] "
         f"scans column i (cost {B.COST['scan']}) and report the number of ship cells in that whole "
         f"row or column, off by -1 / +1 with probability {B.SCAN_NOISE[-1]} / {B.SCAN_NOISE[1]} "
         "each, then clipped to 0-6. Actions never change the board; repeating one draws fresh "

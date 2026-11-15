@@ -250,3 +250,16 @@ honest posterior, which is what "proper" means. A text box grades any fixed subm
 Open world, 24 boards: honest +0.62; peek +0.70 but caught (p < 0.001); five secret shots +0.66,
 not flagged per board but caught by the all-boards test (p = 0.003); never "other" +0.29; act
 certain −0.41; bet everything −1.30.
+
+## Unknown instrument noise (`bayesenv/battleship_hard.py`): tested, does not add difficulty
+
+World `hard` = open world plus an unknown fire error rate (0.05, 0.15 or 0.3, uniform prior,
+drawn once per game, disclosed). Exact over 3 x 53,624 states. Calibration, 150 boards:
+reference +0.531; a coder that treats the error as known (0.15) +0.529; never "other" +0.293;
+ignore all noise +0.131; random design +0.250; do nothing 0. With about 6 to 8 fires per game
+the error level is barely identifiable (the reference's median posterior on the true level is
+about 1/3), so plugging in the middle value costs almost nothing. We keep the variant for
+completeness but do not use it to claim a gap; the grader measured this for us.
+
+Harbor tasks for any variant: `python scripts/make_battleship_tasks.py --world open --seeds 0:5
+--out tasks/battleship_open` (worlds: closed, open, hard).

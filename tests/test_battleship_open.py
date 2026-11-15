@@ -73,3 +73,19 @@ def test_exact_rules_posterior_matches_brute_force():
     post /= post.sum()
     got = np.array([lab.result["exact_rules"][n] for n in O.NAMES])
     assert np.allclose(post, got, atol=1e-5)
+
+
+def test_hard_world_infers_the_fire_noise_level():
+    from bayesenv.battleship_worlds import load
+    H = load("hard")
+    assert H.UNKNOWN_NOISE and H.OPEN_WORLD and H.FIRE_LEVELS == (0.05, 0.15, 0.30)
+    assert not C.UNKNOWN_NOISE and C.FIRE_LEVELS == (0.1,)
+    lab = H.run_policy("reference", "exact", 2, "t-hard")
+    noise = lab.result["exact_fire_noise"]
+    assert abs(sum(noise.values()) - 1) < 1e-5
+    assert lab.result["hidden_fire_noise"] in H.FIRE_LEVELS
+    # with many repeated fires at one cell the error level becomes identifiable
+    b = H.Belief()
+    for i in range(40):
+        b.update(0, int(i % 10 < 3))        # 30% of the reports disagree with the majority
+    assert b.noise().argmax() == 2

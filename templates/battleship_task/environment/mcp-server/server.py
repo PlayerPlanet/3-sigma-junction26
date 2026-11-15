@@ -25,7 +25,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 
-from bayesenv import battleship as B
+from bayesenv.battleship_worlds import load
+
+WORLD = os.environ.get("BATTLESHIP_WORLD", "closed")   # closed | open | hard
+B = load(WORLD)
 
 TOKEN = os.environ.get("GRADER_TOKEN", "")
 if not TOKEN:
@@ -41,8 +44,8 @@ mcp = FastMCP("battleship")
 
 @mcp.tool()
 def get_rules() -> dict:
-    """The board, the ships, the six placement rules and how the hidden one was drawn, the
-    noise of each action, the budget, the prior probability of every cell, and the scoring."""
+    """The board, the ships, the placement rules and how the hidden one was drawn, the noise of
+    each action, the budget, the prior probability of every cell, and the scoring."""
     return B.rules()
 
 
@@ -58,7 +61,8 @@ def _act(action: dict) -> dict:
 @mcp.tool()
 def fire(row: int, col: int) -> dict:
     """Fire at one cell (row and col 0-5). Costs 1. Returns result 1 (hit) or 0 (miss); the
-    reported result is wrong with probability 0.1. Also returns budget_remaining."""
+    reported result is sometimes wrong (the error rate is in get_rules). Also returns
+    budget_remaining."""
     return _act({"type": "fire", "row": row, "col": col})
 
 

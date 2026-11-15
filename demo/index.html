@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>3-Sigma · An environment that grades how agents do science</title>
+<title>3σ · An environment that grades how agents do science</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="intro-on">
@@ -18,18 +18,29 @@
   <div class="card" data-ms="3500"><img src="assets/still4.jpg" alt=""><p>Now AI agents are<br>walking into the lab.</p></div>
   <div class="card text-only" data-ms="3000"><p>Can they choose the experiment?<br>Can they believe the result?</p></div>
   <div class="intro-ui"><button id="intro-mute" type="button" aria-pressed="false">Sound on</button><button id="intro-skip" type="button">Skip intro</button></div>
-  <div class="gate" id="intro-gate"><h1>3-Sigma</h1><button id="intro-start" type="button">Begin</button></div>
+  <div class="gate" id="intro-gate">
+    <h1 aria-label="3 sigma"><span class="tex">3<i>&sigma;</i></span></h1>
+    <button id="intro-start" type="button">Begin</button>
+    <div class="rotate-ask">
+      <svg viewBox="0 0 120 120" width="96" height="96" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect class="ph" x="42" y="24" width="36" height="72" rx="6"/><path d="M96 46a40 40 0 0 0-18-26"/><path d="M79 12l-1 9 9 1"/></g></svg>
+      <p>Turn your phone sideways</p>
+      <button id="intro-upright" type="button">Continue upright</button>
+    </div>
+  </div>
   <audio id="intro-audio" src="assets/intro.mp3" preload="auto"></audio>
   <div class="intro-bar"><i id="intro-progress"></i></div>
 </div>
 
+<div class="rotate-back" id="rotate-back">Turn your phone upright again</div>
+
 <header class="nav">
-  <a class="brand" href="#top">3-Sigma</a>
+  <a class="brand" href="#top" aria-label="3 sigma"><span class="tex">3<i>&sigma;</i></span></a>
   <nav>
     <a href="#idea">Idea</a>
     <a href="#play">Play</a>
     <a href="#rl">Training</a>
     <a href="#wetlab">Wet lab</a>
+    <a href="bench-pressure.html">Bench Pressure</a>
   </nav>
 </header>
 
@@ -83,8 +94,9 @@
     </div>
     <div class="boards" id="boards" aria-label="Board"></div>
   </div>
+  <div class="wrap viewswitch" id="viewswitch" role="tablist"><button type="button" data-show="a" class="on"></button><button type="button" data-show="b"></button></div>
 
-  <div class="wrap arena">
+  <div class="wrap arena" id="arena" data-show="a">
     <div class="panel" id="panelA">
       <div class="panel-head"><div><span class="who"></span><span class="tag"></span></div><div class="budget"><i></i><b></b></div></div>
       <div class="sea-host"></div>
@@ -102,15 +114,14 @@
 </section>
 
 <!-- ============ Wet lab transfer (light) ============ -->
-<section class="band dark">
-  <img src="assets/still1.jpg" alt="">
-  <h2 class="reveal">From a game<br>to the bench.</h2>
-</section>
-
 <section id="wetlab" class="light">
   <div class="wrap">
-    <div class="reveal narrow">
-      <p class="body">The wet lab is the same problem with real chemistry: six candidate mechanisms, noisy kinetics, limited reagents.</p>
+    <div class="split reveal">
+      <div>
+        <h2>From a game to the bench.</h2>
+        <p class="body">The wet lab is the same problem with real chemistry: six candidate mechanisms, noisy kinetics, limited reagents.</p>
+      </div>
+      <figure class="sq"><img src="assets/still4.jpg" alt=""></figure>
     </div>
     <div class="map reveal" id="map"></div>
     <div class="reveal">
@@ -129,16 +140,18 @@
   </div>
 </section>
 
-<section class="band dark">
-  <img src="assets/still3.jpg" alt="">
-  <h2 class="reveal">The same grader, for any lab<br>whose truth can be simulated.</h2>
+<section class="light closing">
+  <div class="wrap split reveal">
+    <figure class="sq left"><img src="assets/still3.jpg" alt=""></figure>
+    <h2>The same grader, for any lab whose truth can be simulated.</h2>
+  </div>
 </section>
 
 <footer class="dark">
   <div class="wrap foot">
     <div>
-      <p class="brand">3-Sigma</p>
-      <p class="small">Team 3-Sigma · Junction 2026 · AfterQuery</p>
+      <p class="brand" aria-label="3 sigma"><span class="tex">3<i>&sigma;</i></span></p>
+      <p class="small">Junction 2026 · AfterQuery</p>
     </div>
     <div>
             <p class="small" id="foot-note"></p>

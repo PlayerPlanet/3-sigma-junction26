@@ -1,0 +1,2021 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3σ · Bench Pressure</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+
+<style>
+/* Layout: one game stage (canvas) centred under a slim scoreboard; overlays sit on the stage; controls legend below. */
+:root {
+  --bg: #e6ecee; --paper: #f8fafa; --ink: #16232a; --muted: #56676f; --line: #c3cfd3;
+  --floor: #dbe4e6; --floor-line: #c9d5d8;
+  --bench: #2a3337; --bench-top: #343e43; --bench-edge: #192024;
+  --steel: #9eabb1; --steel-hi: #d4dde0; --steel-ink: #24313a;
+  --coat: #f6f9fa; --hair: #3b2f2a;
+  --hazard: #f0b928; --hazard-ink: #3a2c00;
+  --good: #1d8a57; --bad: #c63f2c;
+  --s1: #11907d; --s2: #d4731a; --s3: #b3367b; --s4: #3864c8;
+  --p1: #e2502f; --p2: #6d4fd0;
+  --agar: #f1e2a8; --contam: #4d5b24; --dirty: #a99e8c;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11171a; --paper: #1a2226; --ink: #e2eaed; --muted: #92a3aa; --line: #2e3a40;
+    --floor: #263035; --floor-line: #2f3a40;
+    --bench: #0d1215; --bench-top: #161e22; --bench-edge: #050809;
+    --steel: #66757c; --steel-hi: #9aa9af; --steel-ink: #0e1518;
+    --coat: #e3eaec; --hair: #2a201c;
+    --hazard: #f2c23e; --hazard-ink: #2d2200;
+    --good: #3cbf80; --bad: #ec6a54;
+    --s1: #00ac95; --s2: #d67916; --s3: #dc5aa1; --s4: #6590ed;
+    --p1: #ff7253; --p2: #9b80ff;
+    --agar: #c9b679; --contam: #6b7d33; --dirty: #7d7466;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11171a; --paper: #1a2226; --ink: #e2eaed; --muted: #92a3aa; --line: #2e3a40;
+  --floor: #263035; --floor-line: #2f3a40;
+  --bench: #0d1215; --bench-top: #161e22; --bench-edge: #050809;
+  --steel: #66757c; --steel-hi: #9aa9af; --steel-ink: #0e1518;
+  --coat: #e3eaec; --hair: #2a201c;
+  --hazard: #f2c23e; --hazard-ink: #2d2200;
+  --good: #3cbf80; --bad: #ec6a54;
+  --s1: #00ac95; --s2: #d67916; --s3: #dc5aa1; --s4: #6590ed;
+  --p1: #ff7253; --p2: #9b80ff;
+  --agar: #c9b679; --contam: #6b7d33; --dirty: #7d7466;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px 16px; box-sizing: border-box; overflow-x: hidden;
+}
+/* Grid: scoreboard across the top; stage column (keeps the 960:804 aspect, sized by viewport height) + live-chart panel.
+   Wide screens put the charts to the right of the stage; below 1000px they stack under it. */
+.wrap {
+  --stage-w: max(min(100%, 560px), min(100%, 1180px, calc((100dvh - 150px) * 960 / 804)));
+  display: grid; grid-template-columns: var(--stage-w); justify-content: center; gap: 8px 14px; max-width: 1640px; margin: 0 auto;
+}
+.col { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.top { grid-column: 1 / -1; min-width: 0; }
+@media (min-width: 1000px) {
+  .wrap { --stage-w: min(calc(100% - 284px), 74%, 1180px, max(560px, calc((100dvh - 150px) * 960 / 804))); grid-template-columns: var(--stage-w) minmax(260px, 400px); }
+  .charts { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .charts .card { flex: 1 1 0; }
+}
+.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 18px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.brand h1 { font-family: var(--f-display); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; margin: 0; line-height: 1; }
+.brand span { color: var(--muted); font-size: 13px; }
+.score { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 13px; align-items: baseline; }
+.score b { font-size: 18px; font-weight: 700; }
+.score .lbl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 4px; font-family: var(--f-body); }
+.pill { border: 1.5px solid var(--line); border-radius: 999px; padding: 1px 9px; font-size: 12px; color: var(--muted); background: var(--paper); cursor: pointer; font-family: var(--f-mono); }
+.pill.on { background: var(--hazard); color: var(--hazard-ink); border-color: var(--hazard); }
+.pill:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--hazard); outline-offset: 2px; }
+.stage { position: relative; width: 100%; aspect-ratio: 960 / 804; max-width: 100%; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); background: var(--floor); }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.overlay { position: absolute; inset: 0; overflow: auto; background: color-mix(in srgb, var(--bg) 88%, transparent); display: flex; align-items: flex-start; justify-content: center; padding: 22px 16px; box-sizing: border-box; }
+.overlay[hidden] { display: none !important; }
+.sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; max-width: 760px; width: 100%; padding: 20px 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 14%, transparent); }
+.sheet h2 { font-family: var(--f-display); font-weight: 800; font-size: 34px; letter-spacing: -0.02em; margin: 0; line-height: 1.05; text-wrap: balance; }
+.sheet h3 { font-family: var(--f-display); font-weight: 600; font-size: 15px; margin: 0; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.sheet p { margin: 0; max-width: 65ch; }
+.cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 18px; }
+.cols > * { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+ol.loop { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+ol.loop b { font-weight: 600; }
+table.keys { border-collapse: collapse; font-size: 12.5px; width: 100%; }
+table.keys td, table.keys th { padding: 3px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.keys th { font-family: var(--f-mono); font-size: 11px; color: var(--muted); font-weight: 500; }
+kbd { font-family: var(--f-mono); font-size: 11.5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--bg); white-space: nowrap; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+button.big { font-family: var(--f-display); font-weight: 800; font-size: 17px; padding: 9px 18px; border-radius: 5px; border: 2px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; }
+button.big.alt { background: transparent; color: var(--ink); }
+button.big:hover { transform: translateY(-1px); }
+label.seed { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; margin-left: auto; }
+label.seed input { width: 80px; font-family: var(--f-mono); font-size: 12px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); }
+.note { font-size: 12.5px; color: var(--muted); }
+.touchnote { border: 1.5px dashed var(--bad); color: var(--ink); padding: 8px 10px; border-radius: 5px; font-size: 13px; }
+.stars { font-size: 40px; letter-spacing: 6px; color: var(--hazard); line-height: 1; }
+.stars .off { color: var(--line); }
+.statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+.stat { border: 1px solid var(--line); border-radius: 5px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.stat .k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.stat .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 700; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 12.5px; color: var(--muted); }
+.legend > span { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.legend b { color: var(--ink); font-weight: 600; }
+@media (max-width: 720px) {
+  .wrap { --stage-w: 100%; }
+  .cols { grid-template-columns: 1fr; }
+  .overlay { position: static; background: transparent; padding: 10px 0 0; }
+  .stage { overflow: visible; aspect-ratio: auto; border: none; background: transparent; }
+  .stage canvas { aspect-ratio: 960 / 804; height: auto; border: 1px solid var(--line); border-radius: 6px; box-sizing: border-box; background: var(--floor); }
+  .sheet h2 { font-size: 26px; }
+  label.seed { margin-left: 0; }
+}
+.watch { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; border-top: 1px solid var(--line); padding-top: 12px; }
+.watch p { flex-basis: 100%; }
+.watch select { font-family: var(--f-mono); font-size: 12px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); max-width: 100%; }
+.watch label { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; min-width: 0; }
+button.big.gem { background: var(--p2); border-color: var(--p2); color: var(--paper); }
+select:focus-visible { outline: 3px solid var(--hazard); outline-offset: 2px; }
+.gemline { display: none; margin: 0; font-size: 13px; border-left: 4px solid var(--p2); padding: 4px 10px; background: var(--paper); border-radius: 0 4px 4px 0; }
+@media (max-width: 720px) { .gemline:not([hidden]) { display: block; } }
+.cmpbox { display: flex; flex-direction: column; gap: 6px; }
+.cmpwrap { overflow-x: auto; max-width: 100%; }
+table.cmp { border-collapse: collapse; font-size: 12.5px; width: 100%; font-variant-numeric: tabular-nums; }
+table.cmp th, table.cmp td { padding: 4px 7px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+table.cmp th:first-child { text-align: left; }
+table.cmp thead th { font-family: var(--f-mono); font-size: 11px; color: var(--muted); font-weight: 500; }
+table.cmp td { font-family: var(--f-mono); }
+table.cmp tr.gem th, table.cmp tr.gem td { color: var(--p2); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { button.big:hover { transform: none; } }
+/* Live charts: small cards on the paper surface; plots are canvases drawn from tokens, tooltips are DOM. */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; min-width: 0; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px 6px; display: flex; flex-direction: column; gap: 2px; min-width: 0; min-height: 0; box-sizing: border-box; }
+.card .ch { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.card h4 { margin: 0; font-family: var(--f-body); font-weight: 600; font-size: 13px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.card .hl { font-family: var(--f-body); font-weight: 600; font-size: 15px; color: var(--ink); white-space: nowrap; }
+.card .hl small { font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 3px; }
+.card .lg { display: flex; flex-wrap: wrap; gap: 0 10px; font-size: 11px; color: var(--muted); line-height: 1.5; min-height: 16px; }
+.card .lg > span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.key { display: inline-block; width: 12px; height: 2px; border-radius: 1px; flex: none; }
+.key.bar { width: 8px; height: 10px; border-radius: 2px 2px 0 0; }
+.gl { font-weight: 700; font-size: 12px; }
+.gl.ok { color: var(--good); } .gl.no { color: var(--bad); } .gl.ex { color: var(--muted); }
+.plot { position: relative; flex: 1 1 auto; min-height: 84px; }
+.plot canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tip { position: absolute; top: 2px; left: 0; z-index: 2; pointer-events: none; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 4px 7px; font-size: 11px; line-height: 1.45; color: var(--muted); white-space: nowrap; box-shadow: 0 4px 14px color-mix(in srgb, var(--ink) 14%, transparent); }
+.tip[hidden] { display: none; }
+.tip .th { color: var(--muted); font-family: var(--f-mono); font-size: 10.5px; }
+.tip .r { display: flex; align-items: center; gap: 5px; }
+.tip b { color: var(--ink); font-family: var(--f-mono); font-weight: 700; font-size: 11.5px; }
+.seg { display: inline-flex; gap: 2px; }
+.seg[hidden] { display: none; }
+.seg button { font: 500 10.5px var(--f-mono); padding: 0 7px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+@media (max-width: 999px) { .plot { flex: none; height: 130px; } }
+</style>
+<style id="three-sigma-skin">
+/* 3σ skin for Bench Pressure. Written by demo/tools/wrap_bench_pressure.py; edit it there. */
+@font-face { font-family: "IBM Plex Sans"; src: url("assets/inter.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+@font-face { font-family: "Bricolage Grotesque"; src: url("assets/inter.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+@font-face { font-family: "JetBrains Mono"; src: url("assets/inter.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+@font-face { font-family: "TeXMain"; src: url("assets/tex-main.woff2") format("woff2"); font-display: block; }
+@font-face { font-family: "TeXMath"; src: url("assets/tex-math.woff2") format("woff2"); font-style: italic; font-display: block; }
+:root, :root[data-theme="light"] {
+  --bg: #f4f2ed; --paper: #ffffff; --ink: #0b0c0e; --muted: #6a6b6c; --line: #dcd9d2;
+  --floor: #ebe8e1; --floor-line: #dedad1;
+  --bench: #1b1d21; --bench-top: #2a2d32; --bench-edge: #0b0c0e;
+  --steel: #a9a69d; --steel-hi: #dedbd3; --steel-ink: #1b1d21;
+  --coat: #ffffff; --hair: #2b2622;
+  --hazard: #f0591c; --hazard-ink: #ffffff;
+  --good: #2f6b4f; --bad: #b3261e;
+  --s1: #0d5c75; --s2: #b8860b; --s3: #9c4a55; --s4: #46618c;
+  --p1: #0b0c0e; --p2: #f0591c;
+  --agar: #efe3b4; --contam: #5d6630; --dirty: #b3aa98;
+  color-scheme: light;
+}
+body { font-size: 15px; padding-block: 18px 28px; -webkit-font-smoothing: antialiased; font-feature-settings: "tnum", "ss01", "cv11"; }
+.top { align-items: center; margin-bottom: 6px; }
+.brand { align-items: center; gap: 18px; }
+.brand .mark { font-family: "TeXMain", "Times New Roman", serif; font-size: 30px; line-height: 1; color: var(--ink); text-decoration: none; }
+.brand .mark i { font-family: "TeXMath", "Times New Roman", serif; font-style: italic; margin-left: 0.04em; }
+.brand h1 { font-weight: 400; font-size: 26px; letter-spacing: -0.03em; }
+.brand .back { color: var(--muted); font-size: 14px; text-decoration: none; }
+.brand .back:hover { color: var(--ink); }
+.score { font-size: 14px; gap: 22px; }
+.score b { font-weight: 400; font-size: 22px; letter-spacing: -0.02em; }
+.score .lbl, .stat .k, .sheet h3 { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.pill, .seg button { border-radius: 6px; border-width: 1px; padding: 3px 10px; font-size: 13px; background: transparent; }
+.pill.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.stage, .card, .stat, .touchnote { border-radius: 6px; }
+.card { border-color: var(--line); padding: 10px 12px 8px; }
+.card h4 { font-weight: 500; font-size: 14px; }
+.card .hl { font-weight: 400; font-size: 18px; letter-spacing: -0.02em; }
+.card .lg { font-size: 12px; }
+.overlay { background: color-mix(in srgb, var(--bg) 92%, transparent); }
+.sheet h2 { font-weight: 400; font-size: clamp(28px, 3.2vw, 44px); letter-spacing: -0.03em; line-height: 1.06; }
+.sheet h3 { font-weight: 500; font-size: 16px; color: var(--ink); }
+.sheet p, .sheet li { font-size: 15px; }
+.note { font-size: 13.5px; }
+button.big { font-weight: 500; font-size: 15px; padding: 12px 24px; border-radius: 99px; border-width: 1px; }
+button.big.alt { background: transparent; color: var(--ink); }
+button.big.gem { background: var(--p2); border-color: var(--p2); color: #fff; }
+kbd { border-radius: 4px; font-size: 12px; }
+.stars { color: var(--ink); font-size: 30px; }
+.stat .v { font-weight: 300; font-size: 30px; letter-spacing: -0.03em; }
+table.cmp, .legend { font-size: 13px; }
+.credit { max-width: 1640px; margin: 22px auto 0; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.credit a { color: inherit; }
+</style>
+
+<style id="three-sigma-lab">
+/* The 3D lab view: the game's own page is kept running out of sight, the lab is drawn over it. */
+html, body.lab3d { height: 100%; margin: 0; padding: 0; overflow: hidden; background: #e9e7e2; }
+#lab { position: fixed; inset: 0; }
+#lab canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+#legacy .wrap { display: block; max-width: none; margin: 0; }
+#legacy .top, #legacy .col { position: absolute; left: -9999px; top: 0; width: 960px; visibility: hidden; pointer-events: none; }
+#legacy .charts { position: fixed; z-index: 8; right: 0; top: 0; bottom: 0; width: min(420px, 100vw); display: flex; flex-direction: column; gap: 10px; padding: 0 16px 16px; box-sizing: border-box; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); box-shadow: -18px 0 48px rgba(11, 12, 14, 0.18); visibility: hidden; transform: translateX(100%); transition: transform 0.3s ease, visibility 0s 0.3s; }
+#legacy .charts .card { flex: 0 0 auto; min-width: 0; overflow: hidden; box-shadow: none; border-radius: 0; }
+#legacy .charts .plot { flex: none; height: 160px; position: relative; }
+#legacy .charts .plot canvas { display: block; width: 100%; height: 100%; }
+body.charts-open #legacy .charts { visibility: visible; transform: none; transition: transform 0.3s ease; }
+.drawer-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; margin: 0 -16px; padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.drawer-head h3 { margin: 0; font: 600 18px var(--f-body); letter-spacing: -0.01em; color: var(--ink); }
+.drawer-head button { height: 40px; padding: 0 20px; border-radius: 99px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font: 500 14px var(--f-body); cursor: pointer; }
+.drawer-head button:hover { background: var(--accent, #f0591c); border-color: var(--accent, #f0591c); }
+#scrim { position: fixed; inset: 0; z-index: 7; background: rgba(11, 12, 14, 0.22); display: none; cursor: pointer; }
+body.charts-open #scrim { display: block; }
+body.charts-open .cam { visibility: hidden; }
+.credit { display: none; }
+
+.topbar { position: fixed; z-index: 5; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 22px; padding: 16px 26px; pointer-events: none; }
+.topbar > * { pointer-events: auto; }
+.topbar .mark { font-family: "TeXMain", serif; font-size: 30px; line-height: 1; color: var(--ink); text-decoration: none; }
+.topbar .mark i { font-family: "TeXMath", serif; font-style: italic; margin-left: 0.04em; }
+.topbar h1 { margin: 0; font-weight: 400; font-size: 24px; letter-spacing: -0.03em; white-space: nowrap; }
+.topbar .what { margin: 0 auto 0 6px; font-size: 16px; color: var(--muted); max-width: 62ch; line-height: 1.35; }
+.topbar .num { text-align: right; line-height: 1; }
+.topbar .num b { display: block; font-weight: 300; font-size: 34px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.topbar .num span { font-size: 13px; color: var(--muted); }
+body:not(.playing) .topbar .num, body:not(.playing) #cards, body:not(.playing) .now { display: none; }
+
+#cards { position: fixed; z-index: 4; left: 26px; top: 86px; display: grid; gap: 10px; width: 290px; pointer-events: none; }
+.q { background: rgba(244, 242, 237, 0.58); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2); border-radius: 0; padding: 14px 16px 12px; border: 1px solid rgba(11, 12, 14, 0.12); border-left: 4px solid var(--c); }
+.q header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.q header i { display: none; }
+.q h3 { margin: 0; font-weight: 500; font-size: 17px; letter-spacing: -0.01em; }
+.q time { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.q.late time { color: var(--bad); font-weight: 600; }
+.q .bars { display: flex; align-items: flex-end; gap: 4px; height: 54px; margin: 12px 0 20px; }
+.q .bars > div { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; position: relative; min-width: 0; }
+.q .bars u { display: block; background: color-mix(in srgb, var(--c) 34%, #fff); border-radius: 0; transition: height 0.4s ease; }
+.q .bars .lead u { background: var(--c); }
+.q .bars span { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 3px; font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+.q .bars .lead span { color: var(--ink); font-weight: 600; }
+.q .guess { margin: 0; font-size: 14px; color: var(--ink); }
+
+.now { position: fixed; z-index: 4; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(760px, calc(100vw - 52px)); background: rgba(11, 12, 14, 0.72); color: #fff; border-radius: 0; padding: 14px 20px; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.now p { margin: 0; }
+#say { font-size: 19px; letter-spacing: -0.01em; border-left: 4px solid var(--c, transparent); padding-left: 12px; margin-left: -4px; }
+#why { margin-top: 6px; font-size: 14px; line-height: 1.4; color: rgba(255, 255, 255, 0.68); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#why:empty { display: none; }
+
+.cam { position: fixed; z-index: 5; right: 22px; bottom: 22px; display: grid; gap: 8px; justify-items: end; }
+.cam div { display: flex; gap: 6px; }
+.cam button { height: 40px; min-width: 40px; padding: 0 16px; border-radius: 99px; border: 1px solid rgba(11, 12, 14, 0.14); background: rgba(244, 242, 237, 0.7); color: var(--ink); font: 500 14px var(--f-body); cursor: pointer; backdrop-filter: blur(8px); }
+.cam button:hover, .cam button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.cam .zoom button { font-size: 20px; padding: 0; }
+
+#toasts { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+.toast { position: absolute; left: 0; top: 0; background: #fff; color: var(--ink); border-bottom: 3px solid var(--c); border-radius: 0; padding: 6px 12px; font-size: 14px; font-weight: 500; white-space: nowrap; box-shadow: 0 6px 20px rgba(11, 12, 14, 0.16); }
+
+.sheet3d { position: fixed; z-index: 7; inset: 0; display: grid; place-items: center; background: rgba(233, 231, 226, 0.5); backdrop-filter: blur(6px); padding: 20px; }
+.sheet3d[hidden] { display: none; }
+.sheet3d > div { width: min(620px, 100%); background: rgba(244, 242, 237, 0.9); border-radius: 0; padding: 38px 40px 34px; box-shadow: 0 20px 70px rgba(11, 12, 14, 0.18); }
+.sheet3d h2 { margin: 0 0 16px; font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); letter-spacing: -0.03em; line-height: 1.06; }
+.sheet3d p { margin: 0 0 12px; font-size: 17px; line-height: 1.5; color: var(--muted); }
+.sheet3d .go { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 24px; }
+.sheet3d button { height: 48px; padding: 0 24px; border-radius: 99px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font: 500 15px var(--f-body); cursor: pointer; }
+.sheet3d button.alt { background: transparent; color: var(--ink); }
+.sheet3d select { height: 40px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font: 400 14px var(--f-body); padding: 0 8px; }
+#paused { position: fixed; z-index: 7; left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--ink); color: #fff; padding: 16px 26px; border-radius: 0; font-size: 18px; }
+#paused[hidden] { display: none; }
+
+@media (max-width: 900px) {
+  .topbar { padding: 12px 14px; gap: 12px; }
+  .topbar .what { display: none; }
+  .topbar h1 { font-size: 20px; margin-right: auto; }
+  .topbar .num b { font-size: 26px; }
+  #cards { left: 10px; right: 10px; top: 62px; width: auto; grid-auto-flow: column; grid-auto-columns: minmax(200px, 1fr); overflow-x: auto; pointer-events: auto; }
+  .q { padding: 10px 12px; }
+  .q .guess { font-size: 13px; }
+  .now { bottom: 70px; padding: 10px 14px; width: calc(100vw - 20px); }
+  #say { font-size: 16px; }
+  .cam { right: 10px; bottom: 12px; left: 10px; grid-auto-flow: column; justify-content: space-between; }
+  .sheet3d > div { padding: 26px 22px; }
+}
+</style>
+</head>
+<body class="lab3d">
+<div id="lab" aria-label="The lab, in 3D"></div>
+<header class="topbar">
+  <a class="mark" href="index.html" aria-label="3 sigma, back to the main page">3<i>&sigma;</i></a>
+  <h1>Bench Pressure</h1>
+  <p class="what">A robot gets questions with deadlines. It chooses experiments, reads the plates, and publishes its best answer.</p>
+  <div class="num"><b id="hTime">3:00</b><span>time left</span></div>
+  <div class="num"><b id="hScore">0</b><span>points</span></div>
+</header>
+<section id="cards" aria-label="Open questions"></section>
+<div id="toasts"></div>
+<footer class="now" aria-live="polite"><p id="say"></p><p id="why"></p></footer>
+<div class="cam">
+  <div><button type="button" id="speed" hidden></button><button type="button" id="btnCharts" aria-pressed="false">Charts</button></div>
+  <div><button type="button" id="camFollow" aria-pressed="false">Follow the duck</button><button type="button" id="camAll">Whole lab</button></div>
+  <div class="zoom"><button type="button" id="camOut" aria-label="Zoom out">&minus;</button><button type="button" id="camIn" aria-label="Zoom in">+</button></div>
+</div>
+<div class="sheet3d" id="start"><div>
+  <h2>A robot runs the lab. Watch what it chooses to test.</h2>
+  <p>Each card is a question with a deadline. The bars show what the robot believes so far, and every plate it reads should sharpen them.</p>
+  <p>Right answer published: points. Wrong answer: a retraction. Too slow: the question expires.</p>
+  <div class="go" id="watchBox"><button type="button" id="btnWatch3d">Watch the model run the lab</button><select id="run3d" aria-label="Recorded run"></select></div>
+  <div class="go"><button type="button" class="alt" id="btnPlay3d">Drive the robot yourself</button></div>
+</div></div>
+<div class="sheet3d" id="endCard" hidden><div>
+  <h2>Round over.</h2>
+  <p id="endLine"></p>
+  <div class="go"><button type="button" id="btnAgain3d">Again</button><button type="button" class="alt" id="btnMenu3d">Back to start</button></div>
+</div></div>
+<div id="paused" hidden>Paused. Press Esc to continue.</div>
+<div id="legacy">
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><a class="mark" href="index.html" aria-label="3 sigma, back to the main page">3<i>&sigma;</i></a><h1>Bench Pressure</h1><a class="back" href="index.html#play">Battleship demo</a></div>
+    <div class="score">
+      <span><span class="lbl">Score</span><b id="hudScore">0</b></span>
+      <span><span class="lbl">Time</span><b id="hudTime">3:00</b></span>
+      <span><span class="lbl">Papers</span><b id="hudPapers">0</b></span>
+      <button class="pill" id="speedBtn" type="button" title="Replay speed" hidden>Speed ×1</button>
+      <button class="pill" id="gogglesBtn" type="button" title="Bayes goggles (G)">G · goggles off</button>
+    </div>
+  </div>
+
+  <div class="col">
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="804" aria-label="Bench Pressure game area"></canvas>
+
+    <div class="overlay" id="menu">
+      <div class="sheet">
+        <h2>Grants in. Papers out. Every plate should teach you something.</h2>
+        <p>Each grant ticket arrives with a prior over hypotheses, drawn as bars. Pick experiments that split that belief well, read the plates, and publish the most probable hypothesis before the grant runs out. The posterior updates by exact Bayes' rule, and the truth is drawn from the prior you see.</p>
+        <div class="touchnote" id="touchNote" hidden>This game needs a physical keyboard. On a phone or tablet you can read the rules and watch Gemini play, but you cannot play yourself.</div>
+        <div class="cols">
+          <div>
+            <h3>The bench loop</h3>
+            <ol class="loop">
+              <li><b>Plate rack</b>: grab a clean petri dish.</li>
+              <li><b>Strain freezer</b>: tap Use to choose the grant (colour), hold Use to inoculate.</li>
+              <li><b>Design bench</b>: tap Use to cycle experiments, hold Use to prepare one.</li>
+              <li><b>Incubator</b>: grows in 6 s. Take it out soon after or it contaminates.</li>
+              <li><b>Plate reader</b>: hold Use. The grant's posterior bars update.</li>
+              <li><b>Autoclave</b>: hold Use to wash the dish. It returns to the rack.</li>
+              <li><b>Writing desk</b>: hold Use to write up the top hypothesis; carry the paper to the <b>journal hatch</b>.</li>
+            </ol>
+            <p class="note">Correct paper: 100 + time left + a bonus for using fewer experiments. Wrong paper: −60 retraction. Expired grant: −30. Contaminated plates go in the bin.</p>
+          </div>
+          <div>
+            <h3>Controls</h3>
+            <table class="keys">
+              <tr><th></th><th>Player 1</th><th>Player 2</th></tr>
+              <tr><td>Move</td><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td><td>Arrow keys</td></tr>
+              <tr><td>Pick up / put down</td><td><kbd>Space</kbd></td><td><kbd>Enter</kbd></td></tr>
+              <tr><td>Use (tap / hold)</td><td><kbd>F</kbd></td><td><kbd>R-Shift</kbd> or <kbd>.</kbd></td></tr>
+              <tr><td>Bayes goggles</td><td colspan="2"><kbd>G</kbd> shows expected information gain in bits</td></tr>
+              <tr><td>Pause</td><td colspan="2"><kbd>Esc</kbd> or <kbd>P</kbd></td></tr>
+            </table>
+            <p class="note">Solo: either key set drives your scientist.</p>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="big" id="btnSolo" type="button">Start solo</button>
+          <button class="big alt" id="btnDuo" type="button">Two players</button>
+          <label class="seed" for="seedIn">Seed <input id="seedIn" type="text" inputmode="numeric" maxlength="9"></label>
+        </div>
+        <div class="watch" id="watchRow" hidden>
+          <button class="big gem" id="btnWatch" type="button">Watch Gemini play</button>
+          <label for="traceSel" class="note">Recorded run <select id="traceSel"></select></label>
+          <p class="note">Gemini ran the lab offline: at every decision it read each grant's posterior and the experiment menu, then chose what to run or publish. Scripted hands carry the plates. The page replays those recorded decisions on the same seed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="pause" hidden>
+      <div class="sheet">
+        <h2>Paused</h2>
+        <p>The incubators are waiting for you.</p>
+        <div class="actions">
+          <button class="big" id="btnResume" type="button">Resume</button>
+          <button class="big alt" id="btnQuit" type="button">End round</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="end" hidden>
+      <div class="sheet">
+        <div class="stars" id="endStars" aria-label="stars"></div>
+        <h2 id="endTitle">Round over</h2>
+        <p id="endLine"></p>
+        <div class="statgrid" id="endStats"></div>
+        <div class="cmpbox" id="endCmp" hidden></div>
+        <p class="note">Bits gathered is the realised information: the KL divergence from each prior to its posterior, summed over every plate read. Design efficiency is the expected information gain of the experiments you prepared, divided by the best expected gain on offer at the moment you chose.</p>
+        <div class="actions">
+          <button class="big" id="btnAgain" type="button">Play again</button>
+          <button class="big alt" id="btnMenu" type="button">Rules and controls</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="gemline" id="gemLine" hidden></p>
+  <div class="legend">
+    <span><b>P1</b> <kbd>WASD</kbd> move · <kbd>Space</kbd> pick/put · <kbd>F</kbd> use</span>
+    <span><b>P2</b> arrows · <kbd>Enter</kbd> pick/put · <kbd>R-Shift</kbd>/<kbd>.</kbd> use</span>
+    <span><kbd>G</kbd> goggles · <kbd>Esc</kbd> pause</span>
+  </div>
+  </div>
+
+  <aside class="charts" id="charts" aria-label="Live charts">
+    <section class="card" data-chart="ent">
+      <div class="ch"><h4>Uncertainty per grant</h4><span class="hl"></span></div>
+      <div class="lg"></div>
+      <div class="plot"><canvas role="img"></canvas><div class="tip" hidden></div></div>
+    </section>
+    <section class="card" data-chart="info">
+      <div class="ch"><h4>Information gathered</h4><span class="hl"></span></div>
+      <div class="lg"><span><i class="key" style="background:var(--ink)"></i>realised (KL per plate read)</span><span><i class="key" style="background:var(--muted);opacity:.6"></i>expected (EIG of those plates)</span></div>
+      <div class="plot"><canvas role="img"></canvas><div class="tip" hidden></div></div>
+    </section>
+    <section class="card" data-chart="design">
+      <div class="ch"><h4>Design quality per experiment</h4><span class="hl"></span></div>
+      <div class="lg"></div>
+      <div class="plot"><canvas role="img"></canvas><div class="tip" hidden></div></div>
+    </section>
+    <section class="card" data-chart="score">
+      <div class="ch"><h4>Score over time</h4><span class="seg" hidden><button type="button" tabindex="-1" data-v="run">This run</button><button type="button" tabindex="-1" data-v="policy">By policy</button></span><span class="hl"></span></div>
+      <div class="lg"></div>
+      <div class="plot"><canvas role="img"></canvas><div class="tip" hidden></div></div>
+    </section>
+  </aside>
+</div>
+
+<script type="application/json" id="geminiData">{"model":"Gemini 4 Argon","modelId":"gemini-4-argon","date":"2026-11-14","table":{"caption":"Gemini 4 Argon (model id gemini-4-argon), 20 seeds (1000–1019), run 2026-11-14. Baselines play the same seeds with the same scripted hands. Score is mean ± sd; other columns are means. Design efficiency = EIG of chosen experiments ÷ best EIG on offer for that grant. Over 200 seeds the baselines average EIG-greedy 101, EIG-greedy, batch-aware 165, Random design 21, Publish early (MAP 0.6) 189.","rows":[{"name":"Gemini 4 Argon","n":20,"gemini":true,"score":[245.2,180],"papers":[2.3,0.98],"retractions":[1.1,1.02],"expired":[1.1,1.17],"eff":[0.984,0.017],"bits":[6.29,0.57]},{"name":"Gemini 4 Carbon","n":20,"gemini":true,"score":[240.6,169.9],"papers":[2.3,0.92],"retractions":[1,0.73],"expired":[1.3,0.92],"eff":[0.984,0.012],"bits":[6.11,0.64]},{"name":"Gemini 4 Hydrogen","n":20,"gemini":true,"score":[147.5,176.6],"papers":[1.85,0.88],"retractions":[1.15,1.27],"expired":[1.6,0.99],"eff":[0.987,0.015],"bits":[6.02,0.6]},{"name":"EIG-greedy","n":20,"score":[86.3,159.2],"papers":[1.45,0.89],"retractions":[1.1,0.85],"expired":[1.7,0.66],"eff":[1,0],"bits":[5,0.68]},{"name":"EIG-greedy, batch-aware","n":20,"score":[164.3,208.4],"papers":[1.75,1.12],"retractions":[0.8,0.62],"expired":[1.5,0.89],"eff":[0.994,0.008],"bits":[6.2,0.44]},{"name":"Publish early (MAP ≥ 0.6)","n":20,"score":[163,147.4],"papers":[1.9,0.72],"retractions":[1.5,1],"expired":[0.9,0.72],"eff":[1,0],"bits":[4.79,0.84]},{"name":"Random design","n":20,"score":[-52.5,150.9],"papers":[0.7,0.8],"retractions":[1.65,0.81],"expired":[1.65,0.75],"eff":[0.544,0.088],"bits":[3.43,1.06]}]},"traces":[{"seed":1019,"d":[[0,"run",1,4,"Directly testing top candidate ompF (0.411 prior) can yield an immediate high-confidence confirmation or strongly point toward second-place lacZ."],[302,"run",2,3,"Treating at 3 uM splits the posterior distribution nearly in half (0.656 vs 0.344), maximizing information gain for Ticket 2 while Ticket 1 incubates."],[1326,"run",1,1,"Testing lacZ directly splits the posterior evenly and can confirm the leading hypothesis."],[1806,"run",2,4,"E4 (10 µM) directly tests the leading hypothesis (0.472) and splits the posterior probability mass (~0.65 vs ~0.35)."],[2904,"publish",1,-1,"The lacZ knockout lost the phenotype, giving a 0.929 posterior for lacZ, which is confident enough to publish now."],[3231,"run",3,4,"E4 splits Ticket 3's prior probability nearly in half (0.461 for \u003c=10 µM vs 0.539 for >10 µM) and starts incubation early."],[3615,"run",4,5,"E5 tests the top two candidate genes (combined 0.581 posterior), efficiently bisecting the hypothesis space for Ticket 4."],[4715,"publish",2,-1,"With E3 negative and E4 positive, 10 µM has a strong 0.688 posterior; publishing now secures points and opens a slot for new tickets."],[5044,"run",3,3,"E3 at 3 µM cleanly splits the posterior mass between \u003c=3 µM (0.477) and >=10 µM (0.523), potentially confirming 10 µM."],[5430,"run",4,8,"E8 tests {lacZ, fliC} (0.601 combined probability), isolating sodA if negative or narrowing to two candidates if positive."],[6536,"run",3,2,"Test 1 uM on expiring Ticket 3 to distinguish between 3 uM (0.497) and lower thresholds (0.394 total)."],[7014,"run",4,3,"Directly tests lacZ to distinguish between the two remaining likely candidates, lacZ (0.521) and fliC (0.423), while waiting for Ticket 3."],[8110,"publish",3,-1,"Ticket 3 has only 4 seconds left and 3 uM has a strong 0.766 posterior after positive response at 3 uM and negative at 1 uM."],[8342,"publish",4,-1,"With only 17s remaining on Ticket 4, fliC has a strong 0.790 posterior, so we must publish before time expires."],[8441,"run",5,6,"Test {hisG, ftsZ} (0.444 total prior mass) to quickly narrow down the culprit gene on the expiring ticket."],[8831,"run",5,11,"Run E11 {hisG, recA, gyrA} in parallel with E6 {hisG, ftsZ} to quickly distinguish the top gene candidates."],[9929,"publish",5,-1,"With only 13 seconds left on Ticket 5 and 0.760 posterior on ftsZ, we must publish now before it expires."],[10258,"wait",0,-1,"Only 10 seconds remain in the round, which is not enough time to run an experiment and publish, and current posteriors have negative expected value."]],"final":{"score":577,"papers":4,"retractions":0,"expired":1,"bits":6.58,"eff":0.99}},{"seed":1005,"d":[[0,"run",1,0,"Testing the leading candidate dnaK (0.395) gives a high chance of confirming it in a single plate, while rejecting it narrows down the remaining genes."],[294,"run",2,4,"Treating at 10 uM bisects the dose probability mass while Ticket 1's plate incubates."],[1320,"run",2,3,"E3 (3 µM) splits the remaining posterior mass nearly in half (0.572 vs 0.428) while we prepare to publish Ticket 1."],[1808,"run",3,5,"Test {gyrA, recA} on Ticket 3 to split the prior probability nearly in half while incubators are free."],[2908,"run",2,2,"Test 1 µM on Ticket 2 to distinguish 3 µM from lower thresholds while incubators are free before publishing Ticket 1."],[3392,"publish",1,-1,"Posterior for dnaK is 0.880 after only one plate, giving high expected points and freeing capacity."],[4287,"run",3,0,"Test gyrA directly to distinguish between the two top candidates, gyrA and recA, which share 91% of the posterior."],[4763,"publish",2,-1,"Ticket 2 has a strong 0.793 posterior for 3 uM and only 36s left; publishing now secures high points."],[5660,"run",4,5,"Test {lacZ, sodA} (combined posterior 0.476) to split the probability mass evenly while incubators are free, before publishing Ticket 3."],[6144,"publish",3,-1,"gyrA has a 0.904 posterior after two positive knockout tests, making it ready to publish."],[7041,"run",4,1,"Test sodA directly to distinguish between the two leading candidates, sodA (0.496) and lacZ (0.415), before Ticket 4 expires."],[7527,"run",5,3,"E3 bisects the dose threshold prior (0.632 \u003c= 3 uM vs 0.368 > 3 uM) while we wait for Ticket 4's plate."],[8625,"publish",4,-1,"Ticket 4 has only 11 seconds left and lacZ has a strong posterior of 0.744."],[8954,"run",5,4,"E4 tests whether the threshold is at most 10 uM, strongly separating the leading 10 uM hypothesis from higher doses."],[9332,"run",8,3,"Test top candidate fliC on Ticket 8 while waiting for Ticket 5's E4 plate to finish."],[10432,"publish",5,-1,"With only 7 seconds left in the round, no new plates can finish, and Ticket 5 has a strong positive expected value at 0.551 posterior."],[10761,"wait",0,-1,"Only 1 second remains in the round, so no experiment or publication can finish before time expires."]],"final":{"score":528,"papers":4,"retractions":1,"expired":0,"bits":6.238,"eff":0.991}},{"seed":1014,"d":[[0,"run",1,5,"E5 tests {hisG, dnaK} with combined probability 0.473, maximizing information gain by splitting the prior nearly in half."],[304,"run",2,4,"E4 (10 µM) splits the prior probability nearly in half (43.9% vs 56.1%), maximizing information gain for Ticket 2 while Ticket 1 incubates."],[1330,"run",1,2,"Test the leading hypothesis lacZ (0.565 posterior) directly to either confirm it for publication or narrow down to gyrA and rpoB."],[1812,"run",2,3,"E3 at 3 uM splits the posterior evenly and will strongly confirm 10 uM if no response occurs."],[2908,"run",1,4,"Test the leading hypothesis rpoB directly on the most urgent ticket to distinguish it from gyrA."],[3394,"run",2,2,"Test 1 µM to distinguish the leading 3 µM hypothesis (0.508) from lower threshold hypotheses (combined 0.374)."],[4488,"run",2,1,"Test at 0.3 uM to distinguish whether the threshold is 1 uM or lower."],[4976,"publish",1,-1,"Posterior for rpoB is strong (0.867) after E4 lost phenotype, and only 23s remain on Ticket 1."],[5871,"publish",2,-1,"With only 18s left and 4 clean plates remaining, we publish 0.3 µM now to secure points and save plates for Tickets 3 and 4."],[6198,"run",3,5,"Ticket 3 has only 26s left; testing the leading candidate lacZ directly gives a chance for immediate high-confidence publication."],[6584,"run",3,3,"Ticket 3 has only 20s left; testing the second-likeliest gene gyrA in parallel with lacZ maximizes our chance of a high-confidence hit before expiration."],[7692,"publish",3,-1,"Ticket 3 has only 1 second left and a strong 0.814 posterior for gyrA after E3 lost the phenotype."],[7922,"run",4,4,"Ticket 4 has only 27s left; testing the leading candidate ompF can confirm it for a quick publication before expiration."],[8276,"run",6,1,"Test the leading candidate katG (0.349 posterior) on Ticket 6 while waiting for Ticket 4's plate to finish."],[9370,"publish",4,-1,"Ticket 4 has a strong 0.806 posterior for ompF after E4 lost the phenotype, and only 3 seconds remain before expiration."],[9600,"run",6,3,"Test the leading candidate gyrA directly so we can either confirm it or pivot to trpE before the round ends."],[9948,"wait",0,-1,"With only 15s left in the round, wait 6s for Ticket 6's E3 result so the technician is free to immediately publish."],[10618,"publish",6,-1,"With only 4 seconds left in the round, we lack time for experiments and must publish Ticket 6 with positive expected value (0.507 posterior)."]],"final":{"score":206,"papers":2,"retractions":0,"expired":2,"bits":7.305,"eff":0.932}}]}</script>
+<script>
+"use strict";
+/*BAYES-START*/
+// Pure Bayesian experimental design helpers. Binary outcomes, discrete hypotheses.
+const Bayes = (() => {
+  const LN2 = Math.log(2);
+  // Binary entropy in bits.
+  function h2(p) { if (p <= 0 || p >= 1) return 0; return -(p * Math.log(p) + (1 - p) * Math.log(1 - p)) / LN2; }
+  // Shannon entropy of a discrete distribution, bits.
+  function entropy(d) { let s = 0; for (const p of d) if (p > 0) s -= p * Math.log(p); return s / LN2; }
+  function normalize(w) { let s = 0; for (const x of w) s += x; return w.map(x => x / s); }
+  // P(Y=1) under the current belief.
+  function predictive(prior, lik) { let s = 0; for (let i = 0; i < prior.length; i++) s += prior[i] * lik[i]; return s; }
+  // EIG(e) = H(Y) - E_h[H(Y|h)], exact.
+  function eig(prior, lik) {
+    let cond = 0; for (let i = 0; i < prior.length; i++) cond += prior[i] * h2(lik[i]);
+    return Math.max(0, h2(predictive(prior, lik)) - cond);
+  }
+  // Exact Bayes update after observing y (true = positive).
+  function update(prior, lik, y) { return normalize(prior.map((p, i) => p * (y ? lik[i] : 1 - lik[i]))); }
+  // KL(post || prior) in bits: realised information from one observation.
+  function kl(post, prior) { let s = 0; for (let i = 0; i < post.length; i++) if (post[i] > 0) s += post[i] * Math.log(post[i] / prior[i]); return s / LN2; }
+  function argmax(a) { let b = 0; for (let i = 1; i < a.length; i++) if (a[i] > a[b]) b = i; return b; }
+  // Seeded RNG.
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0; let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function sample(rng, d) { const u = rng(); let c = 0; for (let i = 0; i < d.length; i++) { c += d[i]; if (u < c) return i; } return d.length - 1; }
+  // Group test: knock out pool; P(phenotype lost | h) = 1-fn if h in pool else fp.
+  function poolLik(K, pool, fn, fp) { const s = new Set(pool); return Array.from({ length: K }, (_, h) => s.has(h) ? 1 - fn : fp); }
+  // Dose threshold: hypothesis t = first responsive dose index; P(response | t) = hi if d >= t else lo.
+  function doseLik(T, d, hi, lo) { return Array.from({ length: T }, (_, t) => d >= t ? hi : lo); }
+  return { h2, entropy, normalize, predictive, eig, update, kl, argmax, mulberry32, sample, poolLik, doseLik };
+})();
+/*BAYES-END*/
+
+// ---------- constants ----------
+const W = 960, RAIL = 150, T = 64, COLS = 15, ROWS = 8, FY = RAIL, HUDY = FY + ROWS * T, HUDH = 142, H = HUDY + HUDH;
+const ROUND = 180, GROW = 6, BURN = 8, WARN = 3.5, TAP = 0.2, SPEED = 235, RAD = 20;
+const WORK = { freezer: 0.6, bench: 0.9, reader: 1.0, autoclave: 1.6, desk: 0.8 };
+const FN = 0.10, FP = 0.08, HI = 0.9, LO = 0.1;
+const PLATES = 5;
+const MAP = [
+  "#R#F#DD#III#P##",
+  "#.............#",
+  "#.............#",
+  "#....#####....A",
+  "#....#####....#",
+  "#.............#",
+  "#.............#",
+  "##W#J#######X##",
+];
+const TYPES = { "#": "counter", R: "rack", F: "freezer", D: "bench", I: "incubator", P: "reader", A: "autoclave", X: "bin", W: "desk", J: "hatch" };
+const NAMES = { counter: "Bench", rack: "Plate rack", freezer: "Strain freezer", bench: "Design bench", incubator: "Incubator", reader: "Plate reader", autoclave: "Autoclave", bin: "Biohazard bin", desk: "Writing desk", hatch: "Journal hatch" };
+const GENES = ["rpoB", "gyrA", "lacZ", "ftsZ", "recA", "dnaK", "ompF", "sodA", "katG", "trpE", "hisG", "metJ", "araC", "fliC"];
+const DOSES = ["0.1", "0.3", "1", "3", "10", "30", "100", "300"];
+const KEYS = {
+  p1: { up: ["KeyW"], down: ["KeyS"], left: ["KeyA"], right: ["KeyD"], pick: ["Space"], use: ["KeyF"] },
+  p2: { up: ["ArrowUp"], down: ["ArrowDown"], left: ["ArrowLeft"], right: ["ArrowRight"], pick: ["Enter", "NumpadEnter"], use: ["ShiftRight", "Period", "Numpad0"] },
+};
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+// ---------- theme tokens for canvas ----------
+const TOKENS = ["bg", "paper", "ink", "muted", "line", "floor", "floor-line", "bench", "bench-top", "bench-edge", "steel", "steel-hi", "steel-ink", "coat", "hair", "hazard", "hazard-ink", "good", "bad", "s1", "s2", "s3", "s4", "p1", "p2", "agar", "contam", "dirty"];
+const C = {};
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const n of TOKENS) C[n] = cs.getPropertyValue("--" + n).trim() || "#888";
+  C.strain = [C.s1, C.s2, C.s3, C.s4];
+}
+readTheme();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTheme);
+new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });
+const FONT = {
+  body: (w, s) => `${w} ${s}px "IBM Plex Sans", "Segoe UI", system-ui, sans-serif`,
+  mono: (w, s) => `${w} ${s}px "JetBrains Mono", ui-monospace, Consolas, monospace`,
+  disp: (w, s) => `${w} ${s}px "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif`,
+};
+
+// ---------- canvas setup ----------
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+function resize() {
+  const r = cv.getBoundingClientRect();
+  const scale = Math.max(0.3, r.width / W);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  cv.width = Math.round(W * scale * dpr); cv.height = Math.round(H * scale * dpr);
+  ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+}
+new ResizeObserver(resize).observe(cv);
+resize();
+
+// ---------- state ----------
+let G = null, rng = null, state = "menu", nPlayers = 1, goggles = false, seed = 0;
+let ticketSeq = 0;
+const keysDown = new Set();
+const events = [];
+
+function key(c, r) { return c + "," + r; }
+function newGame(players) {
+  nPlayers = players;
+  rng = Bayes.mulberry32(seed);
+  ticketSeq = 0;
+  G = {
+    t: 0, timeLeft: ROUND, score: 0, tickets: [], slots: [null, null, null, null], nextSpawn: 24, lastTypes: [],
+    stations: new Map(), players: [], toasts: [],
+    stats: { papers: 0, retractions: 0, expired: 0, experiments: 0, bits: 0, sumEig: 0, sumMax: 0, contam: 0 },
+    hist: newHist(), // chart history (read-only observer of the game; never touches rng)
+  };
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const ch = MAP[r][c];
+    if (ch !== ".") G.stations.set(key(c, r), { type: TYPES[ch], c, r, item: null, work: 0, sel: 0, selTk: null, count: TYPES[ch] === "rack" ? PLATES : 0 });
+  }
+  const spawn = [[3, 2], [11, 5]];
+  for (let i = 0; i < players; i++) {
+    G.players.push({ id: i, x: spawn[i][0] * T + T / 2, y: FY + spawn[i][1] * T + T / 2, fx: 0, fy: -1, held: null, useHeld: false, useT: 0, useTarget: null, walk: 0 });
+  }
+  spawnTicket("gene"); spawnTicket("dose");
+}
+
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function spawnTicket(type) {
+  const slot = G.slots.indexOf(null);
+  if (slot < 0) return;
+  const id = ++ticketSeq;
+  let t;
+  if (type === "gene") {
+    const K = 5 + Math.floor(rng() * 2);
+    const names = shuffle(GENES).slice(0, K);
+    let prior;
+    do { prior = Bayes.normalize(names.map(() => 0.2 + Math.pow(rng(), 1.3))); } while (Math.max(...prior) > 0.42);
+    const pools = [];
+    const seen = new Set();
+    const add = (pool) => { const k = pool.join("."); if (pool.length && pool.length < K && !seen.has(k)) { seen.add(k); pools.push(pool); } };
+    for (let i = 0; i < K; i++) add([i]);
+    for (let i = 0; i + 1 < K; i += 2) add([i, i + 1]);
+    const h = Math.ceil(K / 2);
+    add([...Array(h).keys()]);
+    add([...Array(K - h).keys()].map(i => i + h));
+    add([...Array(K).keys()].filter(i => i % 2 === 0));
+    const exps = pools.map(pool => ({
+      pool,
+      label: pool.length <= 2 ? pool.map(i => names[i]).join("+") : pool.length + " genes",
+      long: "Knock out " + pool.map(i => names[i]).join(", "),
+      lik: Bayes.poolLik(K, pool, FN, FP),
+    }));
+    t = { type, title: "Culprit gene", labels: names, prior, exps, timeMax: 105, posWord: "phenotype lost", negWord: "phenotype intact" };
+  } else {
+    const n = DOSES.length;
+    const c = 1.5 + rng() * 4, sig = 1.4 + rng() * 0.8;
+    const prior = Bayes.normalize(DOSES.map((_, i) => Math.exp(-((i - c) ** 2) / (2 * sig * sig)) + 0.04));
+    const exps = DOSES.map((d, i) => ({ dose: i, label: d + " µM", long: "Treat at " + d + " µM", lik: Bayes.doseLik(n, i, HI, LO) }));
+    t = { type, title: "Dose threshold", labels: DOSES, prior, exps, timeMax: 115, posWord: "response", negWord: "no response" };
+  }
+  t.id = id; t.slot = slot; t.post = t.prior.slice(); t.shown = t.prior.slice();
+  t.truth = Bayes.sample(rng, t.prior);
+  t.timeLeft = t.timeMax; t.nExp = 0; t.history = []; t.flash = 0; t.born = G.t;
+  G.slots[slot] = t; G.tickets.push(t);
+  G.lastTypes.push(type);
+}
+function ticketById(id) { return G.tickets.find(t => t.id === id) || null; }
+function activeTickets() { return G.tickets.slice().sort((a, b) => a.slot - b.slot); }
+function removeTicket(t) { G.tickets = G.tickets.filter(x => x !== t); G.slots[t.slot] = null; }
+
+function toast(x, y, text, color, life) { G.toasts.push({ x, y, text, color: color || C.ink, t: 0, life: life || 1.8 }); }
+function railToast(t, text, color) { toast(12 + t.slot * 237 + 114, 150, text, color, 2.4); }
+
+// ---------- input ----------
+const GAME_CODES = new Set(Object.values(KEYS).flatMap(k => Object.values(k).flat()).concat(["KeyG", "KeyP", "Escape"]));
+function playerFor(code, action) {
+  for (const [pk, map] of Object.entries(KEYS)) {
+    if (map[action].includes(code)) {
+      if (nPlayers === 1) return 0;
+      return pk === "p1" ? 0 : 1;
+    }
+  }
+  return -1;
+}
+addEventListener("keydown", (e) => {
+  if (e.target && e.target.tagName === "INPUT") return;
+  if (state === "play" && GAME_CODES.has(e.code)) e.preventDefault();
+  if (e.code === "KeyG" && !e.repeat) { setGoggles(!goggles); return; }
+  if (state === "play" && (e.code === "Escape" || e.code === "KeyP")) { setState("pause"); return; }
+  if (state === "pause" && (e.code === "Escape" || e.code === "KeyP")) { setState("play"); return; }
+  if (state !== "play" || auto) return;
+  keysDown.add(e.code);
+  if (e.repeat) return;
+  let p = playerFor(e.code, "pick"); if (p >= 0) events.push({ p, k: "pick" });
+  p = playerFor(e.code, "use"); if (p >= 0) events.push({ p, k: "useDown", code: e.code });
+});
+addEventListener("keyup", (e) => {
+  keysDown.delete(e.code);
+  if (state !== "play" || auto) return;
+  const p = playerFor(e.code, "use"); if (p >= 0) events.push({ p, k: "useUp", code: e.code });
+});
+addEventListener("blur", () => { keysDown.clear(); if (G && !auto) for (const p of G.players) p.useHeld = false; });
+
+function axis(p) {
+  if (auto) return auto.bot.axis;
+  const sets = nPlayers === 1 ? [KEYS.p1, KEYS.p2] : [p.id === 0 ? KEYS.p1 : KEYS.p2];
+  let x = 0, y = 0;
+  for (const s of sets) {
+    if (s.left.some(k => keysDown.has(k))) x -= 1;
+    if (s.right.some(k => keysDown.has(k))) x += 1;
+    if (s.up.some(k => keysDown.has(k))) y -= 1;
+    if (s.down.some(k => keysDown.has(k))) y += 1;
+  }
+  return [Math.sign(x), Math.sign(y)];
+}
+
+// ---------- world helpers ----------
+function solidAt(c, r) { if (c < 0 || r < 0 || c >= COLS || r >= ROWS) return true; return MAP[r][c] !== "."; }
+function collides(x, y, self) {
+  const c0 = Math.floor((x - RAD) / T), c1 = Math.floor((x + RAD) / T);
+  const r0 = Math.floor((y - RAD - FY) / T), r1 = Math.floor((y + RAD - FY) / T);
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+    if (!solidAt(c, r)) continue;
+    const rx = c * T, ry = FY + r * T;
+    const nx = Math.max(rx, Math.min(x, rx + T)), ny = Math.max(ry, Math.min(y, ry + T));
+    if ((x - nx) ** 2 + (y - ny) ** 2 < RAD * RAD) return true;
+  }
+  for (const o of G.players) if (o !== self && (o.x - x) ** 2 + (o.y - y) ** 2 < (RAD * 1.7) ** 2) return true;
+  return false;
+}
+function targetKey(p) {
+  const px = p.x + p.fx * 46, py = p.y + p.fy * 46;
+  const c = Math.floor(px / T), r = Math.floor((py - FY) / T);
+  const k = key(c, r);
+  return G.stations.has(k) ? k : null;
+}
+function newPlate() { return { kind: "plate", st: "clean", tk: null, exp: -1, grow: 0, over: 0, eig: 0, maxEig: 0 }; }
+function plateTicket(it) { return it && it.tk != null ? ticketById(it.tk) : null; }
+function center(s) { return [s.c * T + T / 2, FY + s.r * T + T / 2]; }
+
+function accepts(s, it) {
+  const pl = it.kind === "plate";
+  switch (s.type) {
+    case "counter": return true;
+    case "freezer": return pl && it.st === "clean";
+    case "bench": return pl && (it.st === "inoc" || it.st === "prep");
+    case "incubator": return pl && (it.st === "prep" || it.st === "grown" || it.st === "contam");
+    case "reader": return pl && it.st === "grown";
+    case "autoclave": return pl && it.st === "dirty";
+    case "desk": return it.kind === "paper";
+    default: return false;
+  }
+}
+const REFUSE = {
+  freezer: "The freezer inoculates clean plates only",
+  bench: "Inoculate the plate at the freezer first",
+  incubator: "Design an experiment at the bench first",
+  reader: "Only grown plates can be read",
+  autoclave: "Only used plates go in the autoclave",
+  desk: "The desk is for writing papers",
+  rack: "The rack takes clean plates only",
+};
+
+function pick(p) {
+  const k = targetKey(p); if (!k) return;
+  const s = G.stations.get(k); const [cx, cy] = center(s);
+  if (!p.held) {
+    if (s.item) { p.held = s.item; s.item = null; s.work = 0; }
+    else if (s.type === "rack" && s.count > 0) { s.count--; p.held = newPlate(); }
+    else if (s.type === "rack") toast(cx, cy + 40, "Rack empty: wash used plates in the autoclave", C.bad);
+    return;
+  }
+  const h = p.held;
+  if (s.type === "bin") {
+    if (h.kind === "paper") { p.held = null; toast(cx, cy - 30, "Draft shredded", C.muted); }
+    else if (h.st !== "clean" && h.st !== "dirty") { h.st = "dirty"; h.tk = null; toast(cx, cy - 30, "Binned, plate needs washing", C.muted); }
+    return;
+  }
+  if (s.type === "hatch") {
+    if (h.kind === "paper") { submit(h, cx, cy); p.held = null; }
+    else toast(cx, cy - 30, "The journal wants papers, not plates", C.muted);
+    return;
+  }
+  if (s.type === "rack") {
+    if (h.kind === "plate" && h.st === "clean") { s.count++; p.held = null; }
+    else toast(cx, cy - 30, REFUSE.rack, C.muted);
+    return;
+  }
+  if (s.item) return;
+  if (accepts(s, h)) {
+    s.item = h; p.held = null; s.work = 0;
+    if (s.type === "bench" && s.selTk !== h.tk) { s.selTk = h.tk; s.sel = h.exp >= 0 ? h.exp : 0; }
+  } else if (REFUSE[s.type]) toast(cx, cy + 40, REFUSE[s.type], C.muted);
+}
+
+function tap(p, s) {
+  const tl = activeTickets();
+  if ((s.type === "freezer" && s.item && s.item.st === "clean") || (s.type === "desk" && !s.item)) {
+    if (tl.length) s.sel = (s.sel + 1) % tl.length; s.work = 0;
+  } else if (s.type === "bench" && s.item && s.item.kind === "plate") {
+    const t = plateTicket(s.item); if (!t) return;
+    s.sel = (s.sel + 1) % t.exps.length; s.work = 0;
+  }
+}
+
+function work(p, s, dt) {
+  const it = s.item, tl = activeTickets();
+  const [cx, cy] = center(s);
+  if (s.type === "freezer") {
+    if (!it || it.st !== "clean" || !tl.length) return;
+    s.work += dt / WORK.freezer;
+    if (s.work >= 1) { const t = tl[s.sel % tl.length]; it.st = "inoc"; it.tk = t.id; s.work = 0; toast(cx, cy + 40, "Inoculated for #" + t.id, C.strain[t.slot]); }
+  } else if (s.type === "bench") {
+    if (!it || it.kind !== "plate") return;
+    const t = plateTicket(it); if (!t) return;
+    if (!(it.st === "inoc" || (it.st === "prep" && it.exp !== s.sel))) return;
+    s.work += dt / WORK.bench;
+    if (s.work >= 1) {
+      const e = t.exps[s.sel % t.exps.length];
+      const all = t.exps.map(x => Bayes.eig(t.post, x.lik));
+      it.st = "prep"; it.exp = s.sel % t.exps.length; it.grow = 0;
+      it.eig = all[it.exp]; it.maxEig = Math.max(...all);
+      chartDesign(t, it);
+      s.work = 0; toast(cx, cy + 40, e.label + " prepared", C.strain[t.slot]);
+    }
+  } else if (s.type === "reader") {
+    if (!it || it.kind !== "plate" || it.st !== "grown") return;
+    s.work += dt / WORK.reader;
+    if (s.work >= 1) { s.work = 0; readPlate(it, cx, cy); }
+  } else if (s.type === "autoclave") {
+    if (!it || it.kind !== "plate" || it.st !== "dirty") return;
+    s.work += dt / WORK.autoclave;
+    if (s.work >= 1) {
+      s.work = 0; s.item = null;
+      for (const r of G.stations.values()) if (r.type === "rack") r.count++;
+      toast(cx - 30, cy + 40, "Clean plate to rack", C.muted);
+    }
+  } else if (s.type === "desk") {
+    if (it || !tl.length) return;
+    s.work += dt / WORK.desk;
+    if (s.work >= 1) {
+      s.work = 0; const t = tl[s.sel % tl.length];
+      const claim = Bayes.argmax(t.post);
+      s.item = { kind: "paper", tk: t.id, claim, conf: t.post[claim] };
+      toast(cx, cy - 34, "Paper: " + t.labels[claim] + (t.type === "dose" ? " µM" : ""), C.strain[t.slot]);
+    }
+  }
+}
+
+function readPlate(it, cx, cy) {
+  const t = plateTicket(it);
+  if (!t || it.exp < 0) { it.st = "dirty"; it.tk = null; toast(cx, cy + 40, "Grant closed, result unused", C.muted); return; }
+  const e = t.exps[it.exp];
+  const y = rng() < e.lik[t.truth];
+  const prior = t.post;
+  const post = Bayes.update(prior, e.lik, y);
+  G.stats.bits += Bayes.kl(post, prior);
+  G.stats.experiments++; G.stats.sumEig += it.eig; G.stats.sumMax += it.maxEig;
+  t.post = post; t.nExp++; t.history.push({ e: it.exp, y }); t.flash = 1;
+  chartRead(t, it);
+  if (reduceMotion.matches) t.shown = post.slice();
+  it.st = "dirty"; it.tk = null;
+  toast(cx, cy + 44, "#" + t.id + " " + e.label + ": " + (y ? t.posWord : t.negWord), C.strain[t.slot], 2.2);
+}
+
+function submit(paper, cx, cy) {
+  const t = ticketById(paper.tk);
+  if (!t) { toast(cx, cy - 34, "That grant already closed", C.muted); return; }
+  removeTicket(t);
+  const unit = t.type === "dose" ? " µM" : "";
+  if (paper.claim === t.truth) {
+    const timeB = Math.round(60 * t.timeLeft / t.timeMax), effB = Math.max(0, 60 - 10 * t.nExp);
+    const pts = 100 + timeB + effB;
+    G.score += pts; G.stats.papers++;
+    chartEvent("pub", t, pts);
+    toast(cx, cy - 34, "+" + pts + " published: " + t.labels[paper.claim] + unit, C.good, 2.6);
+    railToast(t, "Accepted (" + t.nExp + " exps)", C.good);
+  } else {
+    G.score -= 60; G.stats.retractions++;
+    chartEvent("retract", t, -60);
+    toast(cx, cy - 34, "−60 retracted: it was " + t.labels[t.truth] + unit, C.bad, 3);
+    railToast(t, "Retracted", C.bad);
+  }
+}
+
+// ---------- update ----------
+function update(dt) {
+  G.t += dt; G.timeLeft -= dt;
+  if (G.timeLeft <= 0) { G.timeLeft = 0; endRound(); return; }
+  // spawning
+  G.nextSpawn -= dt;
+  if (!G.tickets.length && G.nextSpawn > 2) G.nextSpawn = 2;
+  if (G.nextSpawn <= 0) {
+    if (G.tickets.length < 4 && G.timeLeft > 25) {
+      const last = G.lastTypes.slice(-2);
+      let type = rng() < 0.5 ? "gene" : "dose";
+      if (last.length === 2 && last[0] === last[1] && last[0] === type) type = type === "gene" ? "dose" : "gene";
+      spawnTicket(type);
+    }
+    G.nextSpawn = 22 + rng() * 8;
+  }
+  // tickets
+  for (const t of G.tickets.slice()) {
+    t.timeLeft -= dt; t.flash = Math.max(0, t.flash - dt * 1.2);
+    const k = Math.min(1, dt * 5);
+    for (let i = 0; i < t.post.length; i++) t.shown[i] += (t.post[i] - t.shown[i]) * k;
+    if (t.timeLeft <= 0) { removeTicket(t); G.score -= 30; G.stats.expired++; chartEvent("expired", t, -30); railToast(t, "Grant expired −30", C.bad); }
+  }
+  // incubators
+  for (const s of G.stations.values()) {
+    if (s.type !== "incubator" || !s.item || s.item.kind !== "plate") continue;
+    const it = s.item;
+    if (it.st === "prep") { it.grow += dt / GROW; if (it.grow >= 1) { it.grow = 1; it.st = "grown"; it.over = 0; } }
+    else if (it.st === "grown") {
+      it.over += dt;
+      if (it.over >= BURN) { it.st = "contam"; G.stats.contam++; const [cx, cy] = center(s); toast(cx, cy + 44, "Contaminated!", C.bad, 2.2); }
+    }
+  }
+  // events
+  while (events.length) {
+    const ev = events.shift(); const p = G.players[ev.p]; if (!p) continue;
+    if (ev.k === "pick") pick(p);
+    else if (ev.k === "useDown") { p.useHeld = true; p.useT = 0; p.useTarget = targetKey(p); }
+    else if (ev.k === "useUp") {
+      if (p.useHeld && p.useT <= TAP && p.useTarget) { const s = G.stations.get(p.useTarget); if (s) tap(p, s); }
+      p.useHeld = false;
+    }
+  }
+  // players
+  for (const p of G.players) {
+    const [ax, ay] = axis(p);
+    if (ax || ay) {
+      if (ax && ay) { if (!((p.fx === ax && p.fy === 0) || (p.fy === ay && p.fx === 0))) { p.fx = ax; p.fy = 0; } }
+      else { p.fx = ax; p.fy = ay; }
+      const n = Math.hypot(ax, ay), v = SPEED * dt / n;
+      const nx = p.x + ax * v; if (!collides(nx, p.y, p)) p.x = nx;
+      const ny = p.y + ay * v; if (!collides(p.x, ny, p)) p.y = ny;
+      p.walk += dt;
+    }
+    if (p.useHeld) {
+      p.useT += dt;
+      const k = targetKey(p);
+      if (k !== p.useTarget) p.useHeld = false;
+      else if (k && p.useT > TAP) work(p, G.stations.get(k), dt);
+    }
+  }
+  for (const t of G.toasts) t.t += dt;
+  G.toasts = G.toasts.filter(t => t.t < t.life);
+  updateHud();
+}
+
+// ---------- drawing ----------
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function text(s, x, y, font, color, align, base) { ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align || "left"; ctx.textBaseline = base || "alphabetic"; ctx.fillText(s, x, y); }
+function fitText(s, maxW, font) { ctx.font = font; if (ctx.measureText(s).width <= maxW) return s; while (s.length > 1 && ctx.measureText(s + "…").width > maxW) s = s.slice(0, -1); return s + "…"; }
+
+function drawFloor() {
+  ctx.fillStyle = C.floor; ctx.fillRect(0, FY, W, ROWS * T);
+  ctx.strokeStyle = C["floor-line"]; ctx.lineWidth = 1;
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    if (MAP[r][c] !== ".") continue;
+    ctx.strokeRect(c * T + 0.5, FY + r * T + 0.5, T / 2, T / 2);
+    ctx.strokeRect(c * T + T / 2 + 0.5, FY + r * T + T / 2 + 0.5, T / 2 - 1, T / 2 - 1);
+  }
+}
+
+function drawStation(s, now) {
+  const x = s.c * T, y = FY + s.r * T;
+  // epoxy bench top
+  ctx.fillStyle = C["bench-edge"]; ctx.fillRect(x, y, T, T);
+  ctx.fillStyle = C["bench-top"]; ctx.fillRect(x + 2, y + 2, T - 4, T - 6);
+  const steelBox = () => { rr(x + 6, y + 5, T - 12, T - 14, 4); ctx.fillStyle = C.steel; ctx.fill(); ctx.strokeStyle = C["steel-hi"]; ctx.lineWidth = 1.5; ctx.stroke(); };
+  const label = (s2) => text(s2, x + T / 2, y + T - 6, FONT.mono(700, 8.5), C["steel-hi"], "center");
+  switch (s.type) {
+    case "rack": {
+      ctx.strokeStyle = C.steel; ctx.lineWidth = 2;
+      for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(x + 10 + i * 22, y + 8); ctx.lineTo(x + 10 + i * 22, y + 46); ctx.stroke(); }
+      const n = Math.min(s.count, 7);
+      for (let i = 0; i < n; i++) { ctx.beginPath(); ctx.ellipse(x + T / 2, y + 42 - i * 5, 19, 6, 0, 0, Math.PI * 2); ctx.fillStyle = C["steel-hi"]; ctx.fill(); ctx.strokeStyle = C.steel; ctx.lineWidth = 1; ctx.stroke(); }
+      text("RACK ×" + s.count, x + T / 2, y + T - 6, FONT.mono(700, 8.5), C["steel-hi"], "center");
+      break;
+    }
+    case "freezer": {
+      steelBox();
+      rr(x + 11, y + 10, T - 22, 26, 3); ctx.fillStyle = C.s4; ctx.globalAlpha = 0.55; ctx.fill(); ctx.globalAlpha = 1;
+      text("−80°C", x + T / 2, y + 27, FONT.mono(700, 10), C["steel-ink"], "center");
+      for (let i = 0; i < 4; i++) { ctx.fillStyle = C.strain[i]; ctx.fillRect(x + 12 + i * 10, y + 39, 7, 5); }
+      label("FREEZER"); break;
+    }
+    case "bench": {
+      ctx.fillStyle = C["steel-hi"]; ctx.globalAlpha = 0.18; ctx.fillRect(x + 6, y + 6, T - 12, T - 18); ctx.globalAlpha = 1;
+      // tip box
+      ctx.fillStyle = C.s4; ctx.globalAlpha = 0.6; ctx.fillRect(x + 8, y + 9, 16, 12); ctx.globalAlpha = 1;
+      ctx.fillStyle = C["steel-hi"]; for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) ctx.fillRect(x + 10 + i * 5, y + 11 + j * 5, 2, 2);
+      // pipette
+      ctx.strokeStyle = C["steel-hi"]; ctx.lineWidth = 3; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(x + 48, y + 8); ctx.lineTo(x + 54, y + 30); ctx.stroke(); ctx.lineCap = "butt";
+      label("DESIGN"); break;
+    }
+    case "incubator": {
+      steelBox();
+      rr(x + 11, y + 9, T - 22, 32, 4); ctx.fillStyle = C.hazard; ctx.globalAlpha = 0.28; ctx.fill(); ctx.globalAlpha = 1;
+      text("37.0", x + 49, y + 50, FONT.mono(700, 7.5), C["steel-ink"], "right");
+      label("INCUBATOR"); break;
+    }
+    case "reader": {
+      rr(x + 5, y + 5, T - 10, T - 14, 4); ctx.fillStyle = C["steel-ink"]; ctx.fill(); ctx.strokeStyle = C.steel; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = C.steel;
+      for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++) { ctx.beginPath(); ctx.arc(x + 13 + i * 5.3, y + 12 + j * 5.5, 1.5, 0, 7); ctx.fill(); }
+      text("OD600", x + T / 2, y + 44, FONT.mono(700, 8), C.hazard, "center");
+      label("READER"); break;
+    }
+    case "autoclave": {
+      steelBox();
+      ctx.beginPath(); ctx.arc(x + T / 2, y + 26, 15, 0, 7); ctx.fillStyle = C["steel-hi"]; ctx.fill(); ctx.strokeStyle = C["steel-ink"]; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + T / 2 - 9, y + 26); ctx.lineTo(x + T / 2 + 9, y + 26); ctx.stroke();
+      label("121°C WASH"); break;
+    }
+    case "bin": {
+      ctx.beginPath(); ctx.arc(x + T / 2, y + 27, 20, 0, 7); ctx.fillStyle = C.hazard; ctx.fill(); ctx.strokeStyle = C["hazard-ink"]; ctx.lineWidth = 1.5; ctx.stroke();
+      for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + i * 2 * Math.PI / 3; ctx.beginPath(); ctx.arc(x + T / 2 + Math.cos(a) * 8, y + 27 + Math.sin(a) * 8, 5.5, 0, 7); ctx.strokeStyle = C["hazard-ink"]; ctx.lineWidth = 2; ctx.stroke(); }
+      label("BIN"); break;
+    }
+    case "desk": {
+      ctx.save(); ctx.translate(x + 30, y + 26); ctx.rotate(-0.12); ctx.fillStyle = C.coat; ctx.fillRect(-14, -16, 28, 34);
+      ctx.fillStyle = C.line; for (let i = 0; i < 5; i++) ctx.fillRect(-10, -11 + i * 6, 20 - (i % 2) * 6, 1.5); ctx.restore();
+      ctx.strokeStyle = C.hazard; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + 46, y + 12); ctx.lineTo(x + 54, y + 38); ctx.stroke();
+      label("WRITE"); break;
+    }
+    case "hatch": {
+      rr(x + 6, y + 8, T - 12, T - 18, 3); ctx.fillStyle = C["steel-ink"]; ctx.fill(); ctx.strokeStyle = C.hazard; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = C.bench; ctx.fillRect(x + 14, y + 20, T - 28, 6);
+      text("JOURNAL", x + T / 2, y + 40, FONT.mono(700, 8.5), C.hazard, "center");
+      label("SUBMIT"); break;
+    }
+    default: {
+      ctx.fillStyle = C["steel-hi"]; ctx.globalAlpha = 0.06; ctx.fillRect(x + 4, y + 4, T - 8, 10); ctx.globalAlpha = 1;
+    }
+  }
+  if (s.item) {
+    const iy = s.type === "incubator" ? y + 25 : y + 28;
+    drawItem(s.item, x + T / 2, iy, now, s.type === "incubator");
+  }
+  // progress
+  const showWork = s.work > 0 && s.work < 1;
+  if (showWork) { ctx.fillStyle = C["bench-edge"]; ctx.fillRect(x + 6, y + T - 15, T - 12, 7); ctx.fillStyle = C.hazard; ctx.fillRect(x + 7, y + T - 14, (T - 14) * s.work, 5); }
+  if (s.type === "incubator" && s.item && s.item.kind === "plate") {
+    const it = s.item, cx = x + T / 2, cy = y + 25;
+    if (it.st === "prep") {
+      ctx.strokeStyle = C.good; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, 20, -Math.PI / 2, -Math.PI / 2 + it.grow * Math.PI * 2); ctx.stroke();
+    } else if (it.st === "grown") {
+      const danger = it.over > WARN;
+      const blink = danger && (reduceMotion.matches || Math.floor(now * 6) % 2 === 0);
+      ctx.strokeStyle = danger ? C.bad : C.good; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(cx, cy, 20, -Math.PI / 2, -Math.PI / 2 + (1 - it.over / BURN) * Math.PI * 2); ctx.stroke();
+      if (blink) { ctx.beginPath(); ctx.arc(x + T - 10, y + 10, 8, 0, 7); ctx.fillStyle = C.bad; ctx.fill(); text("!", x + T - 10, y + 14, FONT.mono(700, 12), C.paper, "center"); }
+      else if (!danger) { ctx.beginPath(); ctx.arc(x + T - 10, y + 10, 7, 0, 7); ctx.fillStyle = C.good; ctx.fill(); text("✓", x + T - 10, y + 14, FONT.mono(700, 10), C.paper, "center"); }
+    }
+  }
+}
+
+function drawItem(it, x, y, now, small) {
+  if (it.kind === "paper") {
+    const t = ticketById(it.tk);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(0.08);
+    ctx.fillStyle = C.coat; ctx.fillRect(-12, -15, 24, 30); ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.strokeRect(-12, -15, 24, 30);
+    ctx.fillStyle = t ? C.strain[t.slot] : C.muted; ctx.fillRect(-12, -15, 24, 6);
+    ctx.fillStyle = C.line; for (let i = 0; i < 3; i++) ctx.fillRect(-8, -4 + i * 5, 16, 1.5);
+    ctx.restore();
+    return;
+  }
+  const r = small ? 14 : 16;
+  const t = plateTicket(it);
+  const col = t ? C.strain[t.slot] : C.muted;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 7);
+  ctx.fillStyle = it.st === "clean" ? C["steel-hi"] : it.st === "dirty" ? C.dirty : C.agar;
+  ctx.fill(); ctx.strokeStyle = C.coat; ctx.lineWidth = 2; ctx.stroke();
+  if (it.st === "inoc" || it.st === "prep" || it.st === "grown") {
+    ctx.beginPath(); ctx.arc(x, y, r - 3, 0, 7); ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke();
+  }
+  if (it.st === "prep" || it.st === "grown") {
+    const g = it.st === "grown" ? 1 : it.grow;
+    const n = Math.floor(3 + g * 9);
+    for (let i = 0; i < n; i++) {
+      const a = i * 2.39996, d = (r - 6) * Math.sqrt((i + 0.5) / 12);
+      ctx.beginPath(); ctx.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, 1 + g * 1.6, 0, 7); ctx.fillStyle = col; ctx.fill();
+    }
+    if (it.st === "prep" && g === 0) { ctx.fillStyle = col; ctx.fillRect(x - 5, y - 1, 10, 2); }
+  }
+  if (it.st === "contam") {
+    ctx.fillStyle = C.contam;
+    for (let i = 0; i < 6; i++) { const a = i * 1.7, d = (i % 3) * 4; ctx.beginPath(); ctx.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, 5 - (i % 2) * 1.5, 0, 7); ctx.fill(); }
+  }
+  if (it.st === "dirty") { ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x - 3, y + 2, 6, 0.3, 2.4); ctx.stroke(); ctx.beginPath(); ctx.arc(x + 4, y - 3, 4, 3, 5); ctx.stroke(); }
+}
+
+function drawPlayer(p, now) {
+  const col = p.id === 0 ? C.p1 : C.p2;
+  const bob = reduceMotion.matches ? 0 : Math.sin(p.walk * 14) * 1.5;
+  ctx.beginPath(); ctx.ellipse(p.x, p.y + 16, 20, 7, 0, 0, 7); ctx.fillStyle = C["floor-line"]; ctx.fill();
+  // body (lab coat), shoulders across facing
+  ctx.save(); ctx.translate(p.x, p.y + bob * 0.3);
+  const ang = Math.atan2(p.fy, p.fx);
+  ctx.rotate(ang);
+  rr(-13, -19, 26, 38, 11); ctx.fillStyle = C.coat; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = col; ctx.fillRect(-4, -19, 3, 38);
+  ctx.restore();
+  // head
+  const hx = p.x + p.fx * 5, hy = p.y + p.fy * 5 - 4 + bob;
+  ctx.beginPath(); ctx.arc(hx, hy, 11, 0, 7); ctx.fillStyle = C.hair; ctx.fill();
+  if (goggles) {
+    ctx.strokeStyle = C.hazard; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(hx, hy, 11, ang - 1.1, ang + 1.1); ctx.stroke();
+  }
+  text(p.id === 0 ? "P1" : "P2", p.x, p.y - 27, FONT.mono(700, 10), col, "center");
+  if (p.held) drawItem(p.held, p.x + p.fx * 26, p.y + p.fy * 26 + 2, now, true);
+}
+
+function drawTargets() {
+  for (const p of G.players) {
+    const k = targetKey(p); if (!k) continue;
+    const s = G.stations.get(k);
+    ctx.strokeStyle = p.id === 0 ? C.p1 : C.p2; ctx.lineWidth = 3;
+    ctx.setLineDash([7, 5]); ctx.strokeRect(s.c * T + 2.5, FY + s.r * T + 2.5, T - 5, T - 5); ctx.setLineDash([]);
+  }
+}
+
+function pendingFor(t) {
+  let n = 0;
+  const chk = (it) => { if (it && it.kind === "plate" && it.tk === t.id && (it.st === "prep" || it.st === "grown")) n++; };
+  for (const s of G.stations.values()) chk(s.item);
+  for (const p of G.players) chk(p.held);
+  return n;
+}
+
+function drawRail(now) {
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, RAIL);
+  ctx.fillStyle = C.line; ctx.fillRect(0, RAIL - 2, W, 2);
+  for (let slot = 0; slot < 4; slot++) {
+    const x = 12 + slot * 237, y = 9, w = 228, h = 132;
+    const t = G.slots[slot];
+    if (!t) {
+      rr(x, y, w, h, 5); ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+      text("awaiting grant", x + w / 2, y + h / 2 + 4, FONT.body(400, 12), C.muted, "center");
+      continue;
+    }
+    const col = C.strain[slot];
+    rr(x, y, w, h, 5); ctx.fillStyle = C.paper; ctx.fill();
+    ctx.strokeStyle = t.flash > 0 ? col : C.line; ctx.lineWidth = t.flash > 0 ? 2 + 2 * t.flash : 1; ctx.stroke();
+    // header tab
+    ctx.save(); rr(x, y, w, h, 5); ctx.clip(); ctx.fillStyle = col; ctx.fillRect(x, y, w, 22); ctx.restore();
+    text("#" + t.id + " " + t.title.toUpperCase(), x + 8, y + 15.5, FONT.disp(800, 12.5), C.paper);
+    text(Math.ceil(t.timeLeft) + "s", x + w - 8, y + 15.5, FONT.mono(700, 12), C.paper, "right");
+    // bars
+    const n = t.post.length, bx = x + 8, bw = (w - 16) / n, top = y + 30, bh = 52;
+    const map = Bayes.argmax(t.post);
+    ctx.fillStyle = C.line; ctx.fillRect(bx, top + bh, w - 16, 1);
+    for (let i = 0; i < n; i++) {
+      const v = Math.max(0, Math.min(1, t.shown[i]));
+      const hh = v * bh;
+      ctx.fillStyle = col; ctx.globalAlpha = i === map ? 1 : 0.55;
+      ctx.fillRect(bx + i * bw + 2, top + bh - hh, bw - 4, hh); ctx.globalAlpha = 1;
+      ctx.fillStyle = C.line; ctx.globalAlpha = 0.6; ctx.fillRect(bx + i * bw + 2, top + bh - t.prior[i] * bh, bw - 4, 1.5); ctx.globalAlpha = 1;
+      text(t.labels[i], bx + i * bw + bw / 2, top + bh + 11, FONT.mono(i === map ? 700 : 500, n > 6 ? 8.5 : 9), i === map ? C.ink : C.muted, "center");
+    }
+    // footer
+    const pend = pendingFor(t);
+    let left = t.nExp + " read" + (pend ? " · " + pend + " growing" : "");
+    if (goggles) left += " · H " + Bayes.entropy(t.post).toFixed(2) + "b";
+    text(fitText(left, 124, FONT.mono(500, 9.5)), x + 8, y + 112, FONT.mono(500, 9.5), C.muted);
+    const conf = t.post[map];
+    text((conf >= 0.9 ? "ready " : "MAP ") + t.labels[map] + " " + Math.round(conf * 100) + "%", x + w - 8, y + 112, FONT.mono(700, 10), conf >= 0.9 ? C.good : C.ink, "right");
+    // last result
+    const last = t.history[t.history.length - 1];
+    // timer bar
+    const frac = Math.max(0, t.timeLeft / t.timeMax);
+    ctx.fillStyle = C.line; ctx.fillRect(x + 8, y + 120, w - 16, 5);
+    ctx.fillStyle = frac < 0.25 ? C.bad : col; ctx.fillRect(x + 8, y + 120, (w - 16) * frac, 5);
+    if (last && t.flash > 0) {
+      const s = t.exps[last.e].label + " → " + (last.y ? t.posWord : t.negWord);
+      ctx.globalAlpha = Math.min(1, t.flash * 2);
+      text(fitText(s, w - 20, FONT.mono(700, 9.5)), x + w / 2, y + 36, FONT.mono(700, 9.5), C.ink, "center");
+      ctx.globalAlpha = 1;
+    }
+    if (auto && GEM) drawGeminiTag(t, x, y, w);
+  }
+}
+
+function chip(x, y, w, h, t, selected, sub, pcol) {
+  rr(x, y, w, h, 4); ctx.fillStyle = C.bg; ctx.fill();
+  ctx.strokeStyle = selected ? pcol : C.line; ctx.lineWidth = selected ? 3 : 1; ctx.stroke();
+  ctx.fillStyle = C.strain[t.slot]; ctx.fillRect(x + 5, y + 6, 10, h - 12);
+  text(fitText("#" + t.id + " " + t.title, w - 26, FONT.body(600, 11.5)), x + 21, y + 15, FONT.body(600, 11.5), C.ink);
+  if (sub) text(fitText(sub, w - 26, FONT.mono(500, 9.5)), x + 21, y + 29, FONT.mono(500, 9.5), C.muted);
+}
+
+function drawPanel(p, x, y, w, h) {
+  const pcol = p.id === 0 ? C.p1 : C.p2;
+  const keyPick = nPlayers === 1 ? "Space" : p.id === 0 ? "Space" : "Enter";
+  const keyUse = nPlayers === 1 ? "F" : p.id === 0 ? "F" : "R-Shift";
+  rr(x + 6, y + 6, 26, 16, 3); ctx.fillStyle = pcol; ctx.fill();
+  text("P" + (p.id + 1), x + 19, y + 18, FONT.mono(700, 10.5), C.paper, "center");
+  const k = targetKey(p), s = k ? G.stations.get(k) : null;
+  const tl = activeTickets();
+  const tx = x + 40;
+  const it = s && s.item;
+  // bench design view
+  if (s && s.type === "bench" && it && it.kind === "plate" && (it.st === "inoc" || it.st === "prep") && plateTicket(it)) {
+    const t = plateTicket(it), col = C.strain[t.slot];
+    const sel = s.sel % t.exps.length;
+    const eigs = t.exps.map(e => Bayes.eig(t.post, e.lik));
+    const best = Bayes.argmax(eigs);
+    const e = t.exps[sel];
+    let head = "#" + t.id + " " + e.long;
+    if (goggles) head += "  ·  P(" + (t.type === "gene" ? "lost" : "resp") + ")=" + Bayes.predictive(t.post, e.lik).toFixed(2) + "  EIG " + eigs[sel].toFixed(2) + " b";
+    text(fitText(head, w - 52, FONT.body(600, 12)), tx, y + 18, FONT.body(600, 12), C.ink);
+    const cw = 62, ch = goggles ? 50 : 40, gap = 4, perRow = Math.max(1, Math.floor((w - 12) / (cw + gap)));
+    t.exps.forEach((ex, i) => {
+      const cx = x + 8 + (i % perRow) * (cw + gap), cy = y + 28 + Math.floor(i / perRow) * (ch + gap);
+      if (cy + ch > y + h) return;
+      rr(cx, cy, cw, ch, 3); ctx.fillStyle = C.bg; ctx.fill();
+      const isSel = i === sel;
+      ctx.strokeStyle = isSel ? pcol : (goggles && i === best ? C.hazard : C.line); ctx.lineWidth = isSel ? 3 : goggles && i === best ? 2 : 1; ctx.stroke();
+      if (t.type === "gene") {
+        const K = t.labels.length, sq = 7, sx = cx + (cw - K * (sq + 2)) / 2;
+        for (let g = 0; g < K; g++) {
+          const inP = ex.pool.includes(g);
+          ctx.fillStyle = inP ? col : C.paper; ctx.fillRect(sx + g * (sq + 2), cy + 5, sq, sq);
+          ctx.strokeStyle = inP ? col : C.line; ctx.lineWidth = 1; ctx.strokeRect(sx + g * (sq + 2) + 0.5, cy + 5.5, sq - 1, sq - 1);
+        }
+      } else {
+        const n = DOSES.length, sx = cx + 6, sw = (cw - 12) / n;
+        for (let d = 0; d < n; d++) { ctx.fillStyle = d === ex.dose ? col : C.line; const hh = 3 + d * 1.1; ctx.fillRect(sx + d * sw + 1, cy + 14 - hh, sw - 2, hh); }
+      }
+      text(fitText(ex.label, cw - 6, FONT.mono(600, 9)), cx + cw / 2, cy + 25, FONT.mono(600, 9), C.ink, "center");
+      if (goggles) {
+        const v = eigs[i];
+        ctx.fillStyle = C.line; ctx.fillRect(cx + 5, cy + 30, cw - 10, 4);
+        ctx.fillStyle = i === best ? C.hazard : C.muted; ctx.fillRect(cx + 5, cy + 30, (cw - 10) * Math.min(1, v), 4);
+        text(v.toFixed(2) + " b", cx + cw / 2, cy + 45, FONT.mono(700, 9), i === best ? C.ink : C.muted, "center");
+      }
+      if (it.st === "prep" && it.exp === i) { ctx.beginPath(); ctx.arc(cx + 6, cy + 6, 4, 0, 7); ctx.fillStyle = C.good; ctx.fill(); }
+    });
+    text("tap " + keyUse + ": next  ·  hold " + keyUse + ": prepare" + (goggles ? "" : "  ·  G: goggles"), x + w - 8, y + 18, FONT.mono(500, 9), C.muted, "right");
+    return;
+  }
+  // ticket chooser (freezer / desk)
+  const chooser = s && ((s.type === "freezer" && it && it.st === "clean") || (s.type === "desk" && !it));
+  if (chooser) {
+    const isDesk = s.type === "desk";
+    text(isDesk ? "Write up a paper claiming the most probable hypothesis" : "Inoculate this plate for which grant?", tx, y + 18, FONT.body(600, 12), C.ink);
+    if (!tl.length) { text("No open grants right now.", tx, y + 44, FONT.body(400, 12), C.muted); return; }
+    const cw = Math.min(150, (w - 16) / tl.length - 6);
+    tl.forEach((t, i) => {
+      const m = Bayes.argmax(t.post);
+      const sub = isDesk ? "claim " + t.labels[m] + " · " + Math.round(t.post[m] * 100) + "%" : t.timeLeft.toFixed(0) + "s left · " + t.nExp + " read";
+      chip(x + 8 + i * (cw + 6), y + 30, cw, 36, t, i === s.sel % tl.length, sub, pcol);
+    });
+    text("tap " + keyUse + ": switch grant  ·  hold " + keyUse + ": " + (isDesk ? "write" : "inoculate"), tx, y + 86, FONT.mono(500, 9.5), C.muted);
+    if (isDesk) text("Publish only when you trust it. A wrong claim is retracted (−60).", tx, y + 102, FONT.body(400, 11), C.muted);
+    return;
+  }
+  // general status + hint
+  let title = s ? NAMES[s.type] : "Walking";
+  let lines = [];
+  const held = p.held;
+  if (s) {
+    if (s.type === "rack") lines.push(s.count + " clean plate" + (s.count === 1 ? "" : "s") + " in the rack.");
+    if (s.type === "incubator" && it && it.kind === "plate") {
+      if (it.st === "prep") lines.push("Growing: " + Math.round(it.grow * 100) + "%. Ready in " + ((1 - it.grow) * GROW).toFixed(1) + " s.");
+      else if (it.st === "grown") lines.push(it.over > WARN ? "Take it out now! Contamination in " + (BURN - it.over).toFixed(1) + " s." : "Grown. " + keyPick + " to take it to the reader.");
+      else if (it.st === "contam") lines.push("Contaminated. Take it to the bin.");
+    }
+    if (s.type === "reader" && it && it.st === "grown") lines.push("Hold " + keyUse + " to read the plate. The outcome updates the grant's posterior.");
+    if (s.type === "autoclave" && it && it.st === "dirty") lines.push("Hold " + keyUse + " to sterilise. The plate goes back to the rack.");
+    if (s.type === "hatch" && held && held.kind === "paper") lines.push(keyPick + " to submit the paper.");
+    if (s.type === "bench" && !it && !(held && held.kind === "plate" && (held.st === "inoc" || held.st === "prep"))) lines.push("Bring an inoculated plate here to choose an experiment.");
+    if (it && !lines.length) lines.push(keyPick + " to pick up.");
+    if (!it && held && accepts(s, held)) lines.push(keyPick + " to put down.");
+  }
+  const hint = {
+    null: "Get a clean plate from the rack (top left).",
+    clean: "Take it to the strain freezer to inoculate it for a grant.",
+    inoc: "Design bench: choose the experiment this plate will run.",
+    prep: "Incubator: 6 s to grow. Collect it before it contaminates.",
+    grown: "Plate reader (top right): hold " + keyUse + " to read.",
+    contam: "Contaminated. Put it in a bin, then wash the plate.",
+    dirty: "Autoclave (right wall): hold " + keyUse + " to wash.",
+    paper: "Journal hatch (bottom left): " + keyPick + " to submit.",
+  };
+  const hk = held ? (held.kind === "paper" ? "paper" : held.st) : "null";
+  if (held) {
+    const t = held.kind === "paper" ? ticketById(held.tk) : plateTicket(held);
+    let desc = held.kind === "paper" ? "Holding a paper" : "Holding a " + ({ clean: "clean plate", inoc: "inoculated plate", prep: "designed plate", grown: "grown plate", contam: "contaminated plate", dirty: "used plate" })[held.st];
+    if (t) desc += " for #" + t.id;
+    if (held.kind === "plate" && held.exp >= 0 && t && (held.st === "prep" || held.st === "grown")) desc += " (" + t.exps[held.exp].label + ")";
+    if (held.kind === "paper") desc += t ? " claiming " + t.labels[held.claim] + (t.type === "dose" ? " µM" : "") : " (grant closed)";
+    title += "  ·  " + desc;
+  }
+  text(fitText(title, w - 52, FONT.body(600, 12)), tx, y + 18, FONT.body(600, 12), C.ink);
+  let ly = y + 42;
+  for (const l of lines) { text(fitText(l, w - 24, FONT.body(400, 12)), x + 12, ly, FONT.body(400, 12), C.ink); ly += 18; }
+  text(fitText("Next: " + hint[hk], w - 24, FONT.body(400, 12)), x + 12, ly, FONT.body(400, 12), C.muted);
+}
+
+function drawHud() {
+  ctx.fillStyle = C.paper; ctx.fillRect(0, HUDY, W, HUDH);
+  ctx.fillStyle = C.line; ctx.fillRect(0, HUDY, W, 2);
+  if (auto && GEM) { drawPanel(G.players[0], 0, HUDY + 2, 430, HUDH - 2); drawGemini(430, HUDY + 2, W - 430, HUDH - 2); return; }
+  const n = G.players.length, w = W / n;
+  G.players.forEach((p, i) => { drawPanel(p, i * w, HUDY + 2, w, HUDH - 2); if (i > 0) { ctx.fillStyle = C.line; ctx.fillRect(i * w, HUDY + 8, 1.5, HUDH - 16); } });
+}
+
+function drawToasts() {
+  for (const t of G.toasts) {
+    const a = 1 - t.t / t.life;
+    const dy = reduceMotion.matches ? 0 : -t.t * 18;
+    ctx.globalAlpha = Math.max(0, Math.min(1, a * 1.6));
+    ctx.font = FONT.body(600, 12.5);
+    const tw = ctx.measureText(t.text).width;
+    let x = Math.max(tw / 2 + 6, Math.min(W - tw / 2 - 6, t.x)), y = Math.min(HUDY - 10, t.y + dy);
+    rr(x - tw / 2 - 6, y - 13, tw + 12, 19, 4); ctx.fillStyle = C.paper; ctx.fill(); ctx.strokeStyle = t.color; ctx.lineWidth = 1.5; ctx.stroke();
+    text(t.text, x, y, FONT.body(600, 12.5), t.color, "center");
+    ctx.globalAlpha = 1;
+  }
+}
+
+function draw(now) {
+  ctx.clearRect(0, 0, W, H);
+  if (!G) { drawIdle(); return; }
+  drawRail(now);
+  drawFloor();
+  for (const s of G.stations.values()) drawStation(s, now);
+  drawTargets();
+  G.players.slice().sort((a, b) => a.y - b.y).forEach(p => drawPlayer(p, now));
+  drawHud();
+  drawToasts();
+}
+let idleG = null;
+function drawIdle() {
+  // The lab with two example grants, behind the start sheet.
+  if (!idleG) { const sv = seed, np = nPlayers; seed = 4242; newGame(1); G.players = []; idleG = G; G = null; seed = sv; nPlayers = np; }
+  G = idleG;
+  drawRail(0); drawFloor(); for (const s of G.stations.values()) drawStation(s, 0);
+  ctx.fillStyle = C.paper; ctx.fillRect(0, HUDY, W, HUDH);
+  G = null;
+}
+
+// ---------- DOM ----------
+const $ = (id) => document.getElementById(id);
+const menuEl = $("menu"), pauseEl = $("pause"), endEl = $("end");
+function setGoggles(v) {
+  goggles = v;
+  const b = $("gogglesBtn"); b.classList.toggle("on", v); b.textContent = "G · goggles " + (v ? "on" : "off");
+}
+$("gogglesBtn").addEventListener("click", (e) => { setGoggles(!goggles); e.currentTarget.blur(); });
+function updateHud() {
+  $("hudScore").textContent = G.score;
+  const s = Math.ceil(G.timeLeft); $("hudTime").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  $("hudPapers").textContent = G.stats.papers;
+}
+function setState(s) {
+  state = s;
+  menuEl.hidden = s !== "menu"; pauseEl.hidden = s !== "pause"; endEl.hidden = s !== "end";
+  if (s === "play") { keysDown.clear(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }
+  if (s === "pause") $("btnResume").focus();
+}
+function readSeed() {
+  const v = parseInt($("seedIn").value, 10);
+  return Number.isFinite(v) && v > 0 ? v : 1 + Math.floor(Math.random() * 99999);
+}
+function start(players) {
+  auto = null; setSpeedPill(); syncGemLine();
+  seed = readSeed(); $("seedIn").value = seed;
+  newGame(players); events.length = 0; updateHud(); setState("play");
+}
+function endRound() {
+  const st = G.stats;
+  const eff = st.sumMax > 0 ? st.sumEig / st.sumMax : 0;
+  const stars = G.score >= 800 ? 3 : G.score >= 450 ? 2 : G.score >= 200 ? 1 : 0;
+  let best = 0;
+  if (!auto) try { best = parseInt(localStorage.getItem("bench-pressure-best") || "0", 10) || 0; if (G.score > best) localStorage.setItem("bench-pressure-best", String(G.score)); } catch (e) { best = 0; }
+  $("endStars").innerHTML = [0, 1, 2].map(i => i < stars ? "★" : '<span class="off">★</span>').join("");
+  $("endStars").setAttribute("aria-label", stars + " of 3 stars");
+  $("endTitle").textContent = ["Lab closed for review", "Postdoc material", "Tenure track", "Field-defining lab"][stars];
+  $("endLine").textContent = "Score " + G.score + (G.score > best && best > 0 ? ", a new best (previous " + best + ")." : best > 0 ? ". Best on this device: " + Math.max(best, G.score) + "." : ".") + " Seed " + seed + ", " + (nPlayers === 1 ? "solo" : "two players") + ".";
+  const items = [
+    ["Score", G.score], ["Papers", st.papers], ["Retractions", st.retractions], ["Expired grants", st.expired],
+    ["Plates read", st.experiments], ["Bits gathered", st.bits.toFixed(2)], ["Design efficiency", st.sumMax > 0 ? Math.round(eff * 100) + "%" : "–"], ["Contaminated", st.contam],
+  ];
+  $("endStats").innerHTML = items.map(([k, v]) => `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span></div>`).join("");
+  $("endCmp").hidden = true;
+  if (auto && GEM) renderReplayEnd();
+  $("btnAgain").textContent = auto ? "Watch again" : "Play again";
+  setState("end");
+  $("btnAgain").focus();
+}
+$("btnSolo").addEventListener("click", () => start(1));
+$("btnDuo").addEventListener("click", () => start(2));
+$("btnResume").addEventListener("click", () => setState("play"));
+$("btnQuit").addEventListener("click", () => { endRound(); });
+$("btnAgain").addEventListener("click", () => auto ? startReplay(auto.trace) : start(nPlayers));
+$("btnMenu").addEventListener("click", () => { G = null; auto = null; setSpeedPill(); syncGemLine(); setState("menu"); });
+$("speedBtn").addEventListener("click", (e) => { speedIx = (speedIx + 1) % SPEEDS.length; setSpeedPill(); e.currentTarget.blur(); });
+function initWatch() {
+  if (!GEM || !GEM.traces.length) return;
+  const sel = $("traceSel");
+  GEM.traces.forEach((tr, i) => { const o = document.createElement("option"); o.value = i; o.textContent = "Seed " + tr.seed + " · " + tr.final.score + " pts" + (tr.label ? " · " + tr.label : ""); sel.appendChild(o); });
+  $("watchRow").hidden = false;
+  $("btnWatch").addEventListener("click", () => startReplay(GEM.traces[+sel.value || 0]));
+}
+$("seedIn").value = 1 + Math.floor(Math.random() * 99999);
+if (matchMedia("(pointer: coarse)").matches || innerWidth < 720) $("touchNote").hidden = false;
+
+/*BOT-START*/
+// Scripted lab hands for one scientist: BFS walking plus pick/use timing. The science
+// (which grant, which experiment, when to publish) comes from a policy via decide().
+// The offline Gemini harness runs this same code, so a recorded trace replays exactly.
+const DT = 1 / 60;
+let auto = null;
+function makeBot() {
+  const at = (type, c, r) => { for (const s of G.stations.values()) if (s.type === type && (c == null || (s.c === c && s.r === r))) return key(s.c, s.r); return null; };
+  const K = { rack: at("rack"), freezer: at("freezer"), bench: at("bench", 5, 0), reader: at("reader"), auto: at("autoclave"), bin: at("bin"), desk: at("desk"), hatch: at("hatch") };
+  const incs = [...G.stations.values()].filter(s => s.type === "incubator").map(s => key(s.c, s.r));
+  const STAND = {};
+  for (const [k, s] of G.stations) for (const [dc, dr] of [[0, 1], [0, -1], [-1, 0], [1, 0]]) {
+    if (!solidAt(s.c + dc, s.r + dr)) { STAND[k] = { c: s.c + dc, r: s.r + dr, fx: -dc, fy: -dr }; break; }
+  }
+  const b = { axis: [0, 0], task: null, step: 0, lastSig: "", lastAsk: -99, log: [] };
+  const P = () => G.players[0];
+  const S = (k) => G.stations.get(k);
+  const tileOf = (p) => [Math.floor(p.x / T), Math.floor((p.y - FY) / T)];
+  function bfs(from, to) {
+    const prev = new Map([[from.join(), null]]), q = [from];
+    while (q.length) {
+      const cur = q.shift();
+      if (cur[0] === to[0] && cur[1] === to[1]) break;
+      for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const n = [cur[0] + dc, cur[1] + dr];
+        if (solidAt(n[0], n[1]) || prev.has(n.join())) continue;
+        prev.set(n.join(), cur); q.push(n);
+      }
+    }
+    const path = []; let c = to;
+    if (!prev.has(to.join())) return [from];
+    while (c) { path.unshift(c); c = prev.get(c.join()); }
+    return path;
+  }
+  function* goTo(k) {
+    const sd = STAND[k];
+    for (let tries = 0; tries < 3; tries++) {
+      for (const [c, r] of bfs(tileOf(P()), [sd.c, sd.r])) {
+        const tx = c * T + T / 2, ty = FY + r * T + T / 2;
+        for (let g = 0; g < 240; g++) {
+          const dx = tx - P().x, dy = ty - P().y;
+          if (Math.abs(dx) > 2.5) b.axis = [Math.sign(dx), 0];
+          else if (Math.abs(dy) > 2.5) b.axis = [0, Math.sign(dy)];
+          else break;
+          yield;
+        }
+      }
+      b.axis = [sd.fx, sd.fy]; yield; b.axis = [0, 0];
+      if (targetKey(P()) === k) return true;
+    }
+    return false;
+  }
+  function* pickIt() { events.push({ p: 0, k: "pick" }); yield; }
+  function* tapIt() { events.push({ p: 0, k: "useDown" }); yield; events.push({ p: 0, k: "useUp" }); yield; }
+  function* hold(done, max) {
+    events.push({ p: 0, k: "useDown" }); yield;
+    for (let t = 0; !done() && t < (max || 4); t += DT) yield;
+    events.push({ p: 0, k: "useUp" }); yield;
+    return done();
+  }
+  // Used plates are parked in the autoclave and washed in idle moments.
+  function* stow() {
+    yield* goTo(K.auto);
+    if (S(K.auto).item) yield* hold(() => !S(K.auto).item);
+    yield* pickIt();
+  }
+  function* washParked() { yield* goTo(K.auto); yield* hold(() => !S(K.auto).item); }
+  function* cleanup() {
+    const h = P().held; if (!h) return;
+    if (h.kind === "paper") { yield* goTo(K.bin); yield* pickIt(); return; }
+    if (h.st === "clean") { yield* goTo(K.rack); yield* pickIt(); return; }
+    if (h.st !== "dirty") { yield* goTo(K.bin); yield* pickIt(); }
+    if (P().held && P().held.st === "dirty") yield* stow();
+  }
+  function* service(k) {
+    yield* goTo(k); yield* pickIt();
+    const h = P().held; if (!h) return;
+    if (h.st === "grown") {
+      yield* goTo(K.reader); yield* pickIt();
+      yield* hold(() => { const it = S(K.reader).item; return !it || it.st === "dirty"; });
+      if (!P().held) yield* pickIt();
+    }
+    yield* cleanup();
+  }
+  function* choose(sk, wantId) {
+    // Tap Use at a freezer/desk until it points at the wanted grant.
+    for (let g = 0; g < 8; g++) {
+      const tl = activeTickets(), i = tl.findIndex(t => t.id === wantId);
+      if (i < 0) return false;
+      if (S(sk).sel % tl.length === i) return true;
+      yield* tapIt();
+    }
+    return false;
+  }
+  function* run(tk, ei) {
+    yield* goTo(K.rack); yield* pickIt();
+    if (!P().held) return;
+    yield* goTo(K.freezer); yield* pickIt();
+    const fz = S(K.freezer);
+    if (!fz.item) return;
+    const okT = yield* choose(K.freezer, tk);
+    if (okT) yield* hold(() => fz.item && fz.item.st === "inoc", 3);
+    yield* pickIt();
+    const h = P().held;
+    if (!h || h.st !== "inoc" || h.tk !== tk || !ticketById(tk)) return;
+    yield* goTo(K.bench); yield* pickIt();
+    const bn = S(K.bench), t = ticketById(tk);
+    if (!t || bn.item !== h) { if (!P().held) yield* pickIt(); return; }
+    for (let g = 0; g < 16 && bn.sel % t.exps.length !== ei; g++) yield* tapIt();
+    const ok = yield* hold(() => bn.item && bn.item.st === "prep" && bn.item.exp === ei, 3);
+    yield* pickIt();
+    const inc = incs.find(k => !S(k).item);
+    if (!ok || !inc) return;
+    yield* goTo(inc); yield* pickIt();
+  }
+  function* publish(tk) {
+    yield* goTo(K.desk);
+    const dk = S(K.desk);
+    if (dk.item) { yield* pickIt(); yield* cleanup(); yield* goTo(K.desk); }
+    if (!(yield* choose(K.desk, tk))) return;
+    yield* hold(() => !!dk.item, 3);
+    yield* pickIt();
+    const h = P().held;
+    if (!h || h.kind !== "paper" || h.tk !== tk) return;
+    yield* goTo(K.hatch); yield* pickIt();
+  }
+  const canRun = () => S(K.rack).count > 0 && incs.some(k => !S(k).item) && G.tickets.length > 0;
+  const sig = () => (canRun() ? "R" : "-") + activeTickets().map(t => t.id + ":" + t.nExp).join(",");
+  b.canRun = canRun;
+  b.pending = (t) => {
+    const out = [];
+    for (const k of incs) { const it = S(k).item; if (it && it.kind === "plate" && it.tk === t.id && (it.st === "prep" || it.st === "grown")) out.push({ e: it.exp, ready: it.st === "grown" ? 0 : (1 - it.grow) * GROW }); }
+    return out;
+  };
+  b.start = (gen) => { b.task = gen; return b.tick(); };
+  b.tick = () => {
+    if (b.task) {
+      if (!b.task.next().done) return null;
+      b.task = null; b.axis = [0, 0];
+    }
+    let due = null;
+    for (const k of incs) { const it = S(k).item; if (it && it.kind === "plate" && (it.st === "grown" || it.st === "contam") && (!due || it.over > S(due).item.over)) due = k; }
+    if (due) return b.start(service(due));
+    if (P().held) return b.start(cleanup());
+    // Do not start new bench work when a plate is about to come out of the incubator.
+    const soon = incs.some(k => { const it = S(k).item; return it && it.kind === "plate" && it.st === "prep" && (1 - it.grow) * GROW < 2.5; });
+    if (soon || !G.tickets.length || (sig() === b.lastSig && G.t - b.lastAsk < 12)) {
+      if (S(K.auto).item) return b.start(washParked());
+      return null;
+    }
+    return "need";
+  };
+  // d = {action: "run"|"publish"|"wait", ticket, experiment, why}. Invalid actions become waits.
+  b.validate = (d) => {
+    const t = d && ticketById(d.ticket);
+    if (d && d.action === "run" && t && canRun() && Number.isInteger(d.experiment) && d.experiment >= 0 && d.experiment < t.exps.length) return "run";
+    if (d && d.action === "publish" && t) return "publish";
+    return "wait";
+  };
+  b.decide = (d) => {
+    const a = b.validate(d);
+    // Only a wait arms the "nothing changed" guard; after acting, ask again at the next idle moment.
+    b.lastSig = a === "wait" ? sig() : ""; b.lastAsk = G.t;
+    const rec = { s: b.step, t: G.t, a, tk: a === "wait" ? 0 : d.ticket, e: a === "run" ? d.experiment : -1, why: (d && d.why) || "" };
+    const t = rec.tk ? ticketById(rec.tk) : null;
+    if (a === "run") {
+      const eigs = t.exps.map(x => Bayes.eig(t.post, x.lik));
+      rec.eig = eigs[rec.e]; rec.best = Math.max(...eigs);
+      b.task = run(rec.tk, rec.e);
+    } else if (a === "publish") {
+      const m = Bayes.argmax(t.post); rec.claim = m; rec.conf = t.post[m];
+      b.task = publish(rec.tk);
+    }
+    b.log.push(rec);
+    return rec;
+  };
+  return b;
+}
+// One fixed-step tick of an automated run. policy(bot) returns a decision when the bot asks.
+function autoStep(policy) {
+  const bot = auto.bot;
+  if (bot.tick() === "need") { bot.decide(policy(bot)); bot.tick(); }
+  update(DT);
+  bot.step++;
+}
+/*BOT-END*/
+
+// ---------- replay of recorded Gemini runs ----------
+let GEM = null;
+try { GEM = JSON.parse(document.getElementById("geminiData").textContent); } catch (e) { GEM = null; }
+initWatch();
+function tracePolicy(bot) {
+  const d = auto.trace.d[auto.i++];
+  if (!d) return { action: "wait" };
+  if (d[0] !== bot.step) auto.desync = true;
+  return { action: d[1], ticket: d[2], experiment: d[3], why: d[4] };
+}
+function startReplay(tr) {
+  seed = tr.seed; nPlayers = 1;
+  newGame(1); events.length = 0;
+  auto = { trace: tr, i: 0, desync: false, acc: 0, bot: makeBot() };
+  $("gemLine").dataset.n = "";
+  updateHud(); setState("play"); setSpeedPill();
+}
+const SPEEDS = [1, 2, 4];
+let speedIx = 0;
+function setSpeedPill() {
+  const b = $("speedBtn"); b.hidden = !auto;
+  b.textContent = "Speed ×" + SPEEDS[speedIx];
+}
+function wrapText(s, maxW, font, maxLines) {
+  ctx.font = font;
+  const words = s.split(/\s+/), lines = [];
+  let cur = "";
+  for (const w of words) {
+    const t = cur ? cur + " " + w : w;
+    if (ctx.measureText(t).width <= maxW) cur = t;
+    else { if (cur) lines.push(cur); cur = w; }
+  }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines) { lines.length = maxLines; lines[maxLines - 1] = fitText(lines[maxLines - 1] + " …", maxW, font); }
+  return lines;
+}
+function decisionHead(rec) {
+  if (rec.a === "wait") return "Wait for results";
+  const t = ticketById(rec.tk), id = "#" + rec.tk + " ";
+  if (!t) return id + (rec.a === "run" ? "experiment" : "publish");
+  if (rec.a === "publish") return id + "Publish: claim " + t.labels[rec.claim] + (t.type === "dose" ? " µM" : "") + " at " + Math.round(rec.conf * 100) + "%";
+  return id + t.exps[rec.e].long;
+}
+function drawGemini(x, y, w, h) {
+  const bot = auto.bot, log = bot.log, rec = log[log.length - 1];
+  ctx.fillStyle = C.line; ctx.fillRect(x, y + 6, 1.5, h - 12);
+  const gx = x + 14;
+  rr(gx, y + 6, 58, 16, 3); ctx.fillStyle = C.p2; ctx.fill();
+  text("GEMINI", gx + 29, y + 18, FONT.mono(700, 10), C.paper, "center");
+  text(fitText(GEM.model + " · lab lead · seed " + auto.trace.seed, w - 100, FONT.mono(500, 9.5)), gx + 66, y + 18, FONT.mono(500, 9.5), C.muted);
+  if (!rec) { text("Reading the grants…", gx, y + 44, FONT.body(400, 12), C.muted); return; }
+  const t = rec.tk ? ticketById(rec.tk) : null;
+  const col = t ? C.strain[t.slot] : C.muted;
+  ctx.fillStyle = col; ctx.fillRect(gx, y + 30, 5, 18);
+  text(fitText(decisionHead(rec), w - 40, FONT.body(600, 12.5)), gx + 11, y + 44, FONT.body(600, 12.5), C.ink);
+  const lines = wrapText("“" + rec.why + "”", w - 30, FONT.body(400, 12), 3);
+  lines.forEach((l, i) => text(l, gx, y + 64 + i * 16, FONT.body(400, 12), C.ink));
+  // EIG badge: Gemini's choice vs the best experiment on offer for that grant, from the in-page Bayes helpers.
+  let badge = null, bcol = C.muted;
+  if (rec.a === "run") {
+    const f = rec.best > 1e-9 ? rec.eig / rec.best : 1;
+    badge = "EIG " + rec.eig.toFixed(2) + " b · best " + rec.best.toFixed(2) + " b · " + Math.round(f * 100) + "%";
+    bcol = f >= 0.9 ? C.good : f >= 0.6 ? C.hazard : C.bad;
+  } else if (rec.a === "publish") { badge = "MAP " + Math.round(rec.conf * 100) + "% at writing"; bcol = rec.conf >= 0.9 ? C.good : C.hazard; }
+  const by = y + h - 16;
+  if (badge) {
+    ctx.font = FONT.mono(700, 10); const bw = ctx.measureText(badge).width + 14;
+    rr(gx, by - 12, bw, 17, 8); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = bcol; ctx.lineWidth = 2; ctx.stroke();
+    text(badge, gx + 7, by + 1, FONT.mono(700, 10), C.ink);
+  }
+  const runs = log.filter(r => r.a === "run");
+  const se = runs.reduce((a, r) => a + r.eig, 0), sm = runs.reduce((a, r) => a + r.best, 0);
+  text(runs.length + " designs · efficiency " + (sm > 0 ? Math.round(100 * se / sm) + "%" : "–"), x + w - 10, by + 1, FONT.mono(500, 9.5), C.muted, "right");
+}
+function drawGeminiTag(t, x, y, w) {
+  const log = auto.bot.log, rec = log[log.length - 1];
+  if (!rec || rec.tk !== t.id) return;
+  rr(x - 2, y - 2, w + 4, 136, 7); ctx.strokeStyle = C.p2; ctx.lineWidth = 2.5; ctx.stroke();
+  const s = rec.a === "run" ? "Gemini: " + t.exps[rec.e].label : "Gemini: publish";
+  ctx.font = FONT.mono(700, 9.5); const tw = ctx.measureText(s).width + 12;
+  rr(x + w - tw - 6, y + 25, tw, 15, 7); ctx.fillStyle = C.p2; ctx.fill();
+  text(s, x + w - 12, y + 36, FONT.mono(700, 9.5), C.paper, "right");
+}
+// Text copy of Gemini's latest decision under the stage, for narrow screens where canvas text is tiny.
+function syncGemLine() {
+  const el = $("gemLine"), log = auto ? auto.bot.log : [];
+  if (!auto || !log.length) { el.hidden = true; return; }
+  if (el.dataset.n === String(log.length)) return;
+  const rec = log[log.length - 1];
+  el.dataset.n = String(log.length);
+  const badge = rec.a === "run" ? " (EIG " + rec.eig.toFixed(2) + " of best " + rec.best.toFixed(2) + " b)" : "";
+  el.textContent = "Gemini: " + decisionHead(rec) + badge + ". “" + rec.why + "”";
+  el.hidden = false;
+}
+function renderReplayEnd() {
+  const tr = auto.trace, st = G.stats;
+  const match = !auto.desync && tr.final && tr.final.score === G.score;
+  $("endTitle").textContent = "Gemini's lab, seed " + tr.seed;
+  $("endLine").textContent = GEM.model + " chose every experiment and every publication; scripted hands only carried the plates. Score " + G.score + ", " + st.papers + " papers, " + st.retractions + " retractions, " + st.expired + " expired. " + (match ? "The replay matched the recorded run exactly." : "Note: this replay drifted from the recorded run (recorded score " + (tr.final ? tr.final.score : "?") + ").");
+  const tb = GEM.table;
+  const f = (m, sd, d) => m.toFixed(d) + (sd != null ? " ± " + sd.toFixed(d) : "");
+  const rows = tb.rows.map(r => `<tr${r.gemini ? ' class="gem"' : ""}><th>${r.name}</th><td>${r.n}</td><td>${f(r.score[0], r.score[1], 0)}</td><td>${f(r.papers[0], null, 1)}</td><td>${f(r.retractions[0], null, 1)}</td><td>${f(r.expired[0], null, 1)}</td><td>${Math.round(r.eff[0] * 100)}%</td><td>${f(r.bits[0], null, 1)}</td></tr>`).join("");
+  $("endCmp").innerHTML = `<h3>Same lab, same seeds, same hands</h3><div class="cmpwrap"><table class="cmp"><thead><tr><th>Policy</th><th>Seeds</th><th>Score</th><th>Papers</th><th>Retr.</th><th>Expired</th><th>Design eff.</th><th>Bits</th></tr></thead><tbody>${rows}</tbody></table></div><p class="note">${tb.caption}</p>`;
+  $("endCmp").hidden = false;
+}
+
+// ---------- live charts ----------
+// History is event-driven: hooks in work() (bench), readPlate(), submit() and grant expiry append exact
+// points to G.hist; the hooks only read game state, so rules and the rng call order are unchanged.
+// The panel redraws at most 10 times a second, reading every colour from the CSS tokens (C).
+const charts = { dirty: true, last: 0, pickPolicy: true, els: null };
+function newHist() { return { tk: new Map(), reads: [], designs: [], events: [] }; }
+function tkRec(t) {
+  const h = G.hist; let r = h.tk.get(t.id);
+  if (!r) { r = { id: t.id, slot: t.slot, type: t.type, title: t.title, born: t.born, pts: [[t.born, Bayes.entropy(t.prior)]], end: null }; h.tk.set(t.id, r); }
+  return r;
+}
+function chartRead(t, it) {
+  const h = G && G.hist; if (!h) return;
+  const prev = h.reads.length ? h.reads[h.reads.length - 1].bits : 0;
+  tkRec(t).pts.push([G.t, Bayes.entropy(t.post)]);
+  h.reads.push({ t: G.t, id: t.id, slot: t.slot, kl: G.stats.bits - prev, eig: it.eig, bits: G.stats.bits, exp: G.stats.sumEig, label: t.exps[it.exp].label });
+  charts.dirty = true;
+}
+function chartDesign(t, it) {
+  const h = G && G.hist; if (!h) return;
+  tkRec(t);
+  h.designs.push({ t: G.t, id: t.id, slot: t.slot, label: t.exps[it.exp].long, eig: it.eig, best: it.maxEig });
+  charts.dirty = true;
+}
+function chartEvent(kind, t, pts) {
+  const h = G && G.hist; if (!h) return;
+  tkRec(t).end = { t: G.t, kind };
+  h.events.push({ t: G.t, kind, id: t.id, slot: t.slot, title: t.title, pts, score: G.score });
+  charts.dirty = true;
+}
+
+function initCharts() {
+  const root = document.getElementById("charts");
+  if (!root || !root.querySelectorAll) return;
+  const els = {};
+  for (const card of root.querySelectorAll(".card")) {
+    const k = card.dataset.chart, plot = card.querySelector(".plot");
+    const el = { card, cv: plot.querySelector("canvas"), tip: plot.querySelector(".tip"), hl: card.querySelector(".hl"), lg: card.querySelector(".lg"), h4: card.querySelector("h4"), hx: null, hy: null, lgSig: "", aria: "" };
+    // Pointer only: the canvases are not focusable, so Space/Enter stay with the game's window keydown.
+    el.cv.addEventListener("pointermove", (e) => { const r = el.cv.getBoundingClientRect(); el.hx = e.clientX - r.left; el.hy = e.clientY - r.top; charts.dirty = true; });
+    el.cv.addEventListener("pointerleave", () => { el.hx = el.hy = null; el.tip.hidden = true; charts.dirty = true; });
+    new ResizeObserver(() => { charts.dirty = true; }).observe(el.cv);
+    els[k] = el;
+  }
+  const seg = els.score.card.querySelector(".seg");
+  els.score.seg = seg;
+  for (const b of seg.querySelectorAll("button")) b.addEventListener("click", (e) => { charts.pickPolicy = b.dataset.v === "policy"; charts.dirty = true; e.currentTarget.blur(); });
+  charts.els = els;
+  const redraw = () => { charts.dirty = true; };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw);
+  new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class", "style"] });
+}
+try { initCharts(); } catch (e) { charts.els = null; }
+
+// ----- drawing primitives (chart canvases have their own 2d contexts) -----
+const CF = { mono: (w, s) => FONT.mono(w, s), body: (w, s) => FONT.body(w, s) };
+function cprep(el) {
+  const cv = el.cv, w = cv.clientWidth, h = cv.clientHeight;
+  if (!w || !h) return null;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const pw = Math.round(w * dpr), ph = Math.round(h * dpr);
+  if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; }
+  const c = cv.getContext("2d");
+  c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+  c.lineJoin = "round"; c.lineCap = "round";
+  return { c, w, h };
+}
+function ctext(c, s, x, y, font, color, align, base) { c.font = font; c.fillStyle = color; c.textAlign = align || "left"; c.textBaseline = base || "alphabetic"; c.fillText(s, x, y); }
+function cfit(c, s, maxW, font) { c.font = font; if (c.measureText(s).width <= maxW) return s; while (s.length > 1 && c.measureText(s + "…").width > maxW) s = s.slice(0, -1); return s + "…"; }
+function niceStep(range, n) { const raw = range / Math.max(1, n), p = Math.pow(10, Math.floor(Math.log10(raw))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= raw) return m * p; return 10 * p; }
+function niceTicks(lo, hi, n) { const st = niceStep(hi - lo || 1, n), a = Math.floor(lo / st + 1e-9) * st, b = Math.ceil(hi / st - 1e-9) * st, out = []; for (let v = a; v <= b + st * 1e-6; v += st) out.push(+v.toFixed(6)); return out; }
+// Time frame shared by the three line charts: x = game seconds 0..ROUND, fixed so the charts line up.
+function timeFrame(g, yT, fmt) {
+  const { c, w, h } = g, L = 30, R = 34, T0 = 6, B = 16;
+  const lo = yT[0], hi = yT[yT.length - 1];
+  const X = (t) => L + (w - L - R) * Math.max(0, Math.min(ROUND, t)) / ROUND;
+  const Y = (v) => T0 + (h - T0 - B) * (1 - (v - lo) / (hi - lo || 1));
+  c.lineWidth = 1; c.strokeStyle = C.line;
+  for (const v of yT) {
+    const y = Math.round(Y(v)) + 0.5;
+    c.globalAlpha = v === 0 ? 1 : 0.55; c.beginPath(); c.moveTo(L, y); c.lineTo(w - R, y); c.stroke(); c.globalAlpha = 1;
+    ctext(c, fmt(v), L - 5, y, CF.mono(500, 9.5), C.muted, "right", "middle");
+  }
+  for (const t of [0, 60, 120, 180]) ctext(c, t + (t === 180 ? " s" : ""), X(t), h - 3, CF.mono(500, 9.5), C.muted, t === 0 ? "left" : t === 180 ? "right" : "center");
+  return { X, Y, L, R, T0, B, invX: (px) => (px - L) / (w - L - R) * ROUND };
+}
+function stepPath(c, pts, X, Y, tEnd) {
+  c.beginPath();
+  pts.forEach(([t, v], i) => { if (i === 0) c.moveTo(X(t), Y(v)); else { c.lineTo(X(t), Y(pts[i - 1][1])); c.lineTo(X(t), Y(v)); } });
+  const lastP = pts[pts.length - 1]; c.lineTo(X(Math.max(lastP[0], tEnd)), Y(lastP[1]));
+  c.stroke();
+}
+function stepAt(pts, t) { let v = null; for (const p of pts) { if (p[0] <= t + 1e-9) v = p[1]; else break; } return v; }
+function dot(c, x, y, col, r) { c.beginPath(); c.arc(x, y, (r || 4) + 2, 0, 7); c.fillStyle = C.paper; c.fill(); c.beginPath(); c.arc(x, y, r || 4, 0, 7); c.fillStyle = col; c.fill(); }
+// Outcome markers: check = published, cross = retracted, hollow ring = expired. Icon shape carries the meaning, colour backs it.
+function outcome(c, kind, x, y) {
+  c.beginPath(); c.arc(x, y, 6.5, 0, 7); c.fillStyle = C.paper; c.fill();
+  c.lineWidth = 2; c.lineCap = "round";
+  if (kind === "pub") { c.strokeStyle = C.good; c.beginPath(); c.moveTo(x - 4, y); c.lineTo(x - 1.2, y + 3); c.lineTo(x + 4, y - 3.5); c.stroke(); }
+  else if (kind === "retract") { c.strokeStyle = C.bad; c.beginPath(); c.moveTo(x - 3.5, y - 3.5); c.lineTo(x + 3.5, y + 3.5); c.moveTo(x + 3.5, y - 3.5); c.lineTo(x - 3.5, y + 3.5); c.stroke(); }
+  else { c.strokeStyle = C.muted; c.beginPath(); c.arc(x, y, 4, 0, 7); c.stroke(); }
+}
+function crosshair(c, x, top, bot) { c.strokeStyle = C.muted; c.globalAlpha = 0.7; c.lineWidth = 1; c.beginPath(); c.moveTo(Math.round(x) + 0.5, top); c.lineTo(Math.round(x) + 0.5, bot); c.stroke(); c.globalAlpha = 1; }
+// Tooltip: values lead (strong ink), the name follows (muted), keyed by a short line in the series colour.
+function showTip(el, head, rows, ax) {
+  const tip = el.tip;
+  tip.replaceChildren();
+  if (head) { const d = document.createElement("div"); d.className = "th"; d.textContent = head; tip.appendChild(d); }
+  for (const r of rows) {
+    const d = document.createElement("div"); d.className = "r";
+    const b = document.createElement("b"); b.textContent = r.v; d.appendChild(b);
+    if (r.col) { const k = document.createElement("i"); k.className = "key" + (r.bar ? " bar" : ""); k.style.background = r.col; if (r.alpha) k.style.opacity = r.alpha; d.appendChild(k); }
+    if (r.icon) { const g = document.createElement("span"); g.className = "gl " + r.icon[1]; g.textContent = r.icon[0]; d.appendChild(g); }
+    const s = document.createElement("span"); s.textContent = r.n; d.appendChild(s);
+    tip.appendChild(d);
+  }
+  tip.hidden = false;
+  const pw = el.cv.clientWidth, tw = tip.offsetWidth;
+  let left = ax + 12; if (left + tw > pw) left = Math.max(0, ax - tw - 12);
+  tip.style.left = left + "px";
+}
+function setLegend(el, sig, build) { if (el.lgSig === sig) return; el.lgSig = sig; el.lg.replaceChildren(...build()); }
+function lgItem(col, label, bar, alpha) { const s = document.createElement("span"); const k = document.createElement("i"); k.className = "key" + (bar ? " bar" : ""); k.style.background = col; if (alpha) k.style.opacity = alpha; s.append(k, document.createTextNode(label)); return s; }
+function lgText(label, icon) { const s = document.createElement("span"); if (icon) { const g = document.createElement("span"); g.className = "gl " + icon[1]; g.textContent = icon[0]; s.appendChild(g); } s.appendChild(document.createTextNode(label)); return s; }
+function setHl(el, main, small) { const k = main + "|" + (small || ""); if (el.hlK === k) return; el.hlK = k; el.hl.replaceChildren(document.createTextNode(main)); if (small) { const s = document.createElement("small"); s.textContent = small; el.hl.appendChild(s); } }
+function setAria(el, s) { if (el.aria !== s) { el.aria = s; el.cv.setAttribute("aria-label", s); } }
+function empty(g, msg) { ctext(g.c, cfit(g.c, msg, g.w - 16, CF.body(400, 12)), g.w / 2, g.h / 2, CF.body(400, 12), C.muted, "center", "middle"); }
+const KIND = { pub: ["✓", "ok", "published"], retract: ["✗", "no", "retracted"], expired: ["○", "ex", "expired"] };
+const fmtT = (t) => Math.round(t) + " s";
+
+// ----- 1. Uncertainty per grant: posterior entropy (bits) over game time, one step line per grant. -----
+function chartEnt(el) {
+  const g = cprep(el); if (!g) return;
+  const { c, w, h } = g;
+  if (!G) { setHl(el, ""); setLegend(el, "none", () => [lgText("One line per grant, in its strain colour")]); empty(g, "Start a round to watch belief sharpen"); setAria(el, "Uncertainty chart, no round running"); return; }
+  for (const t of G.tickets) tkRec(t);
+  const recs = [...G.hist.tk.values()], now = G.t;
+  const open = recs.filter(r => !r.end);
+  setLegend(el, open.map(r => r.id + ":" + r.slot).join(","), () => [
+    ...open.map(r => lgItem("var(--s" + (r.slot + 1) + ")", "#" + r.id + " " + (r.type === "gene" ? "gene" : "dose"))),
+    lgText(" published", KIND.pub), lgText(" retracted", KIND.retract), lgText(" expired", KIND.expired),
+  ]);
+  const mean = open.length ? open.reduce((a, r) => a + r.pts[r.pts.length - 1][1], 0) / open.length : null;
+  setHl(el, mean == null ? "–" : mean.toFixed(2), "bits, open avg");
+  const f = timeFrame(g, [0, 1, 2, 3], (v) => String(v));
+  // closed grants first, faded, so the open ones sit on top
+  const order = recs.filter(r => r.end).concat(open);
+  for (const r of order) {
+    c.strokeStyle = C.strain[r.slot]; c.lineWidth = 2; c.globalAlpha = r.end ? 0.45 : 1;
+    stepPath(c, r.pts, f.X, f.Y, r.end ? r.end.t : now);
+    c.globalAlpha = 1;
+  }
+  for (const r of recs) if (r.end) { const v = r.pts[r.pts.length - 1][1]; outcome(c, r.end.kind, f.X(r.end.t), f.Y(v)); }
+  const placed = [];
+  for (const r of open) {
+    const v = r.pts[r.pts.length - 1][1], x = f.X(now), y = f.Y(v);
+    dot(c, x, y, C.strain[r.slot]);
+    if (placed.every(py => Math.abs(py - y) >= 11)) { placed.push(y); ctext(c, "#" + r.id, x + 7, y, CF.mono(600, 9.5), C.ink, "left", "middle"); }
+  }
+  setAria(el, "Uncertainty per grant at " + fmtT(now) + ": " + (open.map(r => "#" + r.id + " " + r.pts[r.pts.length - 1][1].toFixed(2) + " bits").join(", ") || "no open grants"));
+  if (el.hx == null) { el.tip.hidden = true; return; }
+  const tau = Math.max(0, Math.min(now, f.invX(el.hx)));
+  crosshair(c, f.X(tau), f.T0, h - f.B);
+  const rows = [];
+  for (const r of recs) {
+    if (r.born > tau + 1e-9) continue;
+    if (r.end && r.end.t < tau - 0.6) continue;
+    const v = stepAt(r.pts, tau);
+    const ended = r.end && Math.abs(r.end.t - tau) <= 0.6;
+    rows.push({ v: v.toFixed(2) + " b", col: C.strain[r.slot], n: "#" + r.id + " " + r.title + (ended ? ", " + KIND[r.end.kind][2] : ""), icon: ended ? KIND[r.end.kind] : null });
+  }
+  showTip(el, "at " + fmtT(tau), rows.length ? rows : [{ v: "–", n: "no open grants" }], f.X(tau));
+}
+
+// ----- 2. Information gathered: cumulative realised bits (KL) and expected bits (EIG) over time. -----
+function chartInfo(el) {
+  const g = cprep(el); if (!g) return;
+  const { c, w, h } = g;
+  const reads = G ? G.hist.reads : [];
+  if (!reads.length) { setHl(el, G ? "0.00" : "–", "bits"); empty(g, "Read a plate to see information gathered"); setAria(el, "Information gathered: no plates read yet"); el.tip.hidden = true; return; }
+  const now = G.t, lastR = reads[reads.length - 1];
+  const top = Math.max(2, lastR.bits, lastR.exp);
+  const yT = niceTicks(0, top, 3);
+  const f = timeFrame(g, yT, (v) => String(v));
+  const real = [[0, 0]].concat(reads.map(r => [r.t, r.bits])), exp = [[0, 0]].concat(reads.map(r => [r.t, r.exp]));
+  c.lineWidth = 2;
+  c.strokeStyle = C.muted; c.globalAlpha = 0.6; stepPath(c, exp, f.X, f.Y, now); c.globalAlpha = 1;
+  c.strokeStyle = C.ink; stepPath(c, real, f.X, f.Y, now);
+  // values at the line ends; skip the second if it would collide
+  const yr = f.Y(lastR.bits), ye = f.Y(lastR.exp);
+  ctext(c, lastR.bits.toFixed(1), f.X(now) + 5, yr, CF.mono(700, 9.5), C.ink, "left", "middle");
+  if (Math.abs(yr - ye) >= 11) ctext(c, lastR.exp.toFixed(1), f.X(now) + 5, ye, CF.mono(500, 9.5), C.muted, "left", "middle");
+  setHl(el, lastR.bits.toFixed(2), "bits from " + reads.length + " plate" + (reads.length === 1 ? "" : "s"));
+  setAria(el, "Information gathered: " + lastR.bits.toFixed(2) + " bits realised, " + lastR.exp.toFixed(2) + " bits expected, from " + reads.length + " plates");
+  if (el.hx == null) { el.tip.hidden = true; return; }
+  const tau = Math.max(0, Math.min(now, f.invX(el.hx)));
+  crosshair(c, f.X(tau), f.T0, h - f.B);
+  const rows = [{ v: stepAt(real, tau).toFixed(2) + " b", col: C.ink, n: "realised" }, { v: stepAt(exp, tau).toFixed(2) + " b", col: C.muted, alpha: 0.6, n: "expected" }];
+  const near = reads.filter(r => Math.abs(r.t - tau) <= 1);
+  for (const r of near) rows.push({ v: "+" + r.kl.toFixed(2) + " b", col: C.strain[r.slot], n: "#" + r.id + " " + r.label + " (EIG " + r.eig.toFixed(2) + ")" });
+  showTip(el, "at " + fmtT(tau), rows, f.X(tau));
+}
+
+// ----- 3. Design quality: one bar per prepared experiment = its EIG; a tick marks the best EIG on offer then. -----
+function drawDesignChart(el) {
+  const g = cprep(el); if (!g) return;
+  const { c, w, h } = g;
+  const who = auto && GEM ? "Gemini's" : "Your";
+  const ds = G ? G.hist.designs : [];
+  setLegend(el, who + (G ? 1 : 0), () => [lgItem("var(--muted)", who + " design, grant colour", true), lgItem("var(--ink)", "best on offer")]);
+  if (!ds.length) { setHl(el, "–"); empty(g, "Prepare an experiment at the design bench"); setAria(el, "Design quality: no experiments prepared yet"); el.tip.hidden = true; return; }
+  const se = ds.reduce((a, d) => a + d.eig, 0), sb = ds.reduce((a, d) => a + d.best, 0);
+  setHl(el, Math.round(100 * se / Math.max(1e-9, sb)) + "%", "of best, " + ds.length + " design" + (ds.length === 1 ? "" : "s"));
+  const L = 30, R = 8, T0 = 6, B = 16, pw = w - L - R;
+  const Y = (v) => T0 + (h - T0 - B) * (1 - v);
+  c.lineWidth = 1; c.strokeStyle = C.line;
+  for (const v of [0, 0.5, 1]) { const y = Math.round(Y(v)) + 0.5; c.globalAlpha = v === 0 ? 1 : 0.55; c.beginPath(); c.moveTo(L, y); c.lineTo(w - R, y); c.stroke(); c.globalAlpha = 1; ctext(c, v === 0.5 ? ".5" : String(v), L - 5, y, CF.mono(500, 9.5), C.muted, "right", "middle"); }
+  const band = Math.min(28, pw / ds.length), bw = Math.max(2, Math.min(24, band - 2));
+  const hov = el.hx != null ? Math.floor((el.hx - L) / band) : -1;
+  ds.forEach((d, i) => {
+    const x = L + i * band + (band - bw) / 2, y0 = Y(0), y1 = Y(Math.min(1, d.eig)), r = Math.min(4, bw / 2, y0 - y1);
+    c.fillStyle = C.strain[d.slot]; c.globalAlpha = hov >= 0 && hov !== i ? 0.55 : 1;
+    c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y1 + r); c.arcTo(x, y1, x + r, y1, r); c.lineTo(x + bw - r, y1); c.arcTo(x + bw, y1, x + bw, y1 + r, r); c.lineTo(x + bw, y0); c.closePath(); c.fill();
+    c.globalAlpha = 1;
+    const yb = Math.round(Y(Math.min(1, d.best))) + 0.5;
+    c.strokeStyle = C.paper; c.lineWidth = 4; c.lineCap = "butt"; c.beginPath(); c.moveTo(x - 1, yb); c.lineTo(x + bw + 1, yb); c.stroke();
+    c.strokeStyle = C.ink; c.lineWidth = 2; c.beginPath(); c.moveTo(x - 1, yb); c.lineTo(x + bw + 1, yb); c.stroke();
+  });
+  c.lineCap = "round";
+  ctext(c, "experiments in order prepared", L, h - 3, CF.mono(500, 9.5), C.muted, "left");
+  setAria(el, "Design quality: " + ds.length + " experiments, " + Math.round(100 * se / Math.max(1e-9, sb)) + "% of best expected information");
+  if (hov < 0 || hov >= ds.length) { el.tip.hidden = true; return; }
+  const d = ds[hov];
+  showTip(el, "design " + (hov + 1) + " · at " + fmtT(d.t), [
+    { v: d.eig.toFixed(2) + " b", col: C.strain[d.slot], bar: true, n: "#" + d.id + " " + d.label },
+    { v: d.best.toFixed(2) + " b", col: C.ink, n: "best on offer" },
+    { v: Math.round(100 * d.eig / Math.max(1e-9, d.best)) + "%", n: "of best" },
+  ], L + hov * band + band / 2);
+}
+
+// ----- 4a. Score over time: step line with publish / retraction / expiry markers. -----
+function chartScore(el) {
+  const g = cprep(el); if (!g) return;
+  const { c, w, h } = g;
+  setLegend(el, "score", () => [lgItem("var(--ink)", "score"), lgText(" published", KIND.pub), lgText(" retracted", KIND.retract), lgText(" expired", KIND.expired)]);
+  if (!G) { setHl(el, ""); empty(g, "Points arrive when papers are published"); setAria(el, "Score chart, no round running"); return; }
+  const ev = G.hist.events, now = G.t;
+  setHl(el, String(G.score), "points");
+  if (!ev.length) { empty(g, "Publish a paper to start scoring"); setAria(el, "Score: 0 points, nothing published yet"); el.tip.hidden = true; return; }
+  const pts = [[0, 0]].concat(ev.map(e => [e.t, e.score]));
+  const lo = Math.min(0, ...pts.map(p => p[1])), hi = Math.max(100, ...pts.map(p => p[1]));
+  const f = timeFrame(g, niceTicks(lo, hi, 3), (v) => String(v));
+  c.strokeStyle = C.ink; c.lineWidth = 2; stepPath(c, pts, f.X, f.Y, now);
+  for (const e of ev) outcome(c, e.kind, f.X(e.t), f.Y(e.score));
+  setAria(el, "Score " + G.score + " points at " + fmtT(now) + ": " + ev.map(e => KIND[e.kind][2] + " #" + e.id + " " + (e.pts > 0 ? "+" : "") + e.pts).join(", "));
+  if (el.hx == null) { el.tip.hidden = true; return; }
+  const tau = Math.max(0, Math.min(now, f.invX(el.hx)));
+  crosshair(c, f.X(tau), f.T0, h - f.B);
+  const rows = [{ v: String(stepAt(pts, tau)), col: C.ink, n: "score" }];
+  for (const e of ev) if (Math.abs(e.t - tau) <= 2) rows.push({ v: (e.pts > 0 ? "+" : "−") + Math.abs(e.pts), icon: KIND[e.kind], n: " #" + e.id + " " + e.title + " " + KIND[e.kind][2] });
+  showTip(el, "at " + fmtT(tau), rows, f.X(tau));
+}
+
+// ----- 4b. (replay end screen) Mean score by policy over the same seeds, from geminiData.table. -----
+function chartPolicy(el) {
+  const g = cprep(el); if (!g) return;
+  const { c, w, h } = g;
+  const rows = GEM.table.rows;
+  setLegend(el, "policy", () => [lgItem("var(--p2)", "Gemini", true), lgItem("var(--muted)", "baseline policy", true, 0.7), lgText("mean of " + rows[0].n + " seeds")]);
+  setHl(el, "");
+  const vals = rows.map(r => r.score[0]);
+  const nameW = Math.min(150, Math.round(w * 0.42)), L = nameW + 6 + (Math.min(...vals) < 0 ? 28 : 0), R = 34, T0 = 2, B = 2;
+  const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+  const X = (v) => L + (w - L - R) * (v - lo) / (hi - lo || 1);
+  const band = (h - T0 - B) / rows.length, bh = Math.max(4, Math.min(14, band - 3));
+  c.strokeStyle = C.line; c.lineWidth = 1; c.beginPath(); c.moveTo(Math.round(X(0)) + 0.5, T0); c.lineTo(Math.round(X(0)) + 0.5, h - B); c.stroke();
+  const hov = el.hy != null ? Math.floor((el.hy - T0) / band) : -1;
+  rows.forEach((r, i) => {
+    const yc = T0 + band * i + band / 2, y = yc - bh / 2, v = r.score[0], x0 = X(0), x1 = X(v);
+    const isMe = r.gemini && r.name === GEM.model;
+    ctext(c, cfit(c, r.name, nameW, CF.body(isMe ? 600 : 400, 11)), 0, yc, CF.body(isMe ? 600 : 400, 11), r.gemini ? C.ink : C.muted, "left", "middle");
+    c.fillStyle = r.gemini ? C.p2 : C.muted; c.globalAlpha = (r.gemini ? (isMe ? 1 : 0.6) : 0.7) * (hov >= 0 && hov !== i ? 0.6 : 1);
+    const a = Math.min(x0, x1), b = Math.max(x0, x1), rad = Math.min(4, bh / 2, b - a);
+    c.beginPath();
+    if (v >= 0) { c.moveTo(a, y); c.lineTo(b - rad, y); c.arcTo(b, y, b, y + rad, rad); c.lineTo(b, y + bh - rad); c.arcTo(b, y + bh, b - rad, y + bh, rad); c.lineTo(a, y + bh); }
+    else { c.moveTo(b, y); c.lineTo(a + rad, y); c.arcTo(a, y, a, y + rad, rad); c.lineTo(a, y + bh - rad); c.arcTo(a, y + bh, a + rad, y + bh, rad); c.lineTo(b, y + bh); }
+    c.closePath(); c.fill(); c.globalAlpha = 1;
+    const lab = String(Math.round(v));
+    if (v >= 0) ctext(c, lab, b + 4, yc, CF.mono(600, 9.5), C.ink, "left", "middle");
+    else ctext(c, lab, a - 4, yc, CF.mono(600, 9.5), C.ink, "right", "middle");
+  });
+  setAria(el, "Mean score by policy: " + rows.map(r => r.name + " " + Math.round(r.score[0])).join(", "));
+  if (hov < 0 || hov >= rows.length) { el.tip.hidden = true; return; }
+  const r = rows[hov];
+  showTip(el, r.name + " · " + r.n + " seeds", [
+    { v: r.score[0].toFixed(0) + " ± " + r.score[1].toFixed(0), col: r.gemini ? C.p2 : C.muted, bar: true, n: "mean score ± sd" },
+    { v: r.papers[0].toFixed(1), n: "papers" }, { v: r.retractions[0].toFixed(1), n: "retractions" },
+    { v: Math.round(r.eff[0] * 100) + "%", n: "design efficiency" }, { v: r.bits[0].toFixed(1) + " b", n: "bits gathered" },
+  ], Math.min(w - 40, X(r.score[0])));
+}
+
+function drawCharts(now) {
+  const E = charts.els; if (!E) return;
+  if (state === "play" && G) charts.dirty = true; // lines extend with game time
+  const sig = state + (G ? "g" : "") + (auto ? "a" : "");
+  if (sig !== charts.sig) { charts.sig = sig; charts.dirty = true; charts.last = 0; }
+  if (!charts.dirty || now - charts.last < 100) return;
+  charts.dirty = false; charts.last = now;
+  const policyOK = state === "end" && auto && GEM && GEM.table && GEM.table.rows.length;
+  E.score.seg.hidden = !policyOK;
+  const pol = policyOK && charts.pickPolicy;
+  for (const b of E.score.seg.querySelectorAll("button")) b.setAttribute("aria-pressed", String((b.dataset.v === "policy") === !!pol));
+  E.score.h4.textContent = pol ? "Mean score by policy" : "Score over time";
+  try {
+    chartEnt(E.ent); chartInfo(E.info); drawDesignChart(E.design);
+    if (pol) chartPolicy(E.score); else chartScore(E.score);
+  } catch (e) { charts.err = String(e); /* a chart must never break the game loop */ }
+}
+
+// ---------- loop ----------
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (state === "play" && G) {
+    if (auto) {
+      auto.acc += dt * SPEEDS[speedIx];
+      while (auto.acc >= DT && state === "play") { autoStep(tracePolicy); auto.acc -= DT; }
+      syncGemLine();
+    } else update(dt);
+  }
+  draw(now / 1000);
+  drawCharts(now);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+<script>
+SPEEDS.push(10); // the replay speed button now cycles 1, 2, 4, 10 (same array object, game script untouched)
+window.__bp = {
+  get G() { return G; }, get state() { return state; }, get auto() { return auto; }, get GEM() { return GEM; },
+  activeTickets, ticketById, T, FY, COLS, ROWS, MAP, TYPES,
+  start: (n) => start(n), startReplay: (tr) => startReplay(tr),
+  menu: () => document.getElementById("btnMenu").click(),
+};
+</script>
+<script src="duck-data.js"></script>
+<script src="lab3d.js"></script>
+
+</div></body>
+</html>

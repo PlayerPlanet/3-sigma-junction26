@@ -44,6 +44,40 @@ Edit the `llm` block at the end of `main()` in `scripts/build_demo_data.py` (or 
 Games are keyed by board seed; the page uses the boards chosen in `pick_boards()` with salt
 `demo-<seed>`, so model runs must use the same seeds and salt to be on the same hidden boards.
 
+## Bench Pressure pages
+
+`bench-pressure.html` shows the Bench Pressure game from `../bench-pressure/index.html` as a
+3D lab: the Microduck robot carries plates between the freezer, design bench, incubators, reader and
+journal hatch, with one card per open question and one line saying what the robot is doing and
+why. `bench-pressure-2d.html` is the original flat view in the 3σ look.
+
+How it is put together:
+
+- `python demo/tools/wrap_bench_pressure.py` builds both pages. The game's script is copied
+  unchanged, so rules, random numbers, the bot and the recorded model runs are the published
+  ones. Run it again after the upstream page changes.
+- `src/lab3d.js` (bundled to `lab3d.js` by `npm run build`) only reads the game's state each
+  frame through `window.__bp`, a read-only accessor the wrapper adds, and draws it. The
+  original page keeps running out of sight; its charts open from the "Charts" button.
+- Camera: drag to turn, scroll or pinch to zoom, right-drag to pan; buttons for zoom, "Follow
+  robot" and "Whole lab".
+- Look: image-based lighting, soft shadows, ambient occlusion, a mirror pass on the floor and
+  bloom. Ambient occlusion and then resolution are dropped if frames get slow.
+- The robot is the Microduck model (`assets/models/microduck.glb`, 4.9 MB, optimised from the
+  87 MB source with `gltf-transform optimize --texture-size 1024 --texture-compress webp
+  --compress meshopt`). `npm run duck` writes `duck-data.js` so it loads from `file://`.
+  Its one 10 s clip is cut into a standing loop and one stride; the game decides where the
+  duck is. Check the model's licence before publishing. If `duck-data.js` is missing the page
+  falls back to a simple drawn robot. The page wraps the static game, not `bench-pressure/deploy/` (the
+  live-partner server).
+
+## Phones
+
+On a phone the Begin screen asks for landscape (with a "Continue upright" way out), and after
+the intro a short prompt asks for upright again. Below 900 px the page shows one sea at a time
+with a switch ("Your board" / "Watch the agent"), a closer and steeper camera so cells are big
+enough to tap, and a lighter render (fewer fog steps, lower pixel ratio).
+
 ## Ship models
 
 The ships are built in code by default (`src/ships.js`). To use downloaded models, put
@@ -73,7 +107,7 @@ then resolution when frames get slow.
 ## Intro sound
 
 `assets/intro.mp3` is synthesised by `tools/make_intro_sound.py` (numpy, scipy, ffmpeg): 120 bpm,
-a pulsing bass and string figure that build, a low hit on each card cut, a riser, and a final
+a pulsing synth bass and string figure that build, a low hit on each card cut, a riser, and a final
 impact as the page appears. The music starts 1 s before the first card (`INTRO_LEAD` in
 `src/app.js`, `LEAD` in the script). Browsers
 block sound until a click, so the page opens on a "Begin" screen. If you change the cards'
