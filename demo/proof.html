@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3σ · Proof</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html" aria-label="3 sigma, home"><span class="tex">3<i>&sigma;</i></span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="proof.html">Proof</a>
+    <a href="partners.html">Partners</a>
+    <a href="index.html#play">Play</a>
+  </nav>
+</header>
+
+<section class="dark page-head">
+  <div class="wrap">
+    <p class="eyebrow">Proof</p>
+    <h1>What we measured.</h1>
+    <p class="lede">Every number on this page is computed from graded trials in our repository, with its source underneath. The full study is in the <a href="assets/3sigma-whitepaper.pdf">paper</a> (paper/3sigma-whitepaper.pdf).</p>
+  </div>
+</section>
+
+<section class="light sub-page">
+  <div class="wrap">
+
+    <div class="block">
+      <h2>Agents misprice information.</h2>
+      <p class="body">The black-box credit desk: an agent underwrites 20 loan applicants against a score generator it can only learn by paying for samples. Reward is 1 at the reference's expected value and 0 for declining everyone. Six desks, one Harbor trial per desk per agent. Every agent averages below the reference.</p>
+      <div class="hbars" id="desk" aria-label="Mean reward on the black-box credit desk, per agent"></div>
+      <p class="body" id="desk-note"></p>
+      <p class="small" id="desk-src"></p>
+      <p class="small">Outlined bar: the reference. Harnesses differ, so each row is an agent and its harness together. Three OpenCode agents timed out in most trials.</p>
+    </div>
+
+    <div class="block">
+      <h2>Stated problems are solved.</h2>
+      <p class="body" id="stated"></p>
+      <p class="small" id="stated-src"></p>
+      <p class="body">The gap appears only when the model must be bought, which is the black-box desk above.</p>
+    </div>
+
+    <div class="block">
+      <h2>The grader can't be gamed.</h2>
+      <p class="body">The reward is Bayesian: guessing earns zero, overconfidence costs.</p>
+      <div class="facts" id="integrity"></div>
+    </div>
+
+    <div class="block">
+      <h2>The reward trains, with a caveat.</h2>
+      <div class="facts">
+        <div class="fact"><b id="training-num"></b><p id="training"></p><p class="small" id="training-src"></p></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="dark">
+  <div class="wrap foot">
+    <div>
+      <p class="brand" aria-label="3 sigma"><span class="tex">3<i>&sigma;</i></span></p>
+      <p class="small">Junction 2026 · AfterQuery</p>
+    </div>
+    <div>
+      <p class="small">Re-check the credit-desk grades yourself: <code>python results/blackbox_v2/regrade.py</code> in our repository.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="proof.js"></script>
+</body>
+</html>

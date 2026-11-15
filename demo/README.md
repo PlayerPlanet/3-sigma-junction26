@@ -14,8 +14,8 @@ Open `demo/index.html` in Chrome or Edge. No server, no network: everything is i
 | "Agent" in the game | A **proxy**, labelled as such: the reference's shots with every report treated as exact (`noise_ignoring_coder` in `docs/BATTLESHIP.md`). No language model has played yet. |
 | "RL-tuned agent" | **Not measured.** The right-hand panel shows the exact-Bayes reference and says so. |
 | Wet-lab curves | Simulated with `bayesenv.wetlab.simulate_trajectories`. |
-| Transfer bars | **Empty on purpose** until the pre-registered comparison has been run. |
-| Headline numbers | Quoted from `README.md` (see `HEADLINE` in the export script). |
+| Transfer bars | **Removed** from the page (empty "not yet measured" bars were cut). |
+| Measured numbers (`#facts`, `proof.html`) | Computed by the export script from `results/blackbox_v2/trials.csv` and `results/battleship_harbor/`, plus quoted README facts with sources (`measured` in `data.js`). `proof.html` and `partners.html` are separate static pages; `proof.js` fills the first from `data.js`. |
 
 Your own score in the game: your shots are scored with exact inference on the cells, and your
 rule pick with its confidence is scored as the rule belief (`conf` on the pick, the rest spread

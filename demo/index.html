@@ -47,6 +47,8 @@
     <a href="#rl">Training</a>
     <a href="#wetlab">Wet lab</a>
     <a href="#lab">The lab</a>
+    <a href="proof.html">Proof</a>
+    <a href="partners.html">Partners</a>
   </nav>
 </header>
 
@@ -117,6 +119,8 @@
 
   <div class="wrap controls" id="controls"></div>
   <div class="wrap results" id="results" hidden></div>
+  <!-- live-Gemma Battleship mount point goes here (owned by the live-Gemma work; keep it) -->
+  <div class="wrap" id="live-gemma"></div>
 </section>
 
 <!-- ============ Second environment: Bench Pressure (light) ============ -->
@@ -137,7 +141,7 @@
     <div class="split reveal">
       <div>
         <h2>From a game to the bench.</h2>
-        <p class="body">The wet lab is the same problem with real chemistry: six candidate mechanisms, noisy kinetics, limited reagents.</p>
+        <p class="body">The wet lab is the same problem with simulated chemistry: six candidate mechanisms, noisy kinetics, limited reagents.</p>
       </div>
       <figure class="sq"><img src="assets/still4.jpg" alt=""></figure>
     </div>
@@ -146,14 +150,6 @@
       <h3 class="sub">What the agent has to tell apart</h3>
       <p class="body" id="wet-caption"></p>
       <div class="curves" id="curves"></div>
-    </div>
-    <div class="transfer reveal">
-      <div>
-        <h3 class="sub">Does the skill transfer?</h3>
-        <p class="body">Train on Battleship only. Test on wet-lab choices the model never saw, against a control.</p>
-        <p class="body" id="transfer-note"></p>
-      </div>
-      <div class="bars" id="transfer"></div>
     </div>
   </div>
 </section>
@@ -181,5 +177,6 @@
 <script src="data.js"></script>
 <script src="ships-data.js"></script>
 <script src="app.js"></script>
+<script src="src/live_gemma.js"></script>
 </body>
 </html>

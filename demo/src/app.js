@@ -161,18 +161,27 @@ function intro() {
 
 // ---------------------------------------------------------------- static sections
 function facts() {
-  const cal = D.calibration.policies;
-  const loss = cal.noise_ignoring_coder.inference;
+  // Measured numbers only (D.measured, from results/ via scripts/build_demo_data.py).
+  const M = D.measured;
+  const row = (name) => M.desk.rows.find((r) => r.name === name);
+  const opus = row('Claude Opus 5.5'), ref = row('Reference');
+  const naive = M.integrity.find((f) => f.value === '0.92');
+  const loss = D.calibration.policies.noise_ignoring_coder.inference;
   const items = [
-    ...D.headline,
+    {
+      value: opus.mean.toFixed(2), versus: ref.mean.toFixed(2),
+      text: `Mean reward of Claude Code with Opus 5.5 on the black-box credit desk, against the reference (1 = the reference's expected value, 0 = do nothing; ${opus.n} desks).`,
+      source: `${M.desk.source}`,
+    },
+    { value: naive.value, versus: naive.versus, text: naive.text, source: naive.source },
     {
       value: fmt(loss), versus: null,
-      text: 'Lost by an agent that takes noisy reports as exact.',
+      text: 'Battleship reward lost by an agent that takes noisy reports as exact.',
       source: `results/battleship_calibration.json, ${D.calibration.seeds} paired boards`,
     },
   ];
   $('#facts').innerHTML = items.map((f) =>
-    `<div class="fact reveal" title="Source: ${f.source}"><b>${f.value}${f.versus !== null && f.versus !== undefined ? `<small>vs ${f.versus}</small>` : ''}</b><p>${f.short || f.text}</p></div>`).join('');
+    `<div class="fact reveal" title="Source: ${f.source}"><b>${f.value}${f.versus != null ? `<small>vs ${f.versus}</small>` : ''}</b><p>${f.text}</p></div>`).join('');
 }
 
 function wetlab() {
@@ -188,7 +197,7 @@ function wetlab() {
   $('#map').innerHTML = rows.map((r, i) => r.map((c) => `<div class="${i ? '' : 'h'}">${c}</div>`).join('')).join('');
   const W = D.wetlab;
   const a = W.action;
-  $('#wet-caption').textContent = `Product over ${W.mechanisms[0].t.at(-1)} minutes, 14 simulated vessels each, same run design.`;
+  $('#wet-caption').textContent = `Simulated, not measured: product over ${W.mechanisms[0].t.at(-1)} minutes from our wet-lab simulator (bayesenv.wetlab), 14 simulated vessels per mechanism, same run design.`;
   const ymax = Math.max(...W.mechanisms.flatMap((m) => m.P.flat()));
   const w = 200, h = 130;
   $('#curves').innerHTML = W.mechanisms.map((m) => {
@@ -197,15 +206,6 @@ function wetlab() {
       `<polyline fill="none" stroke="#0b0c0e" stroke-opacity="0.38" stroke-width="1" points="${row.map((v, i) => `${((m.t[i] / tmax) * w).toFixed(1)},${(h - (v / ymax) * (h - 6)).toFixed(1)}`).join(' ')}"/>`).join('');
     return `<div class="curve"><h4>${m.name.replace('_', ' ')}</h4><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Product over time, ${m.name}"><line x1="0" y1="${h}" x2="${w}" y2="${h}" stroke="#0b0c0e" stroke-opacity="0.3"/>${lines}</svg></div>`;
   }).join('');
-
-  const T = D.llm.transfer;
-  const arms = T ? T.arms : [{ name: 'Base model' }, { name: 'Control' }, { name: 'RL on Battleship' }];
-  const top = T ? Math.max(...arms.map((x) => x.hi ?? x.mean)) : 1;
-  $('#transfer').innerHTML = arms.map((x, i) => T
-    ? `<div class="bar real ${i === arms.length - 1 ? 'hi' : ''}"><em>${x.mean.toFixed(2)}</em><i style="height:${(x.mean / top) * 82}%"></i><span>${x.name}</span></div>`
-    : `<div class="bar"><em>not yet measured</em><i style="height:46%"></i><span>${x.name}</span></div>`).join('');
-  $('#transfer-note').innerHTML = T ? `Mean design reward on ${T.rows} wet-lab rows.` : '<b>Not yet run.</b> The bars stay empty until it is.';
-  $('#foot-note').textContent = D.llm.base ? '' : 'The agent shown is a labelled proxy until model runs land.';
 }
 
 // ---------------------------------------------------------------- the stage
@@ -293,7 +293,7 @@ function stage() {
     mode = t.dataset.mode;
     start();
   }));
-  $('a[href="#rl"]').addEventListener('click', (e) => {
+  $('a[href="#rl"]')?.addEventListener('click', (e) => {
     e.preventDefault();
     mode = 'rl';
     start();
@@ -447,7 +447,7 @@ function stage() {
         <p><b>${lead}</b> The rule was <b>${truth}</b>. ${why}</p>
         <div class="player">
           <button class="btn ghost" id="next" type="button">Next board</button>
-          <button class="btn solid" id="torl" type="button">See the RL-tuned agent</button>
+          <button class="btn solid" id="torl" type="button">${tunedRun() ? 'See the RL-tuned agent' : 'Watch it against the reference'}</button>
         </div>
       </div>`;
     controls.innerHTML = '';
@@ -478,9 +478,9 @@ function stage() {
     A.rules = base.beliefs[0].rules;
     A.note = 'The same agent you just played against.';
     A.draw();
-    B.header(tuned ? D.llm.tuned.label : 'After RL on this reward', tuned ? '' : 'not yet measured', !tuned);
+    B.header(tuned ? D.llm.tuned.label : 'Exact-Bayes reference', '');
     B.rules = right.beliefs[0].rules;
-    B.note = tuned ? 'Same model after RL on the exact reward.' : 'Showing the exact-Bayes reference: the play this reward trains toward. No tuned model has been run yet.';
+    B.note = tuned ? 'Same model after RL on the exact reward.' : 'The exact-Bayes reference: the play this reward points toward.';
     B.draw();
     viewLabels('Out of the box', tuned ? 'RL-tuned' : 'Reference');
     replayControls();
@@ -542,10 +542,9 @@ function stage() {
           <p class="parts">${tuned ? 'Same board, same noise.' : 'Gap to exact play on this board.'}</p></div>
       </div>
       <div class="verdict">
-        <p>${tuned ? '' : '<b>Right side is the reference, not a trained model yet.</b> '}The rule was <b>${RULE_LABEL[E.NAMES[bd.rule]]}</b>.</p>
+        <p>${tuned ? '' : '<b>Right side is the exact-Bayes reference, not a trained model.</b> '}The rule was <b>${RULE_LABEL[E.NAMES[bd.rule]]}</b>.</p>
         <div class="player">
-          <button class="btn ghost" id="again" type="button">Next board</button>
-          <a class="btn solid" href="#wetlab">Does it transfer?</a>
+          <button class="btn solid" id="again" type="button">Next board</button>
         </div>
       </div>`;
     controls.innerHTML = '';

@@ -4,7 +4,7 @@
 
 **Frontier agents decide almost perfectly, then lose by overpaying for information.**
 
-**[Read the whitepaper](paper/3sigma-whitepaper.pdf)** · [Open the demo](demo/index.html) · [See the 54 graded trials](results/blackbox_v2/) · [Run the tasks](tasks/credit-blackbox-v2/)
+**[Read the whitepaper](paper/3sigma-whitepaper.pdf)** · [Open the live demo](https://playerplanet-3-sigma-submission--battleship-live-web.us-east.modal.run/) ([source](demo/)) · [See the 54 graded trials](results/blackbox_v2/) · [Run the tasks](tasks/credit-blackbox-v2/)
 
 Team 3-Sigma · Junction 2026 · AfterQuery "Break the Agent": *build a reinforcement learning
 environment that challenges today's best AI agents, demonstrate real failure modes, and show that

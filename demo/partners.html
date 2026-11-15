@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3σ · For partners</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html" aria-label="3 sigma, home"><span class="tex">3<i>&sigma;</i></span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="proof.html">Proof</a>
+    <a href="partners.html">Partners</a>
+    <a href="index.html#play">Play</a>
+  </nav>
+</header>
+
+<section class="dark page-head">
+  <div class="wrap">
+    <p class="eyebrow">For partners</p>
+    <h1>Thank you.</h1>
+    <p class="lede">We took part in five challenges at Junction 2026. Here is what we found that relates to each one. Measured numbers are in <a href="proof.html">Proof</a>.</p>
+  </div>
+</section>
+
+<section class="light sub-page">
+  <div class="wrap">
+    <div class="cards">
+      <article>
+        <h3>AfterQuery · Break the Agent</h3>
+        <p>Thank you. The black-box credit desk is our submission. Frontier agents score below a fair reference because they misprice information, and the exact grader shows where each dollar went. Six desks, 54 graded trials, regrade in under a second.</p>
+      </article>
+      <article>
+        <h3>Verda</h3>
+        <p>Thank you. Our Harbor evaluation VM ran on Verda CPU, and Gemma GRPO trained on a Verda V100 spot instance. Kimi K3.1 Pro and DeepSeek V4.1 Flash ran through Verda inference: on the desk Kimi scored 0.43 and DeepSeek 0.27, and both bought calibration data up to or near the 1,000-draw cap.</p>
+      </article>
+      <article>
+        <h3>NVIDIA</h3>
+        <p>Thank you. Nemotron 3 Ultra through NVIDIA NIM scored 0.01 on the black-box desk, overbuying calibration and then deciding poorly.</p>
+      </article>
+      <article>
+        <h3>Modal</h3>
+        <p>Thank you. Modal ran the CPU fan-out for our grader experiments (scripted policies over 400 seeds per cell), and hosts this demo with a live Gemma GPU endpoint.</p>
+      </article>
+      <article>
+        <h3>Google DeepMind</h3>
+        <p>Thank you. Gemini 4 Argon was the only agent we saw price its own calibration by simulation; that trial scored 1.0, though most Argon trials hit the time limit. Gemini 4 Carbon scored 1.0 on one desk. Gemini plays Bench Pressure live. Gemma 4 E2B trained with GRPO on our reward went from 0.00 to 0.28, and its transfer to other tasks is a bias towards gathering information.</p>
+      </article>
+    </div>
+    <p class="small" style="margin-top:32px">Desk scores are mean rewards on the black-box credit desk (1 = the reference's expected value, 0 = declining everyone), from results/blackbox_v2/trials.csv.</p>
+  </div>
+</section>
+
+<footer class="dark">
+  <div class="wrap foot">
+    <div>
+      <p class="brand" aria-label="3 sigma"><span class="tex">3<i>&sigma;</i></span></p>
+      <p class="small">Junction 2026 · AfterQuery</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -7,7 +7,10 @@ come from bayesenv.battleship, the calibration table from results/battleship_cal
 the wet-lab time courses from bayesenv.wetlab. The page's JavaScript engine is checked against
 the `tests` block (node demo/src/verify.mjs).
 
-Recorded players (no language model has played yet, so these are the documented proxies):
+The measured results quoted on the page (`measured`) are read from results/blackbox_v2/trials.csv
+and results/battleship_harbor/.
+
+Recorded players in the in-browser game (documented proxies, labelled on the page):
   reference  greedy information per shot + exact posterior
   coder      the reference's shots, but every report treated as exact (a typical coding bug)
   naive      human-style hunt/target shots + reports treated as exact
@@ -33,21 +36,75 @@ PLAYERS = {"reference": ("reference", "exact"), "coder": ("reference", "noiseles
            "naive": ("hunter", "noiseless")}
 
 
-# Measured elsewhere in this repo and quoted on the page. Source: README.md "Headline numbers"
-# (results/e7 for the agent row, docs/RESULTS.md E1 for the naive grader).
-HEADLINE = [
-    {"value": "0.24", "versus": "0.95",
-     "text": "Claude Code with Opus 5.5 on the hyperbolic discounting task, against the "
-             "Bayesian reference. It chose reasonable experiments, then stated beliefs that "
-             "did not follow from its own data.",
-     "short": "Claude Code with Opus 5.5 against the Bayesian reference.",
-     "source": "README.md, headline numbers, hyperbolic discounting, 15 trials"},
+# Measured numbers quoted on the page. The rewards are computed here from the tracked trial
+# records, not typed by hand; the sentences quote README.md. The old "0.24 vs 0.95" headline
+# (hyperbolic discounting) is retracted in the paper: that task withheld the model, and Opus
+# scored 0.98 once it was stated. Do not bring it back.
+DESK_NAMES = {  # trials.csv `agent` -> label on the page
+    "reference": "Reference", "claude-opus-5.5": "Claude Opus 5.5",
+    "claude-sonnet-5.5": "Claude Sonnet 5.5", "kimi-k3.1-pro": "Kimi K3.1 Pro",
+    "gemini-4-carbon": "Gemini 4 Carbon", "deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
+    "gemini-4-argon": "Gemini 4 Argon", "minimax-m3": "MiniMax-M3",
+    "gpt-5.6-terra": "GPT-5.6 Terra", "nemotron-3-ultra": "Nemotron 3 Ultra",
+}
+INTEGRITY = [  # reward-integrity facts, each measured; sources in `source`
+    {"value": "0", "text": "What doing nothing scores on the credit desk (4 Harbor trials).",
+     "source": "README.md, Results table, Do nothing (-a nop)"},
+    {"value": "54 / 54",
+     "text": "Graded trials that results/blackbox_v2/regrade.py re-checks from the grader's "
+             "record in under a second (0.15 s): 0 mismatches.",
+     "source": "README.md, 'Check our numbers in under a second'"},
     {"value": "0.92", "versus": "0",
-     "text": "What a naive accuracy grader pays an agent that runs no experiments at all. "
-             "Our reward pays it exactly 0.",
-     "short": "What a naive grader pays an agent that runs no experiments. Ours pays 0.",
-     "source": "README.md and docs/RESULTS.md, E1"},
+     "text": "What a naive accuracy grader pays an agent that runs no experiments. Ours pays 0.",
+     "source": "docs/RESULTS.md, E1 (hyperbolic discounting)"},
 ]
+TRAINING = {  # quoted from README.md "Training on the reward"
+    "before": "0.00", "after": "0.28", "pm": "0.05",
+    "text": "GRPO on our reward raised Gemma 4 E2B from 0.00 to 0.28 ± 0.05 on the six credit "
+            "desks: the level of one-step lookahead, far below the reference. Its gains on "
+            "other tasks are a learned bias towards gathering information, not better "
+            "experiment choice.",
+    "source": "README.md, 'Training on the reward'; paper, Training section",
+}
+STATED = {  # quoted from README.md "How we got here" and paper Table 'stated'
+    "count": 11,
+    "text": "Stated-model environments where agents with a shell (Claude Code with Opus 5.5) "
+            "wrote exact inference and matched the reference.",
+    "source": "README.md, 'How we got here'; paper, Table 'Stated-model environments'",
+}
+
+
+def desk_results() -> dict:
+    """Mean reward per agent on the black-box credit desk, from results/blackbox_v2/trials.csv."""
+    import csv
+    rows: dict[str, list[float]] = {}
+    harness: dict[str, str] = {}
+    with open(ROOT / "results" / "blackbox_v2" / "trials.csv", newline="") as f:
+        for t in csv.DictReader(f):
+            rows.setdefault(t["agent"], []).append(float(t["reward"]))
+            harness[t["agent"]] = t["harness"]
+    out = [{"name": DESK_NAMES.get(k, k), "harness": harness[k], "n": len(v),
+            "mean": round(float(np.mean(v)), 2), "reference": k == "reference"}
+           for k, v in rows.items()]
+    out.sort(key=lambda x: (not x["reference"], -x["mean"]))
+    out.append({"name": "Do nothing", "harness": "-", "n": 4, "mean": 0.0, "reference": False,
+                "source": "README.md, Results table"})
+    return {"rows": out, "trials": sum(len(v) for v in rows.values()),
+            "source": "results/blackbox_v2/trials.csv",
+            "opus": "Opus decides within $1–35 of the true-model optimum, but buys an extra "
+                    "$200–500 of calibration data, which buys back at most about $170.",
+            "opus_source": "README.md, 'What the decomposition shows'"}
+
+
+def battleship_harbor() -> dict:
+    """Claude Code + Opus 5.5 against the reference on Rulebound Battleship (Harbor trials)."""
+    base = ROOT / "results" / "battleship_harbor"
+    def rewards(prefix):
+        return [float(p.read_text()) for p in sorted(base.glob(f"{prefix}*/*/verifier/reward.txt"))]
+    opus, ref = rewards("bs-opus"), rewards("bs-oracle")
+    return {"opus": round(float(np.mean(opus)), 2), "opus_n": len(opus),
+            "reference": round(float(np.mean(ref)), 2), "reference_n": len(ref),
+            "source": "results/battleship_harbor/bs-opus*, bs-oracle* (verifier/reward.txt)"}
 
 
 def r(x, nd=5):
@@ -179,11 +236,13 @@ def main() -> None:
                 "score_harbor": cal["policies"][k]["score_harbor"],
                 "design": cal["policies"][k]["design"],
                 "inference": cal["policies"][k]["inference"]} for k in keep}},
-        "headline": HEADLINE,
+        "measured": {"desk": desk_results(), "battleship": battleship_harbor(),
+                     "integrity": INTEGRITY, "training": TRAINING, "stated": STATED},
         "wetlab": wetlab_curves(),
         "tests": engine_tests(),
-        # Slots for measured language-model results. Leave null until the runs exist; the page
-        # shows "not yet measured" for every null. Schema in demo/README.md.
+        # Slots for language-model games in the in-browser Battleship. Leave null until the runs
+        # exist; the page then shows the labelled proxy. `transfer` is no longer drawn on the
+        # page (empty bars were cut). Schema in demo/README.md.
         "llm": {"base": None, "tuned": None, "transfer": None},
     }
     out = ROOT / "demo" / "data.js"
