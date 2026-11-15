@@ -140,13 +140,10 @@ pushed to a public repository or hosted.
 
 ## Putting it online
 
-Everything under `demo/` is static and uses relative paths, so any static host works, also
-under a sub-path. `.github/workflows/demo-pages.yml` publishes it to GitHub Pages: set
-Settings > Pages > Source to "GitHub Actions" once, then push to `main` (or run the workflow by
-hand). The workflow reruns `tools/wrap_bench_pressure.py`, so the lab page follows
-`bench-pressure/index.html`; `app.js` and `lab3d.js` are committed bundles and are not rebuilt
-there. Pages on a private repository needs a paid GitHub plan; otherwise point Cloudflare
-Pages or Netlify at the repo with `demo` as the output folder and no build command.
+The live demo is served from Modal (`bench-pressure/deploy/app.py`, link in the top-level
+README). Everything under `demo/` is static and uses relative paths, so any static host also
+works, under a sub-path too. Rerun `tools/wrap_bench_pressure.py` after `bench-pressure/index.html`
+changes; `app.js` and `lab3d.js` are committed bundles.
 
 Before the link goes public: check the photo licences in `assets/`, and keep the AI-generated
 note in the footer and the Microduck credit on the lab's start card.

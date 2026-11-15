@@ -103,7 +103,6 @@ snippet. `step()` returns the reading(s) and the current posterior, ready for a 
 - Run Python with `uv run --no-project --with numpy --with scipy --with pyyaml --with pytest`.
   On Windows, prefix Modal commands with `PYTHONIOENCODING=utf-8 PYTHONUTF8=1`.
 - Tests: `pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py
-  tests/test_spec.py`. `tests/test_model.py` and `tests/test_predict.py` are leftovers from the
-  project template and are expected to fail.
+  tests/test_spec.py tests/test_battleship.py tests/test_battleship_rows.py tests/test_battleship_open.py`.
 - Every new lab gets a `tests/test_<lab>.py` (determinism under seed and salt, prior scores 0,
   invalid actions rejected, budget enforced, reference beats random) and a `docs/<LAB>.md`.
