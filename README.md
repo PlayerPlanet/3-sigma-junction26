@@ -1,50 +1,50 @@
+[![A render of the sea from the 3σ demo: Rulebound Battleship in fog](demo/assets/sea.jpg)](demo/index.html)
+
 # Bitshift Happens
 
-**Team 3-Sigma · Junction 2026 · AfterQuery "Break the Agent"**
+**Frontier agents decide almost perfectly, then lose by overpaying for information.**
 
-Our submission is the **black-box credit desk** (`tasks/credit-blackbox-v2/`, six tasks). An agent
-underwrites 20 loan applicants against a score generator it can only learn by paying for samples. It
-is graded *exactly* against the true-model optimum. Every frontier agent we ran averages below a
-simple reference that uses only the agent's own tools. The best agents decide almost perfectly and
-lose by **buying two to five times more calibration data than it is worth**.
+**[Read the whitepaper](paper/3sigma-whitepaper.pdf)** · [Open the demo](demo/index.html) · [See the 54 graded trials](results/blackbox_v2/) · [Run the tasks](tasks/credit-blackbox-v2/)
 
-| | |
-|---|---|
-| Paper | [`paper/3sigma-whitepaper.pdf`](paper/3sigma-whitepaper.pdf): *Exact Bayesian Rewards for Agent Environments: Scoring, Benchmarking and Training* |
-| Task code | [`tasks/credit-blackbox-v2/`](tasks/credit-blackbox-v2/) (rendered) · [`credit_blackbox/`](credit_blackbox/) (generator, screening, tests) |
-| Our runs | [`results/blackbox_v2/`](results/blackbox_v2/): 54 graded Harbor trials with full traces |
+Team 3-Sigma · Junction 2026 · AfterQuery "Break the Agent": *build a reinforcement learning
+environment that challenges today's best AI agents, demonstrate real failure modes, and show that
+its rewards reflect real progress.*
 
 ---
 
-## Check our numbers in under a second
+## The problem
 
-No Docker, no API keys, no GPU. Python 3 only for the first command; add numpy and scipy for the second.
+Agents with a shell now solve any decision problem whose model is written down: they code the exact
+inference and the dynamic program and match the reference. Real work is different. The model has to
+be learned first, learning costs money, and nobody says how much of it is enough.
 
-```bash
-git clone <this repo> && cd 3-sigma-junction26
+## What we built
 
-python results/blackbox_v2/regrade.py
-# 54 trials regraded, 0 mismatches            (0.15 s)
+The **black-box credit desk** (`tasks/credit-blackbox-v2/`, six Harbor tasks). An agent underwrites
+20 loan applicants against a score generator it can only learn by paying for samples, and is graded
+*exactly* against the true-model optimum. Every frontier agent we ran averages below a simple
+reference that uses only the agent's own tools.
 
-uv run --no-project --with numpy --with scipy python results/blackbox_v2/regrade.py --full --only opus
-# re-solves the true-model DP from the task's own code and replays every action (about 8 s per trial)
-```
+| | What it does |
+|---|---|
+| **The agent** | Buys calibration samples at $1 each, buys live checks at $20 each, then approves or declines each applicant. |
+| **The reference** | 12 draws per cell, a robust fit, and the exact DP. Everything it uses is available to the agent. |
+| **The grader** | Solves the exact DP under the hidden generator and charges each step the value it gave up, minus what was spent on samples. |
 
-Each trial folder keeps the grader's record, `verifier/details.json`. It holds the desk's true
-generator, every sandbox purchase, and every live check and decision. For each step it gives the
-true-model posterior, the DP values and the advantage given up. The reward depends only on the
-agent's actions and the true model, not on the random draws, so the record is enough to re-grade
-the trial.
-- `regrade.py` recomputes each reward from the record.
-- `regrade.py --full` imports the desk's own `credit_core` and `bbsecret`, re-solves the DP for
-  every applicant, and checks every logged value. The largest difference we see is 5×10⁻⁴, from
-  rounding in the log.
+## What's new
 
-Index: [`results/blackbox_v2/trials.csv`](results/blackbox_v2/trials.csv). Trials the harness lost
-before the agent acted are listed with their error in
-[`excluded_trials.csv`](results/blackbox_v2/excluded_trials.csv).
+- **An exact reward.** The score depends only on the agent's actions and the true model, not on the
+  random draws. Doing nothing scores exactly 0.
+- **A split of every loss into two parts:** what the agent overpaid for information (sandbox spend)
+  and what its decisions gave up (play loss). The best agents fail only on the first.
+- **A fair gap.** The reference uses only the agent's own tools.
+- **Checkable in under a second.** `regrade.py` recomputes all 54 rewards from the graders' records,
+  with no Docker, keys or GPU.
+- **Trainable.** GRPO on the reward raised Gemma 4 E2B from 0.00 to 0.28 on the six desks, and the
+  grader shows what that gain is and is not.
+- **Weaknesses stated.** The reward-integrity section lists five things we would attack first.
 
-## Results
+## How it performs
 
 One Harbor trial per desk per agent, six desks. Reward 1 means the reference's expected value; 0
 means declining everyone.
@@ -122,33 +122,6 @@ first six with:
 Two desks that passed the first screen failed confirmation at 200 datasets and were replaced. The
 full table is in [`tasks/credit-blackbox-v2/README.md`](tasks/credit-blackbox-v2/README.md).
 
-## Re-run in Harbor
-
-Requirements: Docker, Python 3.12, and [Harbor](https://github.com/laude-institute/harbor)
-0.25.0 (`uv tool install harbor`). Each task builds two containers: the agent's, and an MCP server
-holding the hidden state.
-
-```bash
-T=tasks/credit-blackbox-v2
-D="--agent-setup-timeout-multiplier 3"
-
-harbor run -p $T -a oracle $D                 # reference: 1.0 on five desks, 0.82 on 3005
-harbor run -p $T -a nop $D                    # do nothing: 0.0
-
-scripts/make_baseline_tasks.sh onestep        # stop early (one-step lookahead); also: naive, guess, over
-harbor run -p tasks/credit-blackbox-v2-onestep -a oracle $D
-
-# agents (your own keys: ANTHROPIC_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, ...)
-harbor run -p $T -a claude-code -m claude-opus-5-5 $D
-harbor run -p $T -a opencode    -m gemini/gemini-4-carbon $D
-harbor run -p $T -a claude-code -m claude-opus-5-5 -i credit-blackbox-3017 $D   # one desk
-```
-
-- **Re-scoring a new run:** add its trial folders to the `traces/` layout and an entry to
-  `trials.csv`, then run `regrade.py`.
-- **Time limit:** the agent limit is 45 minutes, set in `task.toml`. The reference finishes in a few
-  minutes.
-
 ## Reward integrity
 
 **What holds:**
@@ -217,7 +190,75 @@ The black-box desk is the end of a longer search; the paper reports the whole of
    information was too flat, or the stated prior too informative, for the reference to separate
    from fixed-budget shortcuts. They are not in this submission.
 
-## Layout
+## How to use it
+
+### Check our numbers in under a second
+
+No Docker, no API keys, no GPU. Python 3 only for the first command; add numpy and scipy for the second.
+
+```bash
+git clone <this repo> && cd 3-sigma-junction26
+
+python results/blackbox_v2/regrade.py
+# 54 trials regraded, 0 mismatches            (0.15 s)
+
+uv run --no-project --with numpy --with scipy python results/blackbox_v2/regrade.py --full --only opus
+# re-solves the true-model DP from the task's own code and replays every action (about 8 s per trial)
+```
+
+Each trial folder keeps the grader's record, `verifier/details.json`. It holds the desk's true
+generator, every sandbox purchase, and every live check and decision. For each step it gives the
+true-model posterior, the DP values and the advantage given up. The reward depends only on the
+agent's actions and the true model, not on the random draws, so the record is enough to re-grade
+the trial.
+- `regrade.py` recomputes each reward from the record.
+- `regrade.py --full` imports the desk's own `credit_core` and `bbsecret`, re-solves the DP for
+  every applicant, and checks every logged value. The largest difference we see is 5×10⁻⁴, from
+  rounding in the log.
+
+Index: [`results/blackbox_v2/trials.csv`](results/blackbox_v2/trials.csv). Trials the harness lost
+before the agent acted are listed with their error in
+[`excluded_trials.csv`](results/blackbox_v2/excluded_trials.csv).
+
+### Re-run in Harbor
+
+Requirements: Docker, Python 3.12, and [Harbor](https://github.com/laude-institute/harbor)
+0.25.0 (`uv tool install harbor`). Each task builds two containers: the agent's, and an MCP server
+holding the hidden state.
+
+```bash
+T=tasks/credit-blackbox-v2
+D="--agent-setup-timeout-multiplier 3"
+
+harbor run -p $T -a oracle $D                 # reference: 1.0 on five desks, 0.82 on 3005
+harbor run -p $T -a nop $D                    # do nothing: 0.0
+
+scripts/make_baseline_tasks.sh onestep        # stop early (one-step lookahead); also: naive, guess, over
+harbor run -p tasks/credit-blackbox-v2-onestep -a oracle $D
+
+# agents (your own keys: ANTHROPIC_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, ...)
+harbor run -p $T -a claude-code -m claude-opus-5-5 $D
+harbor run -p $T -a opencode    -m gemini/gemini-4-carbon $D
+harbor run -p $T -a claude-code -m claude-opus-5-5 -i credit-blackbox-3017 $D   # one desk
+```
+
+- **Re-scoring a new run:** add its trial folders to the `traces/` layout and an entry to
+  `trials.csv`, then run `regrade.py`.
+- **Time limit:** the agent limit is 45 minutes, set in `task.toml`. The reference finishes in a few
+  minutes.
+
+### Tests
+
+```bash
+uv run --no-project --with numpy --with scipy --with pyyaml --with pytest \
+  pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py tests/test_spec.py
+```
+
+The black-box engine's own tests are in `credit_blackbox/test_blackbox.py`. They cover determinism,
+salt and stream independence, invalid actions, limits, decline = 0, and the reference above the
+baselines.
+
+### Repository layout
 
 ```
 tasks/credit-blackbox-v2/   the submission: six rendered Harbor tasks + selection README
@@ -228,19 +269,19 @@ bayesenv/                   exact Bayesian grader, environments, policies (earli
 tasks/{bayes,chem,wetlab,battleship}/   earlier Harbor task families
 scripts/                    eval.sh, render_tasks.sh, make_baseline_tasks.sh, calibration scripts
 train/                      LoRA fine-tuning and GRPO on the exact reward
-bench-pressure/             live demo page
+demo/                       pitch page, playable Battleship and the 3D lab (open demo/index.html)
+bench-pressure/             Bench Pressure lab game and its Gemini runs
 ```
 
-## Tests
+## Team
 
-```bash
-uv run --no-project --with numpy --with scipy --with pyyaml --with pytest \
-  pytest -q tests/test_env_reward.py tests/test_chem.py tests/test_wetlab.py tests/test_spec.py
-```
+Konsta Kiirikki · Nikolas Juhava · Qilun Li · Atte Laakso (Aalto University School of Science)
 
-The black-box engine's own tests are in `credit_blackbox/test_blackbox.py`. They cover determinism,
-salt and stream independence, invalid actions, limits, decline = 0, and the reference above the
-baselines.
+## Acknowledgments
+
+AfterQuery for the challenge, the Harbor harness and model credits · Junction 2026 ·
+[Harbor](https://github.com/laude-institute/harbor) · the "Microduck" robot model in the demo by
+william.rodrigo on [Sketchfab](https://sketchfab.com/3d-models/microduck-1579de821da94e1e819619869cb0093c), CC BY 4.0.
 
 ## Use of AI
 
