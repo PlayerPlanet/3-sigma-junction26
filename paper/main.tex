@@ -251,6 +251,20 @@ policy's expected profit net of calibration cost, so the profit-maximising polic
 expected unclipped reward.
 \end{corollary}
 
+\paragraph{What the grader measures.} The belief-state DP is Bayesian decision theory solved by
+backward induction: the value of a check is computed by propagating every possible reading through
+Bayes' rule and weighting the updated beliefs by their predictive probabilities (preposterior
+analysis), so the grader scores sequential, non-myopic experimental design under the task's
+monetary utility, against the optimal policy. In prediction tasks the utility is information:
+by Proposition~\ref{prop:info} the expected reward of the exact posterior is the mutual
+information between the agent's data and the outcome, Lindley's criterion, and
+Corollary~\ref{cor:decomp} isolates design quality (scored with inference held exact) from
+inference quality. Two limits apply. The prediction-task reference designs greedily, so the
+design gap is relative to one-step information gain, not to the optimal sequential design. And
+on the black-box desk the DP is Bayesian in the applicant's segment but treats the score
+generator as known: calibration is graded through its cost and the play that follows, not as a
+design problem of its own, which would require the Bayes-adaptive problem over the generator.
+
 \begin{remark}[What is not covered]\label{rem:limits}
 The guarantees concern the score $S$ and the value $\hat V$. The prediction reward of
 Eq.~\eqref{eq:reward} divides by $S(p_{\thetastar};\thetastar)-S(p_0;\thetastar)$, which depends on
@@ -512,6 +526,15 @@ under the surrogate. It would no longer be exact, so the guarantees would hold o
 surrogate's error, but that error can be measured on held-out simulations before the
 environment is released, and it costs the grader compute once rather than every agent at every
 step.
+
+The per-step hypothesis reward of Proposition~\ref{prop:step},
+$\log\pi(h^{*}\mid D_t)-\log\pi(h^{*}\mid D_{t-1})$, is exactly the payout of a logarithmic market
+scoring rule~\citep{hanson2003combinatorial} to a trader who moves the price from the old
+posterior to the new one, so an agent running experiments is a trader paid for the information
+it brings. This suggests prediction-market environments: a market maker that quotes the exact
+posterior given public information, traders who buy private signals at a price, and, with
+several agents, a check of whether prices converge to the exact pooled posterior. The grader
+supplies what real markets lack, the price an ideal aggregator would quote.
 
 What it showed about current agents is specific. Given a stated model and a shell, frontier
 agents infer and plan exactly. What they lack is treating ``how much should I learn?'' as a
