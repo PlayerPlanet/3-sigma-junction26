@@ -6,6 +6,12 @@
 \usepackage{microtype}
 \usepackage{amsmath,amssymb,amsthm}
 \newtheorem{proposition}{Proposition}
+\newtheorem{corollary}[proposition]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\theoremstyle{plain}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\KL}{\mathrm{KL}}
 \usepackage{booktabs}
@@ -123,27 +129,137 @@ draws from the posterior: an agent that used only its own data cannot tell the t
 a posterior draw, so a submission that leans towards the truth is detected without knowing how
 it cheated.
 
-\paragraph{Guarantees.} Call a submission \emph{no-leak} if it depends on $\theta$ only through
-the agent's data. Appendix~\ref{app:proofs} proves:
+\subsection{Guarantees}
+\label{sec:guarantees}
+
+\paragraph{Setup.} Let $(\Theta,\pi)$ be the parameter space with its public prior and
+$p(y\mid x,\theta)$ the simulator's likelihood for design $x$. Nature draws $\thetastar\sim\pi$. The
+agent follows a design policy $\sigma$: at step $t$ it picks $x_t=\sigma_t(D_{t-1},U)$, where
+$D_{t-1}=((x_1,y_1),\dots,(x_{t-1},y_{t-1}))$ and $U$ is private randomness independent of
+$\thetastar$, and observes $y_t\sim p(\cdot\mid x_t,\thetastar)$. After $T$ steps it holds
+$D=D_T$. An evaluation design $x$ is drawn independently of $(\thetastar,D,U)$ and the agent
+submits a density $q$ for the outcome $Y$ at $x$. For any $\theta$ write
+\[
+p_\theta=p(\cdot\mid x,\theta),\qquad
+p_D=\int_\Theta p_\theta\,\pi(\theta\mid D)\,d\theta,\qquad
+p_0=\int_\Theta p_\theta\,\pi(\theta)\,d\theta,\qquad
+S(q;\theta)=\E_{Y\sim p_\theta}\big[\log q(Y)\big],
+\]
+the true, posterior-predictive and prior-predictive densities and the expected log score. Results
+are stated for one evaluation design and extend to the average over designs by linearity.
+
+\begin{definition}[No leak]\label{def:noleak}
+A submission $q$ has \emph{no leak} if $q\perp\thetastar\mid(D,U,x)$: given everything the agent
+legitimately observed, the submission carries no further information about the truth.
+\end{definition}
+
+The key fact used throughout is that adaptivity does not distort the posterior: because each
+$x_t$ is a function of $(D_{t-1},U)$ only, the likelihood of the data factorises as
+$\pi(\theta)\prod_{t}p(y_t\mid x_t,\theta)$ times terms free of $\theta$, so
+\begin{equation}
+\thetastar \mid (D,U,x)\;\sim\;\pi(\cdot\mid D).
+\label{eq:adaptive}
+\end{equation}
+
+\begin{proposition}[Strict propriety]\label{prop:proper}
+For every $\theta$ and every density $q$,
+$S(p_\theta;\theta)-S(q;\theta)=\KL(p_\theta\,\|\,q)\ge 0$, with equality iff $q=p_\theta$ a.e.
+\end{proposition}
+
+\begin{proposition}[Nobody beats the posterior]\label{prop:bayes}
+For every design policy and every no-leak $q$,
+\[
+\E\big[S(p_D;\thetastar)\big]-\E\big[S(q;\thetastar)\big]=\E\big[\KL(p_D\,\|\,q)\big]\ \ge 0 .
+\]
+If $q$ is restricted to a family $\mathcal Q$, the optimal no-leak submission is
+$\arg\min_{q\in\mathcal Q}\KL(p_D\|q)$; for Gaussian $\mathcal Q$ it is the Gaussian with the mean
+and variance of $p_D$.
+\end{proposition}
+
+\begin{corollary}[Exact loss decomposition]\label{cor:decomp}
+Let $S_\mathrm{ref}$ be the expected score of the reference. For any agent with data $D$ and
+no-leak submission $q$,
+\[
+\E\big[S_\mathrm{ref}-S(q;\thetastar)\big]
+=\underbrace{\E\big[S_\mathrm{ref}-S(p_D;\thetastar)\big]}_{\text{design loss}}
++\underbrace{\E\big[\KL(p_D\,\|\,q)\big]}_{\text{inference loss}\ \ge\ 0}.
+\]
+\end{corollary}
+
+\begin{proposition}[The reward measures information]\label{prop:info}
+$\E\big[S(p_D;\thetastar)-S(p_0;\thetastar)\big]=I(Y;D\mid x)$. For a discrete hypothesis
+$h^{*}$ and the reward $r(q)=\log q(h^{*})-\log p_0(h^{*})$, every no-leak $q$ satisfies
+\[
+\E[r(q)] = I(h^{*};D)-\E\big[\KL(\pi(\cdot\mid D)\,\|\,q)\big],
+\]
+and $r(p_0)=0$ in every episode.
+\end{proposition}
+
+\begin{proposition}[Dense per-step reward]\label{prop:step}
+Let $r_t=\log\pi(h^{*}\mid D_t)-\log\pi(h^{*}\mid D_{t-1})$. Then $\sum_{t=1}^{T}r_t=r(\pi(\cdot\mid
+D_T))$, and
+\[
+\E\big[r_t\mid D_{t-1},x_t\big]=I\big(h^{*};y_t\mid D_{t-1},x_t\big),
+\]
+the expected information gain of the chosen design. Replacing each $r_t$ by this conditional mean
+leaves the expected return of every policy unchanged and does not increase the variance of any
+step reward.
+\end{proposition}
+
+\begin{proposition}[Exact grading has lower variance]\label{prop:var}
+Let $\hat S=\log q(Y)$ with $Y\sim p_{\thetastar}$ be the score against one sampled outcome. Then
+$\E[\hat S]=\E[S(q;\thetastar)]$ and
+$\mathrm{Var}(\hat S)=\mathrm{Var}(S)+\E\big[\mathrm{Var}(\hat S\mid\thetastar,q)\big]\ge\mathrm{Var}(S)$.
+\end{proposition}
+
+\begin{proposition}[Validity of the leak test]\label{prop:ppc}
+Let $\tilde\theta_1,\dots,\tilde\theta_m$ be i.i.d.\ draws from $\pi(\cdot\mid D)$ and $T(\theta)$
+any statistic computed from $(\theta,D,q,x)$. If $q$ has no leak, the p-value
+\[
+p=\frac{1+\#\{i:\ T(\tilde\theta_i)\ge T(\thetastar)\}}{m+1}
+\quad\text{satisfies}\quad \Pr(p\le\alpha)\le\alpha\ \ \text{for all }\alpha\in[0,1].
+\]
+\end{proposition}
+
+\paragraph{Decision tasks.} Let $h\sim\pi_0$ be a hidden state, $a_t$ the action at step $t$,
+$o_t$ an observation whose law depends only on $(h,a_t)$, and $r(h,a)$ a bounded reward; the
+horizon is at most $T$. The belief state $s_t=\pi(\cdot\mid H_t)$ is the posterior given the
+history $H_t$. Let $\bar r(s,a)=\E_{h\sim s}\,r(h,a)$ and let $V^{*},Q^{*}$ solve the Bellman
+equations of the belief process,
+\[
+Q^{*}(s,a)=\bar r(s,a)+\E\big[V^{*}(s')\mid s,a\big],\qquad V^{*}(s)=\max_a Q^{*}(s,a),
+\]
+with $V^{*}=0$ after a terminal action.
+
+\begin{proposition}[Advantage grading]\label{prop:adv}
+For every policy whose actions depend only on the history and on randomness independent of $h$,
+with $\hat V$ as in Eq.~\eqref{eq:vhat}:
 \begin{enumerate}
-\item \emph{Proper:} the score is uniquely maximised by the true predictive.
-\item \emph{Nobody beats the posterior:} no no-leak submission beats $p_D$ in expectation, and
-inference loss equals $\E[\KL(p_D\|q)]$ exactly.
-\item \emph{Information:} the expected reward of $p_D$ is the mutual information between the
-agent's data and the outcome, so the reward measures how much was learned.
-\item \emph{Dense:} the per-step reward has the expected information gain of the chosen
-experiment as its conditional mean; replacing it by that mean keeps every policy's return and
-lowers variance.
-\item \emph{Lower variance:} the exact score has the same mean as the sampled one and no more
-variance.
-\item \emph{Valid leak test:} under no leak, $\Pr(p\le\alpha)\le\alpha$.
-\item \emph{Advantage grading:} $\hat V$ is an unbiased estimate of the policy's expected
-profit, never exceeds $V^{*}(s_0)$, and equals it in every episode for an optimal policy.
+\item[(i)] $\E[\hat V]=\E\big[\sum_t r(h,a_t)\big]$, the policy's expected total reward;
+\item[(ii)] $\hat V\le V^{*}(s_0)$ in every episode, with equality iff every action attains
+$\max_a Q^{*}(s_t,a)$;
+\item[(iii)] hence an optimal policy receives exactly $V^{*}(s_0)$ in every episode, whatever the
+observations.
 \end{enumerate}
-Two caveats: clipping and normalising by a $\thetastar$-dependent quantity in
-Eq.~\eqref{eq:reward} mean the guarantees hold for the score, and for the reward only up to
-clipping, which we check empirically (Section~\ref{sec:scoring}); and the leak test assumes exact
-posterior draws, where the grader uses particles.
+\end{proposition}
+
+\begin{corollary}[Normalisation preserves the optimum]\label{cor:norm}
+On the credit desk the agent's total is $V=\sum_i\hat V_i-c\,n_{\mathrm{draws}}$, and the unclipped
+reward is $(V-V_0)/(\bar V_\mathrm{ref}-V_0)$ with $V_0,\bar V_\mathrm{ref}$ constants of the
+task. By Proposition~\ref{prop:adv}(i) its expectation is an increasing affine function of the
+policy's expected profit net of calibration cost, so the profit-maximising policy maximises the
+expected unclipped reward.
+\end{corollary}
+
+\begin{remark}[What is not covered]\label{rem:limits}
+The guarantees concern the score $S$ and the value $\hat V$. The prediction reward of
+Eq.~\eqref{eq:reward} divides by $S(p_{\thetastar};\thetastar)-S(p_0;\thetastar)$, which depends on
+$\thetastar$, so its no-leak optimum is the predictive of a reweighted posterior rather than $p_D$;
+and clipping at $[0,1]$ is a non-linear transform, so $\E[\mathrm{clip}(Z)]$ and
+$\mathrm{clip}(\E Z)$ can order policies differently. We check both effects empirically
+(Section~\ref{sec:scoring}). Proposition~\ref{prop:ppc} assumes exact posterior draws, whereas
+the prediction grader uses a particle approximation.
+\end{remark}
 
 \section{What problems become gradable}
 \label{sec:problems}
@@ -428,69 +544,77 @@ responsibility for the content. The models named in the results were experimenta
 \section{Proofs}
 \label{app:proofs}
 
-Let $\theta \sim \pi$, let the agent choose designs from its history and private randomness $U$
-independent of $\theta$, and let $q$ be \emph{no-leak}: conditionally independent of $\theta$
-given $D$ and the evaluation design $x$. Write $p_\theta = p(\cdot\mid x,\theta)$ and
-$p_D = \int p_\theta\, p(\theta\mid D)\,d\theta$.
+All statements use the setup of Section~\ref{sec:guarantees}. The step used repeatedly is
+Eq.~\eqref{eq:adaptive}: since each design is a function of the past data and of $U$, the joint
+density of $(\thetastar,D)$ given $U$ is $\pi(\theta)\prod_t p(y_t\mid x_t,\theta)$ times factors
+that do not involve $\theta$, so conditioning on $(D,U,x)$ gives the ordinary posterior.
 
-\begin{proposition}[Proper]\label{prop:proper}
-$S(p_\theta;\theta) - S(q;\theta) = \KL(p_\theta\|q) \ge 0$, with equality only if $q = p_\theta$.
-\end{proposition}
-\emph{Proof.} The difference is $\E_{Y\sim p_\theta}[\log p_\theta(Y) - \log q(Y)]$; apply Gibbs'
-inequality. \qed
+\paragraph{Proof of Proposition~\ref{prop:proper}.}
+$S(p_\theta;\theta)-S(q;\theta)=\E_{Y\sim p_\theta}[\log p_\theta(Y)-\log q(Y)]=\KL(p_\theta\|q)$,
+which is non-negative and zero iff $q=p_\theta$ a.e.\ by Gibbs' inequality. \qed
 
-\begin{proposition}[Nobody beats the posterior]\label{prop:bayes}
-$\E[S(p_D;\theta)] - \E[S(q;\theta)] = \E[\KL(p_D\|q)] \ge 0$.
-\end{proposition}
-\emph{Proof.} Each design is a function of the past data and $U$, so the joint density of
-$(\theta, D)$ given $U$ is $\pi(\theta)\prod_t p(y_t\mid x_t,\theta)$ times factors free of
-$\theta$; hence $\theta\mid(D,U,x)\sim p(\theta\mid D)$. Conditioning fixes $q$, and
-$\E[S(q;\theta)\mid D,U,x] = \int p_D(y)\log q(y)\,dy$. Subtract the same identity with
-$q=p_D$ and take expectations. \qed
+\paragraph{Proof of Proposition~\ref{prop:bayes}.}
+Condition on $(D,U,x)$. By no leak, $q$ is then fixed, and by Eq.~\eqref{eq:adaptive}
+\[
+\E\big[S(q;\thetastar)\mid D,U,x\big]
+=\int\pi(\theta\mid D)\int p(y\mid x,\theta)\log q(y)\,dy\,d\theta
+=\int p_D(y)\log q(y)\,dy .
+\]
+The same identity with $q=p_D$ gives $\int p_D\log p_D$; subtracting,
+$\E[S(p_D;\thetastar)-S(q;\thetastar)\mid D,U,x]=\KL(p_D\|q)\ge 0$. Take expectations. Over a family
+$\mathcal Q$ the conditional expectation is maximised by minimising $\KL(p_D\|q)$; for Gaussian $q$
+this is moment matching. \qed
 
-\begin{proposition}[Information]\label{prop:info}
-$\E[S(p_D;\theta) - S(p_0;\theta)] = I(Y;D)$.
-\end{proposition}
-\emph{Proof.} By the identity above the conditional expectation is $\KL(p_D\|p_0)$, whose mean
-over $D$ is $I(Y;D)$ since $Y\mid D\sim p_D$ and $Y\sim p_0$. \qed
+\paragraph{Proof of Corollary~\ref{cor:decomp}.}
+Add and subtract $\E[S(p_D;\thetastar)]$ and apply Proposition~\ref{prop:bayes}. \qed
 
-\begin{proposition}[Dense per-step reward]\label{prop:step}
-Let $r_t = \log p(h^{*}\mid D_t) - \log p(h^{*}\mid D_{t-1})$. Then $\sum_t r_t$ is the final
-hypothesis reward of the posterior, $\E[r_t\mid D_{t-1},x_t] = I(h;y_t\mid D_{t-1},x_t)$, and
-replacing $r_t$ by this conditional mean preserves every policy's expected return without
-increasing variance.
-\end{proposition}
-\emph{Proof.} The sum telescopes from $p(\cdot\mid D_0)=p_0$. Given $(D_{t-1},x_t)$,
-$h^{*}\sim p(\cdot\mid D_{t-1})$ and by Bayes' rule $r_t = \log p(y_t\mid x_t,h^{*}) - \log
-p(y_t\mid x_t,D_{t-1})$, whose conditional mean is the mutual information. Apply the tower
-property and the law of total variance. \qed
+\paragraph{Proof of Proposition~\ref{prop:info}.}
+By the identity above, $\E[S(p_D;\thetastar)-S(p_0;\thetastar)\mid D,x]=\int p_D\log(p_D/p_0)=
+\KL(p_D\|p_0)$. Since $Y\mid(D,x)\sim p_D$ and $Y\mid x\sim p_0$, its mean over $D$ is
+$I(Y;D\mid x)$. For hypotheses, $h^{*}\mid(D,U)\sim\pi(\cdot\mid D)$, so for no-leak $q$,
+$\E[\log q(h^{*})\mid D,U]=\sum_h\pi(h\mid D)\log q(h)$ and
+$\E[r(q)\mid D,U]=\KL(\pi(\cdot\mid D)\|p_0)-\KL(\pi(\cdot\mid D)\|q)$; the first term has mean
+$I(h^{*};D)$. Finally $r(p_0)=0$ by definition. \qed
 
-\begin{proposition}[Variance]\label{prop:var}
-If $\hat S = \log q(Y)$ with $Y\sim p_{\thetastar}$, then $\E\hat S = \E S$ and
-$\mathrm{Var}(S)\le\mathrm{Var}(\hat S)$.
-\end{proposition}
-\emph{Proof.} $S = \E[\hat S\mid\thetastar,q]$; apply the law of total variance. \qed
+\paragraph{Proof of Proposition~\ref{prop:step}.}
+The sum telescopes because $\pi(\cdot\mid D_0)=p_0$. By Bayes' rule
+$\pi(h\mid D_t)/\pi(h\mid D_{t-1})=p(y_t\mid x_t,h)/p(y_t\mid x_t,D_{t-1})$, so
+$r_t=\log p(y_t\mid x_t,h^{*})-\log p(y_t\mid x_t,D_{t-1})$. Given $(D_{t-1},x_t)$,
+$h^{*}\sim\pi(\cdot\mid D_{t-1})$ and $y_t\sim p(\cdot\mid x_t,h^{*})$, so the conditional mean is
+the mutual information $I(h^{*};y_t\mid D_{t-1},x_t)$. The tower property gives
+$\E[\sum_t r_t]=\E[\sum_t\E[r_t\mid D_{t-1},x_t]]$ for every policy, and the law of total variance
+gives $\mathrm{Var}(\E[r_t\mid D_{t-1},x_t])\le\mathrm{Var}(r_t)$. \qed
 
-\begin{proposition}[Leak test]\label{prop:ppc}
-For $\tilde\theta_1,\dots,\tilde\theta_m$ i.i.d.\ from $p(\theta\mid D)$ and any statistic $T$
-of $(D,q,x)$, the p-value $(1+\#\{i: T(\tilde\theta_i)\ge T(\thetastar)\})/(m+1)$ satisfies
-$\Pr(p\le\alpha)\le\alpha$ under no leak.
-\end{proposition}
-\emph{Proof.} Given $(D,q,x)$, $\thetastar$ and the $\tilde\theta_i$ are i.i.d., so the $m+1$
-values of $T$ are exchangeable and $T(\thetastar)$ is among the $\lfloor\alpha(m+1)\rfloor$
-largest with probability at most $\alpha$. \qed
+\paragraph{Proof of Proposition~\ref{prop:var}.}
+By definition $S(q;\thetastar)=\E[\hat S\mid\thetastar,q]$. The means agree by the tower property
+and the variance identity is the law of total variance. \qed
 
-\begin{proposition}[Advantage grading]\label{prop:adv}
-In a finite-horizon problem with hidden state $h$, belief states $s_t$ and optimal values
-$V^{*}, Q^{*}$ of the belief process, for any policy using only its history and independent
-randomness: (i) $\E[\hat V]$ is the policy's expected total reward; (ii) $\hat V\le V^{*}(s_0)$,
-with equality iff every action was optimal, so an optimal policy scores $V^{*}(s_0)$ in every
-episode.
-\end{proposition}
-\emph{Proof.} As above, $h\mid(H_t,U)\sim s_t$, so with $\bar r(s,a)=\E_{h\sim s}r(h,a)$ we have
-$Q^{*}(s_t,a_t)=\bar r(s_t,a_t)+\E[V^{*}(s_{t+1})\mid s_t,a_t]$. Substituting into
-Eq.~\eqref{eq:vhat} gives $\hat V=\sum_t\bar r(s_t,a_t)-\sum_t(V^{*}(s_{t+1})-\E[V^{*}(s_{t+1})\mid
-s_t,a_t])$; the second sum has mean zero, which gives (i). Each bracket in Eq.~\eqref{eq:vhat} is
-non-negative since $V^{*}=\max_a Q^{*}$, which gives (ii). \qed
+\paragraph{Proof of Proposition~\ref{prop:ppc}.}
+Condition on $(D,q,x)$. Under no leak and Eq.~\eqref{eq:adaptive}, $\thetastar\sim\pi(\cdot\mid D)$
+and the $\tilde\theta_i$ are independent draws from the same law, so
+$T(\thetastar),T(\tilde\theta_1),\dots,T(\tilde\theta_m)$ are exchangeable. Let
+$k=\lfloor\alpha(m+1)\rfloor$. The event $p\le\alpha$ requires $T(\thetastar)$ to rank among the $k$
+largest of the $m+1$ values, ties counted against it, which by exchangeability has probability at
+most $k/(m+1)\le\alpha$. The bound holds conditionally, hence unconditionally. \qed
+
+\paragraph{Proof of Proposition~\ref{prop:adv}.}
+Let $U$ be the policy's private randomness. As in Eq.~\eqref{eq:adaptive},
+$h\mid(H_t,U)\sim s_t$, so the expected immediate reward of $a_t$ given $(H_t,U)$ is
+$\bar r(s_t,a_t)$ and $s_{t+1}$ follows the transition law of the belief process. Substituting the
+Bellman equation for $Q^{*}(s_t,a_t)$ into Eq.~\eqref{eq:vhat} and regrouping,
+\[
+\hat V=\sum_{t=0}^{T}\bar r(s_t,a_t)\;-\;\sum_{t=0}^{T-1}\Big(V^{*}(s_{t+1})-\E\big[V^{*}(s_{t+1})\mid
+s_t,a_t\big]\Big).
+\]
+Each term of the second sum has conditional mean zero given $(H_t,U,a_t)$ and the horizon is
+bounded, so the sum has mean zero; the first sum has the policy's expected total reward as its mean
+by the tower property. This proves (i). Each bracket $V^{*}(s_t)-Q^{*}(s_t,a_t)$ in
+Eq.~\eqref{eq:vhat} is non-negative because $V^{*}=\max_aQ^{*}$, and all vanish iff every action is
+a maximiser, which proves (ii); (iii) is its equality case. \qed
+
+\paragraph{Proof of Corollary~\ref{cor:norm}.}
+$\E[V]=\sum_i\E[\hat V_i]-c\,\E[n_\mathrm{draws}]$, which by Proposition~\ref{prop:adv}(i) is the
+policy's expected profit net of calibration cost. The map $v\mapsto(v-V_0)/(\bar V_\mathrm{ref}-V_0)$
+is affine and increasing because $\bar V_\mathrm{ref}>V_0$ on every selected desk. \qed
 
 \end{document}
