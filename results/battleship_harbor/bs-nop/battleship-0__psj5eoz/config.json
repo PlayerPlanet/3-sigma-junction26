@@ -1,0 +1,12 @@
+{
+    "task": {
+        "path": "tasks/battleship-0",
+        "source": "tasks"
+    },
+    "trial_name": "battleship-0__psj5eoz",
+    "trials_dir": "/root/work/jobs/bs-nop",
+    "agent": {
+        "name": "nop"
+    },
+    "job_id": "85dc80ec-5336-4868-98a9-ddc26e7ddf04"
+}

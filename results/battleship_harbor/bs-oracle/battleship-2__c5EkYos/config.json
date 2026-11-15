@@ -1,0 +1,10 @@
+{
+    "task": {
+        "path": "tasks/battleship-2",
+        "source": "tasks"
+    },
+    "trial_name": "battleship-2__c5EkYos",
+    "trials_dir": "/root/work/jobs/bs-oracle",
+    "agent_setup_timeout_multiplier": 3.0,
+    "job_id": "cd8a5256-166e-4cad-94e0-a92e4eeb59a5"
+}
