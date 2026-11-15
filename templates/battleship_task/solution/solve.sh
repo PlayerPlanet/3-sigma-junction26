@@ -8,7 +8,9 @@ cd /solution
 uv run --no-project --with fastmcp==4.2.0 --with numpy==2.3.4 python - <<'PY'
 import asyncio
 from fastmcp import Client
-from bayesenv import battleship as B
+import os
+from bayesenv.battleship_worlds import load
+B = load(os.environ.get("BATTLESHIP_WORLD", "closed"))
 
 async def main():
     belief = B.Belief()

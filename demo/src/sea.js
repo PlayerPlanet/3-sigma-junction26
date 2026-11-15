@@ -305,7 +305,9 @@ export class Sea {
     renderer.toneMappingExposure = 0.5;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    const small = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
+    this.small = small;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.25 : 1.5));
     this.renderer = renderer;
     host.appendChild(renderer.domElement);
     this.labels = document.createElement('div');
@@ -405,7 +407,7 @@ export class Sea {
       uBelief: { value: this.beliefTex }, uTime: this.time, uAmount: { value: 1 },
       uSun: { value: this.sun }, uSunColor: { value: this.sunColor.clone().multiplyScalar(0.62) },
       uAmbient: { value: new THREE.Color(0.52, 0.62, 0.76).multiplyScalar(0.95) },
-      uNoise: { value: noiseTexture() }, uSteps: { value: 44 },
+      uNoise: { value: noiseTexture() }, uSteps: { value: small ? 28 : 44 },
     };
     this.fogAmountTarget = 1;
     const fogBox = new THREE.Mesh(
@@ -667,9 +669,11 @@ export class Sea {
     // camera: frame the grid for this aspect, drift slowly, drop lower on reveal
     this.orbit += ((this.orbitTarget || 0) - this.orbit) * Math.min(1, dt * 0.8);
     const asp = this.camera.aspect;
-    const dist = (116 / Math.min(asp / 1.18, 1.2)) * (1 - 0.06 * this.orbit);
-    const elev = THREE.MathUtils.degToRad(25 - 9 * this.orbit);
-    const pitch = THREE.MathUtils.degToRad(21 - 7 * this.orbit);
+    // phones get a closer, steeper view so the cells are big enough to tap
+    const sm = this.small && asp < 1.3;
+    const dist = (sm ? 118 / Math.min(asp, 1.1) : 116 / Math.min(asp / 1.18, 1.2)) * (1 - 0.06 * this.orbit);
+    const elev = THREE.MathUtils.degToRad((sm ? 44 : 25) - (sm ? 26 : 9) * this.orbit);
+    const pitch = THREE.MathUtils.degToRad((sm ? 40 : 21) - (sm ? 25 : 7) * this.orbit);
     const az = Math.sin(t * 0.05) * 0.06 + 0.42 * this.orbit;
     const cx = Math.sin(az) * Math.cos(elev) * dist, cy = Math.sin(elev) * dist;
     const cz = Math.cos(az) * Math.cos(elev) * dist;

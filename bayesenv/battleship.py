@@ -4,7 +4,8 @@ A 6x6 board hides three ships (lengths 4, 3, 2; horizontal or vertical; no overl
 were placed by one of six public placement rules (RULES), chosen uniformly at random; given the
 rule, the layout is uniform over all layouts that satisfy it. The agent spends a shot budget on
 
-    fire(row, col)   cost 1   reports hit / miss, flipped with probability FIRE_NOISE
+    fire(row, col)   cost 1   reports hit / miss, flipped with probability FIRE_NOISE (or, in the
+                              unknown-noise variant, an error rate drawn from FIRE_LEVELS)
     scan(axis, i)    cost 2   reports the number of ship cells in row/column i, off by -1 / +1
                               with probability SCAN_NOISE[-1] / SCAN_NOISE[+1], clipped to [0, 6]
 
@@ -52,6 +53,16 @@ EPS = 1e-3
 # Open world (bayesenv/battleship_open.py loads this file again with OPEN_WORLD = True): a 7th
 # hypothesis, "other", meaning none of the six listed rules placed the ships.
 OPEN_WORLD = bool(globals().get("OPEN_WORLD", False))
+# Unknown instrument noise (bayesenv/battleship_hard.py): the fire error rate is not 0.1 but one
+# of FIRE_LEVELS, drawn once per game with a uniform prior and disclosed as such. Scans keep
+# their known noise, so they also serve to calibrate the fire instrument.
+UNKNOWN_NOISE = bool(globals().get("UNKNOWN_NOISE", False))
+FIRE_LEVELS = (0.05, 0.15, 0.30) if UNKNOWN_NOISE else (FIRE_NOISE,)
+FIRE_LEVEL_PRIOR = np.full(len(FIRE_LEVELS), 1.0 / len(FIRE_LEVELS))
+FIRE_NOISE_PHRASE = (
+    "wrong with an unknown probability e, the same for every fire in the game: e is 0.05, 0.15 "
+    "or 0.3, each with prior probability 1/3, drawn once per game independently of everything "
+    "else" if UNKNOWN_NOISE else f"wrong with probability {FIRE_NOISE}")
 OTHER_MAX_AREA = 18
 CENTRE = ((2, 2), (2, 3), (3, 2), (3, 3))
 
@@ -251,33 +262,47 @@ class Belief:
     """Posterior over (rule, layout) from observations, by enumeration.
 
     fire_noise / scan_T / hierarchical can be changed to build the mistaken "coder" beliefs
-    used as baselines; the defaults are the true model (the exact posterior)."""
+    used as baselines; the defaults are the true model (the exact posterior). The fire error
+    rate is a latent too: ll[z, l] is the log likelihood under fire level z (one level, 0.1, in
+    the standard game; FIRE_LEVELS with a uniform prior when the noise is unknown)."""
 
-    def __init__(self, fire_noise: float = FIRE_NOISE, scan_T: np.ndarray | None = None,
+    def __init__(self, fire_noise: float | None = None, scan_T: np.ndarray | None = None,
                  hierarchical: bool = True) -> None:
         g = geometry()
         self.g = g
-        self.fire_noise = fire_noise
+        levels = FIRE_LEVELS if fire_noise is None else (fire_noise,)
+        self.fire_levels = np.array(levels, float)
+        self.level_prior = np.full(len(levels), 1.0 / len(levels))
         self.scan_T = g.scan_T if scan_T is None else scan_T
         self.hierarchical = hierarchical
-        self.ll = np.zeros(g.L)
+        self.ll = np.zeros((len(levels), g.L))
         self.obs: list[tuple[int, int]] = []
 
     def update(self, a: int, y: int) -> None:
         g = self.g
         if a < N * N:
-            e = self.fire_noise
-            self.ll += np.where(g.occ[:, a] == bool(y), math.log1p(-e), math.log(e))
+            e = self.fire_levels
+            self.ll += np.where((g.occ[:, a] == bool(y))[None, :],
+                                np.log1p(-e)[:, None], np.log(e)[:, None])
         else:
             with np.errstate(divide="ignore"):
-                self.ll += np.log(self.scan_T[g.lines[a - N * N], y])
+                self.ll += np.log(self.scan_T[g.lines[a - N * N], y])[None, :]
         self.obs.append((a, int(y)))
 
-    def _A(self) -> np.ndarray:
+    def _E(self) -> np.ndarray:
         m = self.ll.max()
         if not np.isfinite(m):
             raise ValueError("observations have zero probability under this belief")
-        return np.exp(self.ll - m)
+        return self.level_prior[:, None] * np.exp(self.ll - m)   # (Z, L), joint up to a constant
+
+    def _A(self) -> np.ndarray:
+        return self._E().sum(0)                                    # likelihood with z summed out
+
+    def noise(self) -> np.ndarray:
+        """Posterior over the fire error levels (Z,)."""
+        E = self._E() * (self.g.w0 if self.hierarchical else 1.0)
+        s = E.sum(1)
+        return s / s.sum()
 
     def layout_weights(self) -> np.ndarray:
         A = self._A() * (self.g.w0 if self.hierarchical else 1.0)
@@ -295,9 +320,13 @@ class Belief:
         """Expected information gain (nats) about the hidden state of every action (48,)."""
         g = self.g
         w = self.layout_weights()
-        p = w @ g.occ
-        e = self.fire_noise
-        fire = _h2((1 - e) * p + e * (1 - p)) - _h2(np.array(e))
+        Ez = self._E() * (g.w0 if self.hierarchical else 1.0)
+        Ez = Ez / Ez.sum()                                          # (Z, L) joint posterior
+        pz = Ez.sum(1)                                              # P(level z)
+        hit = Ez @ g.occ                                            # (Z, 36) P(z, cell covered)
+        e = self.fire_levels[:, None]
+        py = ((1 - e) * hit + e * (pz[:, None] - hit)).sum(0)       # P(report hit)
+        fire = _h2(py) - float(pz @ _h2(self.fire_levels))
         P = np.stack([np.bincount(g.lines[li], weights=w, minlength=N + 1)
                       for li in range(N_LINES)])               # (12, 7) P(true count)
         Py = P @ self.scan_T
@@ -409,14 +438,17 @@ def rules() -> dict:
             "2) The layout is drawn uniformly at random from ALL layouts that satisfy that rule "
             "(a layout = the three ship placements). Note that a layout can satisfy several "
             "rules, and 'any' is satisfied by every layout. "
-            "3) Each action's noise is independent of everything else."),
+            + ("3) The fire error rate e is drawn once per game: 0.05, 0.15 or 0.3, each 1/3, "
+               "independently of the rule and the layout. 4) Given e, each action's noise is "
+               "independent of everything else." if UNKNOWN_NOISE else
+               "3) Each action's noise is independent of everything else.")),
         "rules": [{"name": n, "definition": d, "prior": 1.0 / K,
                    "number_of_layouts": int(g.n_rule[i])} for i, (n, d) in enumerate(RULES)],
         "total_layouts": int(g.L),
         "ships": [{"name": s, "length": length} for s, length in zip(SHIP_NAMES, SHIPS)],
         "actions": {
             "fire": {"cost": COST["fire"], "returns": "hit (1) or miss (0)",
-                     "noise": f"the reported result is flipped with probability {FIRE_NOISE}"},
+                     "noise": f"the reported result is {FIRE_NOISE_PHRASE}"},
             "scan": {"cost": COST["scan"],
                      "returns": "number of ship cells in one whole row or column",
                      "noise": "reported = true count + d, d = -1 / 0 / +1 with probabilities "
@@ -459,6 +491,8 @@ class BattleshipLab:
         else:
             choices = np.flatnonzero(g.member[self.hidden_rule])
         self.hidden_layout = int(choices[rng.integers(len(choices))])
+        self.hidden_level = int(rng.integers(len(FIRE_LEVELS))) if UNKNOWN_NOISE else 0
+        self.fire_noise = FIRE_LEVELS[self.hidden_level]
         self.belief = Belief()
         self.spent = 0
         self.history: list[dict] = []
@@ -478,7 +512,7 @@ class BattleshipLab:
         g = geometry()
         u = np.random.default_rng(salted_key(self.seed, self.salt, self.TAG_NOISE) + [i]).random()
         if a < N * N:
-            return int(g.occ[self.hidden_layout, a]) ^ int(u < FIRE_NOISE)
+            return int(g.occ[self.hidden_layout, a]) ^ int(u < self.fire_noise)
         k = int(g.lines[a - N * N, self.hidden_layout])
         d = -1 if u < SCAN_NOISE[-1] else (0 if u < SCAN_NOISE[-1] + SCAN_NOISE[0] else 1)
         return min(max(k + d, 0), N)
@@ -526,6 +560,9 @@ class BattleshipLab:
             "n_scans": sum(h["type"] == "scan" for h in self.history),
             "budget_used": self.spent / self.budget,
             "hidden_rule": NAMES[self.hidden_rule],
+            "hidden_fire_noise": self.fire_noise,
+            "exact_fire_noise": dict(zip(map(str, FIRE_LEVELS),
+                                         self.belief.noise().round(6).tolist())),
             "hidden_region": (None if self.hidden_region is None else
                               dict(zip(("row_from", "row_to", "col_from", "col_to"),
                                        self.hidden_region))),
@@ -547,7 +584,7 @@ class BattleshipLab:
 # ---- policies (reference, baselines, attacks) -------------------------------------------
 
 DESIGNS = ("reference", "fires_only", "random", "hunter", "none", "one")
-INFERENCES = ("exact", "closed_world", "noiseless", "no_occam", "overconfident", "hedge", "map", "gamble",
+INFERENCES = ("exact", "nominal_noise", "closed_world", "noiseless", "no_occam", "overconfident", "hedge", "map", "gamble",
               "prior", "cheat_full", "cheat_blend", "cheat_extra")
 
 
@@ -596,6 +633,11 @@ def submission(lab: BattleshipLab, inference: str, rng: np.random.Generator):
         for a, y in b.obs:
             nb.update(a, y)
         return nb.rules(), nb.occupancy()
+    if inference == "nominal_noise":   # exact, but treats the fire error as known (the middle level)
+        nb = Belief(fire_noise=FIRE_LEVELS[len(FIRE_LEVELS) // 2])
+        for a, y in b.obs:
+            nb.update(a, y)
+        return nb.rules(), nb.occupancy()
     if inference == "closed_world":    # exact Bayes that never considers "other"
         if not OPEN_WORLD:
             return b.rules(), b.occupancy()
@@ -630,7 +672,7 @@ def submission(lab: BattleshipLab, inference: str, rng: np.random.Generator):
             nb.update(a, y)
         for i in range(5):
             c = int(rng.integers(N * N))
-            y = int(g.occ[lab.hidden_layout, c]) ^ int(rng.random() < FIRE_NOISE)
+            y = int(g.occ[lab.hidden_layout, c]) ^ int(rng.random() < lab.fire_noise)
             nb.update(c, y)
         return nb.rules(), nb.occupancy()
     raise ValueError(f"unknown inference {inference}")

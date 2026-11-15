@@ -1,4 +1,4 @@
-# 3-Sigma design guide
+# 3σ design guide
 
 For the pitch deck. It should look like the same object as the landing page in `demo/index.html`,
 so open that first and keep it next to you.
@@ -16,6 +16,13 @@ Quiet, editorial, lots of empty space. One thought per slide. The only loud thin
 | **Sea** | The demo: Battleship replays and screenshots | full-bleed render | white |
 
 Never mix dark and light on one slide. A switch from dark to light is the "now" moment; use it once.
+
+## The mark
+
+The name is written **3σ**, set the way LaTeX sets `$3\sigma$`: an upright 3 and an italic sigma in
+Computer Modern (`demo/assets/tex-main.woff2` and `tex-math.woff2`, the KaTeX fonts; in slides,
+"Latin Modern Math" or a pasted LaTeX render). No hyphen, no word "Sigma", nothing else in that
+font.
 
 ## Colour
 
@@ -64,6 +71,9 @@ Keynote both have Inter).
 - **Before (dark):** the stills in `demo/assets/` (`still1` to `still6`). Full bleed, black and
   white where possible, darkened to 50 to 62% brightness so white text holds. Hard cuts
   between them, no fades or slide transitions.
+- **Photos on light slides:** black and white, cropped square, 6 px corners, at natural
+  brightness, sitting in the text column beside the headline (as AfterQuery's own site does).
+  Never full bleed on a light slide.
 - **Now (light):** `dish.mp4`, `sea.jpg` (a render of our own sea), or nothing. White space is fine.
 - **Demo:** screenshots or screen recordings of the sea from the landing page. Two panels side
   by side, the agent always on the right. Do not draw a cartoon grid when the sea exists.
@@ -100,8 +110,8 @@ Keynote both have Inter).
 | 7 | Light | Trainable | Base, control, RL on Battleship. Then the wet-lab transfer bars. |
 | 8 | Dark | Vision | One still, one line: the same grader for any lab whose truth can be simulated. |
 
-Sound: `demo/assets/intro.mp3` (22 s, 120 bpm, piano over a pulsing bass, a hit on every cut,
-soft landing on a piano chord at 19 s) fits slides 1 and 2 if the deck opens with the card
+Sound: `demo/assets/intro.mp3` (22 s, 120 bpm, pulsing synth bass and strings, a hit on every
+cut, soft landing on a piano chord at 19 s) fits slides 1 and 2 if the deck opens with the card
 sequence. The music starts 1 s before the first picture, and every card lasts a whole number of
 beats (0.5 s). `demo/tools/make_intro_sound.py` regenerates it with different timings.
 

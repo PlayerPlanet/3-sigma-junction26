@@ -47,14 +47,8 @@ def set_world(world: str) -> None:
     """closed = the six rules; open = six plus "other" (bayesenv/battleship_open.py). Rebinds
     the engine used here and by the prompt builder in bayesenv/battleship_rows.py."""
     global B
-    if world == "open":
-        from bayesenv import battleship_open as BO
-        B = BO
-    elif world == "closed":
-        from bayesenv import battleship as BC
-        B = BC
-    else:
-        raise ValueError(f"unknown world {world}")
+    from bayesenv.battleship_worlds import load
+    B = load(world)
     R.B = B
 # Reasoning models can spend more than 16k tokens thinking before the 6x6 answer (bench-v1:
 # every final answer of kimi-k3-1-pro was empty after hitting the limit).

@@ -62,10 +62,12 @@ OPEN_BASELINES = {"closed_world_bayes": ("reference", "closed_world")}  # open w
 def set_world(world: str) -> None:
     """Config key "world": "closed" (six rules, default) or "open" (six plus "other")."""
     global B
-    if world == "open":
-        from bayesenv import battleship_open as BO
-        B = BO
+    from bayesenv.battleship_worlds import load
+    B = load(world)
+    if B.OPEN_WORLD:
         BASELINES.update(OPEN_BASELINES)
+    if B.UNKNOWN_NOISE:
+        BASELINES["nominal_noise_coder"] = ("reference", "nominal_noise")
     R.B = B
 
 

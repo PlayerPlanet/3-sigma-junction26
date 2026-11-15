@@ -1,21 +1,20 @@
 # Rulebound Battleship: find the ships and the rule that placed them
 
 An MCP server named `battleship` is connected to you. Start with `get_rules`: it gives the
-board, the three ships, the six placement rules (exactly one of them was used to place the
-ships), exactly how the rule and the layout were drawn, the noise of every action, your shot
+board, the three ships, __RULES_TEXT__, exactly how the rule and the layout were drawn, the noise of every action, your shot
 budget, the prior probability that each cell holds a ship, and the scoring formula. Nothing
 about the game is hidden except the drawn rule, the ship positions and the noise.
 
 Spend your budget with two actions:
 
-* `fire(row, col)`: costs 1, reports hit (1) or miss (0), wrong with probability 0.1.
+* `fire(row, col)`: costs 1, reports hit (1) or miss (0), __FIRE_TEXT__.
 * `scan(axis, index)`: costs 2, reports how many ship cells are in a whole row or column,
   off by one with probability 0.3 (see `get_rules`).
 
 Firing never sinks or changes anything; the board stays the same. You may stop early. When you
 are done, call `submit_beliefs` once with:
 
-* `rules`: a probability for each of the six rule names, and
+* `rules`: a probability for each of the __N_RULES__ rule names, and
 * `occupancy`: 6 rows of 6 numbers, the probability that a ship covers each cell.
 
 You have a shell with Python 3, numpy and scipy. Writing and running code (for example to

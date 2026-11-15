@@ -1,0 +1,60 @@
+{
+ "models": {
+  "gemini-4-hydrogen": {
+   "provider": "gemini",
+   "model": "gemini-4-hydrogen",
+   "seeds": "0:14",
+   "salt": "battleship-open-v1-750",
+   "one_tag": true,
+   "concurrency": 4,
+   "max_tokens": 16384,
+   "temperature": 1.0,
+   "rpm": 0.0,
+   "started": "2026-11-15T02:51:13",
+   "finished": "2026-11-15T03:04:19"
+  }
+ },
+ "tag": "open-v1",
+ "world": "open",
+ "salt": "battleship-open-v1-750",
+ "seeds": "0:14",
+ "git": {
+  "commit": "9c16bb18b7ae1073d89fdcac884ea766c3c86115",
+  "branch": "battleship-env",
+  "dirty": true
+ },
+ "rules_hash": "ec3eb23b1355",
+ "protocol_hash": "818863207430",
+ "engine_hash": "949b949eff05",
+ "runner_hash": "09347f883c01",
+ "config": {
+  "tag": "open-v1",
+  "world": "open",
+  "salt": "battleship-open-v1-750",
+  "seeds": "0:14",
+  "temperature": 1.0,
+  "max_tokens": 16384,
+  "concurrency": 4,
+  "one_tag": true,
+  "models": [
+   {
+    "provider": "gemini",
+    "model": "gemini-4-hydrogen"
+   },
+   {
+    "provider": "verda",
+    "model": "kimi-k3-1-pro",
+    "concurrency": 2
+   },
+   {
+    "provider": "verda-deepseek",
+    "model": "SET-FROM---list-models"
+   },
+   {
+    "provider": "modal",
+    "model": "gemma-4-26b-a4b-it"
+   }
+  ],
+  "_notes": "Open world: the six rules plus 'other' (all ships inside one hidden rectangle of at most 18 cells; disclosed in the rules). The salt is the first of battleship-open-v1-<i> whose 14 boards hold exactly 2 boards of each of the 7 rules (a stratified sample of the uniform rule prior, found by scripts search; see docs). Same protocol as bench-v2."
+ }
+}

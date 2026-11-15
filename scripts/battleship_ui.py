@@ -50,10 +50,10 @@ BENCH_CFG = ROOT / "configs" / "battleship_benchmark.json"
 def set_world(world: str) -> None:
     """Switch the whole UI to the closed (six rules) or open (six + "other") game."""
     global B, BENCH_CFG
-    if world == "open":
-        from bayesenv import battleship_open as BO
-        B = BO
-        BENCH_CFG = ROOT / "configs" / "battleship_benchmark_open.json"
+    from bayesenv.battleship_worlds import load
+    B = load(world)
+    if world != "closed":
+        BENCH_CFG = ROOT / "configs" / f"battleship_benchmark_{world}.json"
 
 
 # ---- break it ---------------------------------------------------------------------------
@@ -74,6 +74,8 @@ STRATEGIES = [  # key, design, inference, label, what it tries
     ("random", "random", "exact", "Random experiments", "random shots, exact beliefs"),
     ("closed_world", "reference", "closed_world", "Never say 'none of the above'",
      "exact beliefs over the six listed rules only"),
+    ("nominal_noise", "reference", "nominal_noise", "Assume the fire error is 0.15",
+     "exact beliefs, but the unknown fire error rate treated as known"),
     ("peek", "reference", "cheat_blend", "Peek at the answer (cheat)",
      "10% of the hidden truth mixed into honest beliefs"),
     ("hidden_shots", "reference", "cheat_extra", "Five secret shots (cheat)",
@@ -161,7 +163,8 @@ def break_custom(body: dict) -> dict:
 def break_meta() -> dict:
     return {"n": BREAK_N, "open": bool(B.OPEN_WORLD),
             "strategies": [{"key": k, "label": lab, "what": w} for k, _, inf, lab, w in STRATEGIES
-                           if B.OPEN_WORLD or inf != "closed_world"]}
+                           if (B.OPEN_WORLD or inf != "closed_world")
+                           and (B.UNKNOWN_NOISE or inf != "nominal_noise")]}
 
 
 def _warm() -> None:
@@ -589,8 +592,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8050)
     ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--world", choices=("closed", "open"), default="closed",
-                    help='open = the six rules plus "other" (none of the above)')
+    ap.add_argument("--world", choices=("closed", "open", "hard"), default="closed",
+                    help='open = the six rules plus "other" (none of the above); hard = open '
+                         'plus an unknown fire error rate')
     a = ap.parse_args()
     set_world(a.world)
     B.geometry()

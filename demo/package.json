@@ -6,7 +6,9 @@
     "data": "python ../scripts/build_demo_data.py",
     "verify": "node src/verify.mjs",
     "models": "node tools/embed-models.mjs",
-    "build": "esbuild src/app.js --bundle --format=iife --minify --outfile=app.js"
+    "build": "esbuild src/app.js --bundle --format=iife --minify --outfile=app.js && esbuild src/lab3d.js --bundle --format=iife --minify --outfile=lab3d.js",
+    "bench": "python tools/wrap_bench_pressure.py",
+    "duck": "node tools/embed-duck.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

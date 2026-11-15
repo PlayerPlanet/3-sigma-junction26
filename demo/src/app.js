@@ -35,6 +35,8 @@ const describe = (a, y) => {
 };
 
 // ---------------------------------------------------------------- intro
+const INTRO_LEAD = 1000; // ms of music before the first card; LEAD in tools/make_intro_sound.py
+
 function intro() {
   const root = $('#intro');
   const cards = $$('.card', root);
@@ -62,6 +64,7 @@ function intro() {
     document.body.classList.remove('intro-on');
     $$('video', root).forEach((v) => v.pause());
     if (!natural) fadeOut();
+    if (ix >= 0) askBack();
   };
   const show = (i, seek = false) => {
     clearTimeout(timer);
@@ -73,7 +76,7 @@ function intro() {
       v.currentTime = 0;
       v.play().catch(() => {});
     }
-    if (seek) audio.currentTime = startAt[i] / 1000; // keep the score on the cuts
+    if (seek) audio.currentTime = (INTRO_LEAD + startAt[i]) / 1000; // keep the score on the cuts
     const t0 = performance.now(), ms = +cards[i].dataset.ms;
     const tick = () => {
       bar.style.width = `${Math.min(100, ((startAt[i] + performance.now() - t0) / total) * 100)}%`;
@@ -83,13 +86,36 @@ function intro() {
     tick();
     timer = setTimeout(() => show(i + 1), ms);
   };
+  // phones: ask for landscape for the cards, then for upright again once the page shows
+  const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600;
+  const portrait = () => window.innerHeight > window.innerWidth;
+  const back = $('#rotate-back');
+  let upright = false, backTimer = null;
+  const askRotate = () => gate.classList.toggle('rotate', phone && portrait() && !upright && !gate.classList.contains('off'));
+  const askBack = () => {
+    if (!phone || portrait()) return;
+    back.classList.add('on');
+    clearTimeout(backTimer);
+    backTimer = setTimeout(() => back.classList.remove('on'), 8000);
+  };
+  window.addEventListener('resize', () => {
+    askRotate();
+    if (portrait()) back.classList.remove('on');
+  });
+  $('#intro-upright').addEventListener('click', (e) => {
+    e.stopPropagation();
+    upright = true;
+    askRotate();
+  });
   const begin = () => {
     gate.classList.add('off');
+    gate.classList.remove('rotate');
     clearInterval(fade);
     audio.volume = 1;
     audio.currentTime = 0;
     audio.play().catch(() => {});
-    show(0);
+    clearTimeout(timer);
+    timer = setTimeout(() => show(0), INTRO_LEAD); // the music leads, then the first picture
   };
   const open = (withGate) => {
     root.classList.remove('done');
@@ -97,15 +123,18 @@ function intro() {
     window.scrollTo(0, 0);
     cards.forEach((c) => c.classList.remove('on'));
     bar.style.width = '0';
-    if (withGate) gate.classList.remove('off');
-    else begin();
+    ix = -1;
+    if (withGate) {
+      gate.classList.remove('off');
+      askRotate();
+    } else begin();
   };
   $('#intro-start').addEventListener('click', (e) => {
     e.stopPropagation();
     begin();
   });
   root.addEventListener('click', (e) => {
-    if (e.target.closest('button') || !gate.classList.contains('off')) return;
+    if (e.target.closest('button') || !gate.classList.contains('off') || ix < 0) return;
     show(ix + 1, true);
   });
   $('#intro-skip').addEventListener('click', () => finish());
@@ -119,8 +148,9 @@ function intro() {
     if (e.key === 'Escape') return finish();
     if (e.key !== ' ' && e.key !== 'ArrowRight' && e.key !== 'Enter') return;
     e.preventDefault();
-    if (!gate.classList.contains('off')) begin();
-    else show(ix + 1, true);
+    if (!gate.classList.contains('off')) {
+      if (!gate.classList.contains('rotate')) begin();
+    } else if (ix >= 0) show(ix + 1, true);
   });
   $('#replay-intro').addEventListener('click', () => open(false));
   if (location.hash && location.hash !== '#top') {
@@ -236,6 +266,17 @@ function stage() {
   const controls = $('#controls');
   const results = $('#results');
   let mode = 'play', boardIx = 0, token = 0;
+  const arena = $('#arena');
+  const sw = $$('#viewswitch button');
+  const view = (which) => {
+    arena.dataset.show = which;
+    sw.forEach((b) => b.classList.toggle('on', b.dataset.show === which));
+  };
+  const viewLabels = (a, b) => {
+    sw[0].textContent = a;
+    sw[1].textContent = b;
+  };
+  sw.forEach((b) => b.addEventListener('click', () => view(b.dataset.show)));
   let human, agentK, agentSpent, busy, replay;
 
   const board = () => D.boards[boardIx];
@@ -268,6 +309,7 @@ function stage() {
     results.innerHTML = '';
     A.reset();
     B.reset();
+    view('a');
     if (mode === 'play') startPlay();
     else startReplay();
   }
@@ -294,13 +336,14 @@ function stage() {
     B.note = 'Plays the same hidden board, shot for shot with your budget.';
     B.draw();
     A.sea.onAction = humanAction;
+    viewLabels('Your board', `Watch the ${D.llm.base ? 'model' : 'agent'}`);
     playControls();
   }
 
   function playControls() {
     const left = E.BUDGET - human.spent;
     controls.innerHTML = `
-      <p class="hint">${left > 0 ? 'Click a cell to fire (1). Arrows scan a line (2).' : 'Budget spent.'}</p>
+      <p class="hint">${left > 0 ? 'Pick a cell to fire (1). Arrows scan a line (2).' : 'Budget spent.'}</p>
       <button class="btn ghost" id="bayes" type="button" ${left > 0 ? '' : 'disabled'}>Play the Bayes move</button>
       <button class="btn solid" id="tosubmit" type="button">${left > 0 ? 'Stop and submit' : 'Submit beliefs'}</button>`;
     $('#bayes').addEventListener('click', () => {
@@ -439,6 +482,7 @@ function stage() {
     B.rules = right.beliefs[0].rules;
     B.note = tuned ? 'Same model after RL on the exact reward.' : 'Showing the exact-Bayes reference: the play this reward trains toward. No tuned model has been run yet.';
     B.draw();
+    viewLabels('Out of the box', tuned ? 'RL-tuned' : 'Reference');
     replayControls();
   }
 
